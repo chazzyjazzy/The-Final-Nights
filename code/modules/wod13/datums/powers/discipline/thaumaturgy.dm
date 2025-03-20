@@ -123,6 +123,8 @@
 
 	level = 2
 
+	cooldown_length = 0 SECONDS
+
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/a_taste_for_blood,
 		/datum/discipline_power/thaumaturgy/blood_of_potency,
@@ -135,7 +137,7 @@
 	var/turf/start = get_turf(owner)
 	var/obj/projectile/thaumaturgy/H = new(start)
 	H.firer = owner
-	H.damage = 10 + owner.thaum_damage_plus
+	H.damage = 10 + owner.thaum_damage_plus + owner.mentality
 	H.preparePixelProjectile(target, start)
 	H.level = 2
 	H.fire(direct_target = target)
