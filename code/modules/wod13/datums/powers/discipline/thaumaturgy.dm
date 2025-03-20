@@ -205,7 +205,6 @@
 /datum/discipline_power/thaumaturgy/theft_of_vitae/activate(mob/living/target)
 	. = ..()
 	if(iscarbon(target))
-		target.Stun(2.5 SECONDS)
 		target.visible_message(span_danger("[target] throws up!"), "<span class='userdanger'>You throw up!</span>")
 		target.add_splatter_floor(get_turf(target))
 		target.add_splatter_floor(get_turf(get_step(target, target.dir)))
