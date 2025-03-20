@@ -246,7 +246,7 @@
 				to_chat(target, "<span class='userdanger'>Your blood continues to burn!</span>")
 				target.apply_damage(15, BURN, owner.zone_selected)
 				sleep(2.5 SECONDS)
-				if(!prob(clamp((target.physique * 10), 40, 80)))
+				if(!prob(clamp((target.physique * 10 + 20), 40, 80)))
 					target.Stun(2.5 SECONDS)
 					to_chat(target, "<span class='userdanger'>IT BURNS! IT BURNS!! IT BURNS!!!</span>")
 					target.apply_damage(20, BURN, owner.zone_selected)
