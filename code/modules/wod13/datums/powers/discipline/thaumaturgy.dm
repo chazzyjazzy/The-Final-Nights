@@ -99,6 +99,8 @@
 
 	level = 1
 
+	cooldown_length = 0 SECONDS
+
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/blood_rage,
 		/datum/discipline_power/thaumaturgy/blood_of_potency,
