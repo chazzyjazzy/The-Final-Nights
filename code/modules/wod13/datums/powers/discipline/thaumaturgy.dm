@@ -52,7 +52,7 @@
 	pass_flags = PASSTABLE | PASSGLASS | PASSGRILLE
 	damage = 5
 	damage_type = BURN
-	hitsound = 'code/modules/wod13/sounds/drinkblood1.ogg'
+	hitsound = 'code/modules/wod13/sounds/bloodbeam.ogg'
 	hitsound_wall = 'sound/weapons/effects/searwall.ogg'
 	flag = LASER
 	light_system = MOVABLE_LIGHT
