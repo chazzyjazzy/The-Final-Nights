@@ -209,6 +209,8 @@
 		target.visible_message(span_danger("[target] throws up!"), "<span class='userdanger'>You throw up!</span>")
 		target.add_splatter_floor(get_turf(target))
 		target.add_splatter_floor(get_turf(get_step(target, target.dir)))
+		target.bloodpool - 2
+		owner.bloodpool + 2
 	else
 		owner.bloodpool = min(owner.bloodpool + target.bloodpool, owner.maxbloodpool)
 		if(!istype(target, /mob/living/simple_animal/hostile/megafauna))
