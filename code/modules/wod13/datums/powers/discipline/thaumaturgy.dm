@@ -99,7 +99,7 @@
 
 	level = 1
 
-	cooldown_length = 0 SECONDS
+	cooldown_length = 3 SECONDS
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/blood_rage,
@@ -123,7 +123,7 @@
 
 	level = 2
 
-	cooldown_length = 0 SECONDS
+	cooldown_length = 2.5 SECONDS
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/a_taste_for_blood,
@@ -149,7 +149,7 @@
 
 	level = 3
 
-	cooldown_length = 0 SECONDS
+	cooldown_length = 1 SECONDS
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/a_taste_for_blood,
@@ -163,7 +163,7 @@
 	var/turf/start = get_turf(owner)
 	var/obj/projectile/thaumaturgy/H = new(start)
 	H.firer = owner
-	H.damage = 25 + owner.thaum_damage_plus + owner.mentality
+	H.damage = 15 + owner.thaum_damage_plus + owner.mentality
 	H.preparePixelProjectile(target, start)
 	H.level = 2
 	H.fire(direct_target = target)
