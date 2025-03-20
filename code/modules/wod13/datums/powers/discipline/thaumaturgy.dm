@@ -223,7 +223,7 @@
 
 	level = 5
 
-	effect_sound = 'code/modules/wod13/sounds/vomit.ogg'
+	effect_sound = 'code/modules/wod13/sounds/bloodcauldron.ogg'
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/a_taste_for_blood,
