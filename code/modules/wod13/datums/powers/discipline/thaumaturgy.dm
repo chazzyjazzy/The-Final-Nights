@@ -137,7 +137,7 @@
 	var/turf/start = get_turf(owner)
 	var/obj/projectile/thaumaturgy/H = new(start)
 	H.firer = owner
-	H.damage = 10 + owner.thaum_damage_plus + owner.mentality
+	H.damage = 10 + owner.thaum_damage_plus + owner.get_total_mentality()
 	H.preparePixelProjectile(target, start)
 	H.level = 2
 	H.fire(direct_target = target)
@@ -163,7 +163,7 @@
 	var/turf/start = get_turf(owner)
 	var/obj/projectile/thaumaturgy/H = new(start)
 	H.firer = owner
-	H.damage = 15 + owner.thaum_damage_plus + owner.mentality
+	H.damage = 15 + owner.thaum_damage_plus + owner.get_total_mentality()
 	H.preparePixelProjectile(target, start)
 	H.level = 2
 	H.fire(direct_target = target)
@@ -237,16 +237,16 @@
 	if(iscarbon(target))
 		target.visible_message(span_danger("[target] reddens and quakes!"), "<span class='userdanger'>Your veins feel like they're on fire!</span>")
 		//Add a prob roll here, we want it to have a bias towards succeeding than not, but there's still an advantage to having higher phys.
-		if(!prob(clamp((target.physique * 10), 10, 30)))
+		if(!prob(clamp((target.get_total_physique() * 10), 10, 30)))
 			target.Stun(2.5 SECONDS)
 			target.apply_damage(10, BURN, owner.zone_selected)
 			sleep(2.5 SECONDS)
 			//It's a little heinous
-			if(!prob(clamp((target.physique * 10), 20, 40)))
+			if(!prob(clamp((target.get_total_physique() * 10), 20, 40)))
 				to_chat(target, "<span class='userdanger'>Your blood continues to burn!</span>")
 				target.apply_damage(15, BURN, owner.zone_selected)
 				sleep(2.5 SECONDS)
-				if(!prob(clamp((target.physique * 10 + 20), 40, 80)))
+				if(!prob(clamp((target.get_total_physique() * 10 + 20), 40, 80)))
 					target.Stun(2.5 SECONDS)
 					to_chat(target, "<span class='userdanger'>IT BURNS! IT BURNS!! IT BURNS!!!</span>")
 					target.apply_damage(20, BURN, owner.zone_selected)
@@ -302,7 +302,7 @@
 		var/ritual = input(owner, "Choose rune to draw (You need an Arcane Tome to reduce random):", "Thaumaturgy") as null|anything in list("???")
 		if(ritual)
 			drawing = TRUE
-			if(do_after(H, 3 SECONDS * max(1, 5 - H.mentality), H))
+			if(do_after(H, 3 SECONDS * max(1, 5 - H.get_total_mentality()), H))
 				drawing = FALSE
 				var/rune = pick(shit)
 				new rune(H.loc)
