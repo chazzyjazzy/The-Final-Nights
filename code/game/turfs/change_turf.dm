@@ -134,7 +134,7 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 	return W
 
 /turf/open/ChangeTurf(path, list/new_baseturfs, flags) //Resist the temptation to make this default to keeping air.
-		if(ispath(path,/turf/closed))
+	if(ispath(path,/turf/closed))
 		flags |= CHANGETURF_RECALC_ADJACENT
 	return ..()
 
