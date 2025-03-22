@@ -85,8 +85,8 @@
 	return
 
 // Base mob environment handler for body temperature
-/mob/living/proc/handle_environment(datum/gas_mixture/environment)
-	var/loc_temp = get_temperature(environment)
+/mob/living/proc/handle_environment()
+	var/loc_temp = get_temperature()
 
 	if(loc_temp < bodytemperature) // it is cold here
 		if(!on_fire) // do not reduce body temp when on fire

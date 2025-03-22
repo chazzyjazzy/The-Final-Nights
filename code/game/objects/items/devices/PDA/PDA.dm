@@ -1070,7 +1070,6 @@ GLOBAL_LIST_EMPTY(PDAs)
 		visible_message("<span class='danger'>[src] explodes!</span>", "<span class='warning'>You hear a loud *pop*!</span>")
 
 	if(T)
-		T.hotspot_expose(700,125)
 		if(istype(cartridge, /obj/item/cartridge/virus/syndicate))
 			explosion(T, -1, 1, 3, 4)
 		else

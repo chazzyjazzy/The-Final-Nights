@@ -11,12 +11,14 @@
 	var/stabilizers = FALSE
 	var/full_speed = TRUE // If the jetpack will have a speedboost in space/nograv or not
 	var/datum/effect_system/trail_follow/ion/ion_trail
+	var/tank_holder_icon_state = "holder_generic"
 
 /obj/item/jetpack/Initialize()
 	. = ..()
 	ion_trail = new
 	ion_trail.auto_process = FALSE
 	ion_trail.set_up(src)
+	AddComponent(/datum/component/container_item/tank_holder, tank_holder_icon_state)
 
 /obj/item/jetpack/ui_action_click(mob/user, action)
 	if(istype(action, /datum/action/item_action/toggle_jetpack))
@@ -25,9 +27,6 @@
 		if(on)
 			stabilizers = !stabilizers
 			to_chat(user, "<span class='notice'>You turn the jetpack stabilization [stabilizers ? "on" : "off"].</span>")
-	else
-		toggle_internals(user)
-
 
 /obj/item/jetpack/proc/cycle(mob/user)
 	if(user.incapacitated())
