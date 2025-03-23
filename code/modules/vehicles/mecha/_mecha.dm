@@ -174,7 +174,6 @@
 /obj/vehicle/sealed/mecha/Initialize()
 	. = ..()
 	add_radio()
-	add_cabin()
 	RegisterSignal(src, COMSIG_MOVABLE_MOVED, PROC_REF(play_stepsound))
 	spark_system.set_up(2, 0, src)
 	spark_system.attach(src)
@@ -351,7 +350,6 @@
 
 //processing internal damage, temperature, air regulation, alert updates, lights power use.
 /obj/vehicle/sealed/mecha/process(delta_time)
-	var/internal_temp_regulation = 1
 
 	if(internal_damage)
 		if(internal_damage & MECHA_INT_FIRE)
