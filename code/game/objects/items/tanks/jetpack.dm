@@ -2,6 +2,7 @@
 	name = "jetpack (empty)"
 	desc = "A tank of compressed gas for use as propulsion in zero-gravity areas. Use with caution."
 	icon_state = "jetpack"
+	icon = 'icons/obj/tank.dmi'
 	inhand_icon_state = "jetpack"
 	lefthand_file = 'icons/mob/inhands/equipment/jetpacks_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/jetpacks_righthand.dmi'
