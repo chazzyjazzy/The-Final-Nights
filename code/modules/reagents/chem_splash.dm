@@ -62,8 +62,6 @@
 				if(!(A in viewable))
 					continue
 				reactable |= A
-			if(extra_heat >= 300)
-				T.hotspot_expose(extra_heat*2, 5)
 		if(!reactable.len) //Nothing to react with. Probably means we're in nullspace.
 			return
 		for(var/thing in reactable)

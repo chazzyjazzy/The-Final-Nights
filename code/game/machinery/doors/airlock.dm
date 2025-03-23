@@ -120,8 +120,6 @@
 /obj/machinery/door/airlock/Initialize()
 	. = ..()
 	wires = set_wires()
-	if(frequency)
-		set_frequency(frequency)
 
 	if(closeOtherId != null)
 		addtimer(CALLBACK(PROC_REF(update_other_id)), 5)
@@ -1136,7 +1134,6 @@
 	sleep(4)
 	density = FALSE
 	flags_1 &= ~PREVENT_CLICK_UNDER_1
-	air_update_turf(TRUE, FALSE)
 	sleep(1)
 	layer = OPEN_DOOR_LAYER
 	update_icon(AIRLOCK_OPEN, 1)
@@ -1181,12 +1178,10 @@
 	if(air_tight)
 		density = TRUE
 		flags_1 |= PREVENT_CLICK_UNDER_1
-		air_update_turf(TRUE, TRUE)
 	sleep(1)
 	if(!air_tight)
 		density = TRUE
 		flags_1 |= PREVENT_CLICK_UNDER_1
-		air_update_turf(TRUE, TRUE)
 	sleep(4)
 	if(dangerous_close)
 		crush()
