@@ -71,14 +71,6 @@
 	///Whether or not the mech destroys walls by running into it.
 	var/bumpsmash = FALSE
 
-	///////////ATMOS
-	///Whether we are currrently drawing from the internal tank
-	var/use_internal_tank = FALSE
-	///The setting of the valve on the internal tank
-	var/internal_tank_valve = ONE_ATMOSPHERE
-	///The connected air port, if we have one
-	var/obj/machinery/atmospherics/components/unary/portables_connector/connected_port
-
 	///Special version of the radio, which is unsellable
 	var/obj/item/radio/mech/radio
 	var/list/trackers = list()

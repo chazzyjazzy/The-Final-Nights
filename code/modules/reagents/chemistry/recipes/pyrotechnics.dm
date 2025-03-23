@@ -391,9 +391,6 @@
 /datum/chemical_reaction/phlogiston/on_reaction(datum/reagents/holder, created_volume)
 	if(holder.has_reagent(/datum/reagent/stabilizing_agent))
 		return
-	var/turf/open/T = get_turf(holder.my_atom)
-	if(istype(T))
-		T.atmos_spawn_air("plasma=[created_volume];TEMP=1000")
 	holder.clear_reagents()
 	return
 
@@ -489,8 +486,6 @@
 	var/range = clamp(sqrt(created_volume*2), 1, 6)
 	//This first throws people away and then it explodes
 	goonchem_vortex(turfie, 1, range)
-	turfie.atmos_spawn_air("o2=[created_volume/2];TEMP=[575]")
-	turfie.atmos_spawn_air("n2=[created_volume/2];TEMP=[575]")
 	return ..()
 
 /datum/chemical_reaction/firefighting_foam

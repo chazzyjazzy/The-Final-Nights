@@ -262,7 +262,7 @@
 	var/warrant = FALSE
 	var/ignores_warrant = FALSE
 
-	var/obj/overlay/gnosis
+	var/obj/effect/overlay/gnosis
 
 	var/isdwarfy = FALSE
 	var/ischildren = FALSE

@@ -192,7 +192,6 @@
 				[(construction_state == MECHA_OPEN_HATCH) ?"[scanmod?"<a href='?src=[REF(src)];drop_scanmod=1;id_card=[REF(id_card)];user=[REF(user)]'>Drop scanning module</a>":"No scanning module installed</br>"]":null]
 				[(construction_state == MECHA_OPEN_HATCH) ?"[capacitor?"<a href='?src=[REF(src)];drop_cap=1;id_card=[REF(id_card)];user=[REF(user)]'>Drop capacitor</a>":"No capacitor installed</br>"]":null]
 				[(construction_state == MECHA_OPEN_HATCH) ?"--------------------</br>":null]
-				[(construction_state > MECHA_LOCKED) ?"<a href='?src=[REF(src)];set_internal_tank_valve=1;user=[REF(user)]'>Set Cabin Air Pressure</a>":null]
 			</body>
 		</html>"}
 	user << browse(., "window=exosuit_maint_console")
@@ -280,15 +279,6 @@
 		if(href_list["finish_req_access"])
 			mecha_flags &= ~ADDING_ACCESS_POSSIBLE
 			usr << browse(null,"window=exosuit_add_access")
-			return
-
-		//Set pressure.
-		if(href_list["set_internal_tank_valve"] && construction_state)
-			var/new_pressure = input(usr,"Input new output pressure","Pressure setting",internal_tank_valve) as num|null
-			if(isnull(new_pressure) || usr.incapacitated() || !construction_state)
-				return
-			internal_tank_valve = new_pressure
-			to_chat(usr, "<span class='notice'>The internal pressure valve has been set to [internal_tank_valve]kPa.</span>")
 			return
 
 	//Start of all internal topic stuff.

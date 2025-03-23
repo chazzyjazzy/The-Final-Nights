@@ -1035,15 +1035,6 @@
 	build_path = /obj/item/vending_refill/custom
 	category = list("initial", "Misc")
 
-/datum/design/ducts
-	name = "Fluid Ducts"
-	id = "fluid_ducts"
-	build_type = AUTOLATHE
-	materials = list(/datum/material/iron = 500)
-	build_path = /obj/item/stack/ducts
-	category = list("initial", "Construction")
-	maxstack = 50
-
 /datum/design/toygun
 	name = "Cap Gun"
 	id = "toygun"
