@@ -67,8 +67,7 @@
 		/obj/item/construction/rcd,
 		/obj/item/inducer,
 		/obj/item/plunger,
-		/obj/item/airlock_painter,
-		/obj/item/pipe_painter
+		/obj/item/airlock_painter
 		))
 
 /obj/item/storage/belt/utility/chief
@@ -183,7 +182,6 @@
 		/obj/item/implanter,
 		/obj/item/pinpointer/crew,
 		/obj/item/holosign_creator/medical,
-		/obj/item/construction/plumbing,
 		/obj/item/plunger,
 		/obj/item/reagent_containers/spray,
 		/obj/item/shears,

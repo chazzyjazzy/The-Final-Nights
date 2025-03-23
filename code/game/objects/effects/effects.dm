@@ -29,17 +29,5 @@
 /obj/effect/singularity_act()
 	qdel(src)
 
-/obj/effect/abstract/singularity_pull()
-	return
-
-/obj/effect/abstract/singularity_act()
-	return
-
 /obj/effect/abstract/has_gravity(turf/T)
 	return FALSE
-
-/obj/effect/dummy/singularity_pull()
-	return
-
-/obj/effect/dummy/singularity_act()
-	return

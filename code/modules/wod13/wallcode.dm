@@ -473,7 +473,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				new /obj/effect/decal/snow_overlay(src)
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW
@@ -516,7 +515,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				icon_state = "snow[rand(1, 14)]"
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW
@@ -545,7 +543,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				icon_state = "snow[rand(1, 14)]"
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW
@@ -584,7 +581,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				icon_state = "snow[rand(1, 14)]"
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW
@@ -732,7 +728,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				icon_state = "snow[rand(1, 14)]"
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW
@@ -809,7 +804,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				icon_state = "snow[rand(1, 14)]"
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW
@@ -825,7 +819,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				icon_state = "snow_rails"
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW
@@ -1073,7 +1066,6 @@
 		if(istype(get_area(src), /area/vtm))
 			var/area/vtm/V = get_area(src)
 			if(V.upper)
-				initial_gas_mix = WINTER_DEFAULT_ATMOS
 				icon_state = "snow[rand(1, 14)]"
 				footstep = FOOTSTEP_SNOW
 				barefootstep = FOOTSTEP_SNOW

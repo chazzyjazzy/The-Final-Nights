@@ -17,8 +17,6 @@
 	UnregisterSignal(parent, COMSIG_ATOM_FIRE_ACT)
 
 /datum/component/hot_ice/proc/hot_ice_melt(mob/user)
-	message_admins("Hot Ice ignited by [ADMIN_LOOKUPFLW(user)] in [ADMIN_VERBOSEJMP(T)]")
-	log_game("Hot Ice ignited by [key_name(user)] in [AREACOORD(T)]")
 	if(isturf(parent))
 		var/turf/K = parent
 		K.ScrapeAway(1, CHANGETURF_INHERIT_AIR)

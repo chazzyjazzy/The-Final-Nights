@@ -12,9 +12,6 @@
 	if(timeleft)
 		QDEL_IN(src, timeleft)
 
-/obj/effect/forcefield/singularity_pull()
-	return
-
 /obj/effect/forcefield/cult
 	desc = "An unholy shield that blocks all attacks."
 	name = "glowing wall"

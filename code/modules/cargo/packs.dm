@@ -1152,8 +1152,7 @@
 					/obj/item/biopsy_tool,
 					/obj/item/storage/box/petridish,
 					/obj/item/storage/box/petridish,
-					/obj/item/storage/box/swab,
-					/obj/item/construction/plumbing/research)
+					/obj/item/storage/box/swab)
 	crate_name = "cytology supplies crate"
 
 //////////////////////////////////////////////////////////////////////////////

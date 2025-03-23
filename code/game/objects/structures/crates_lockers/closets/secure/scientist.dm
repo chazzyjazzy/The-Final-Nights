@@ -44,4 +44,3 @@
 	for(var/i in 1 to 2)
 		new /obj/item/biopsy_tool(src)
 		new /obj/item/storage/box/swab(src)
-	new /obj/item/construction/plumbing/research(src)

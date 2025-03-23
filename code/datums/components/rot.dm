@@ -24,7 +24,6 @@
 		qdel(src)
 
 /datum/component/rot/corpse
-	amount = MIASMA_CORPSE_MOLES
 	time_remaining = 7 MINUTES //2 minutes more to compensate for the delay
 
 /datum/component/rot/corpse/Initialize()
@@ -55,6 +54,3 @@
 		return
 
 	..()
-
-/datum/component/rot/gibs
-	amount = MIASMA_GIBS_MOLES

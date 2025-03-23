@@ -294,7 +294,7 @@
 
 /obj/effect/anomaly/pyro/proc/makepyroslime()
 	var/new_colour = pick("red", "orange")
-	var/mob/living/simple_animal/slime/S = new(T, new_colour)
+	var/mob/living/simple_animal/slime/S = new(src, new_colour)
 	S.rabid = TRUE
 	S.amount_grown = SLIME_EVOLUTION_THRESHOLD
 	S.Evolve()
@@ -309,7 +309,7 @@
 		var/policy = get_policy(ROLE_PYROCLASTIC_SLIME)
 		if (policy)
 			to_chat(S, policy)
-		log_game("[key_name(S.key)] was made into a slime by pyroclastic anomaly at [AREACOORD(T)].")
+		log_game("[key_name(S.key)] was made into a slime by pyroclastic anomaly at [AREACOORD(src)].")
 
 /////////////////////
 
