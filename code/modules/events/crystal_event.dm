@@ -358,23 +358,6 @@ This section is for the destabilized SM
 		icon_state = "psy"
 		changed_icon = TRUE
 
-	var/turf/loc_turf = loc
-	var/datum/gas_mixture/env = loc_turf.return_air()
-	var/datum/gas_mixture/removed
-	var/gasefficency = 0.5
-	removed = env.remove(gasefficency * env.total_moles())
-
-	if(!removed)
-		return
-
-	removed.assert_gases(/datum/gas/bz, /datum/gas/miasma)
-	if(!removed || !removed.total_moles() || isspaceturf(loc_turf))
-		removed.gases[/datum/gas/bz][MOLES] += 0.5
-	removed.gases[/datum/gas/bz][MOLES] += 15.5
-	removed.gases[/datum/gas/miasma][MOLES] += 5.5
-	env.merge(removed)
-	air_update_turf(FALSE, FALSE)
-
 /obj/machinery/destabilized_crystal/attackby(obj/item/W, mob/living/user, params)
 	if(!istype(user))
 		return
