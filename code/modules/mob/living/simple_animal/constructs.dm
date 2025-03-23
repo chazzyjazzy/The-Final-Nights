@@ -465,13 +465,6 @@
 		the_construct.seeking = FALSE
 		to_chat(the_construct, "<span class='cult italic'>You are now tracking Nar'Sie, return to reap the harvest!</span>")
 		return
-	else
-		to_chat(the_construct, "<span class='cult italic'>Nar'Sie has completed her harvest!</span>")
-		return
-		desc = "Activate to track Nar'Sie!"
-		button_icon_state = "sintouch"
-		the_construct.seeking = TRUE
-
 
 /////////////////////////////ui stuff/////////////////////////////
 
