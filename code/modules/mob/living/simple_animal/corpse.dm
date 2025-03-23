@@ -43,7 +43,6 @@
 	ears = /obj/item/radio/headset
 	mask = /obj/item/clothing/mask/gas/syndicate
 	back = /obj/item/jetpack/oxygen
-	r_pocket = /obj/item/internals/emergency_oxygen
 	id = /obj/item/card/id/syndicate
 
 
