@@ -12,7 +12,6 @@
 	obj_flags = CAN_BE_HIT | USES_TGUI
 	flags_1 = RAD_PROTECT_CONTENTS_1 | RAD_NO_CONTAMINATE_1
 
-	var/datum/gas_mixture/air_contents	// internal reservoir
 	var/full_pressure = FALSE
 	var/pressure_charging = TRUE
 	var/flush = 0	// true if flush handle is pulled

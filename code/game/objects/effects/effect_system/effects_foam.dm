@@ -31,10 +31,6 @@
 	slippery_foam = FALSE
 	var/absorbed_plasma = 0
 
-/obj/effect/particle_effect/foam/firefighting/ComponentInitialize()
-	..()
-	RemoveElement(/datum/element/atmos_sensitive)
-
 /obj/effect/particle_effect/foam/firefighting/process()
 	..()
 
@@ -80,10 +76,6 @@
 	create_reagents(1000) //limited by the size of the reagent holder anyway.
 	START_PROCESSING(SSfastprocess, src)
 	playsound(src, 'sound/effects/bubbles2.ogg', 80, TRUE, -3)
-
-/obj/effect/particle_effect/foam/ComponentInitialize()
-	. = ..()
-	AddElement(/datum/element/atmos_sensitive)
 
 /obj/effect/particle_effect/foam/ComponentInitialize()
 	. = ..()
@@ -179,13 +171,6 @@
 		F.add_atom_colour(color, FIXED_COLOUR_PRIORITY)
 		F.metal = metal
 
-/obj/effect/particle_effect/foam/should_atmos_process(datum/gas_mixture/air, exposed_temperature)
-	return exposed_temperature > 475
-
-/obj/effect/particle_effect/foam/atmos_expose(datum/gas_mixture/air, exposed_temperature)
-	if(prob(max(0, exposed_temperature - 475)))   //foam dissolves when heated
-		kill_foam()
-
 
 ///////////////////////////////////////////////
 //FOAM EFFECT DATUM
@@ -253,20 +238,6 @@
 	desc = "A lightweight foamed metal wall."
 	gender = PLURAL
 	max_integrity = 20
-	CanAtmosPass = ATMOS_PASS_DENSITY
-
-/obj/structure/foamedmetal/Initialize()
-	. = ..()
-	air_update_turf(TRUE, TRUE)
-
-/obj/structure/foamedmetal/Destroy()
-	air_update_turf(TRUE, FALSE)
-	. = ..()
-
-/obj/structure/foamedmetal/Move()
-	var/turf/T = loc
-	. = ..()
-	move_update_air(T)
 
 /obj/structure/foamedmetal/attack_paw(mob/user)
 	return attack_hand(user)

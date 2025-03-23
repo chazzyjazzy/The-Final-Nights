@@ -81,8 +81,7 @@
 		/obj/item/grenade,
 		/obj/item/aicard,
 		/obj/item/storage/backpack/holding,
-		/obj/item/slime_extract,
-		/obj/item/onetankbomb))
+		/obj/item/slime_extract))
 
 /obj/machinery/rnd/experimentor/RefreshParts()
 	for(var/obj/item/stock_parts/manipulator/M in component_parts)
