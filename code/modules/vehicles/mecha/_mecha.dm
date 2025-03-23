@@ -76,10 +76,6 @@
 	var/use_internal_tank = FALSE
 	///The setting of the valve on the internal tank
 	var/internal_tank_valve = ONE_ATMOSPHERE
-	///The internal air tank obj of the mech
-	var/obj/machinery/portable_atmospherics/canister/internal_tank
-	///Internal air mix datum
-	var/datum/gas_mixture/cabin_air
 	///The connected air port, if we have one
 	var/obj/machinery/atmospherics/components/unary/portables_connector/connected_port
 
@@ -214,7 +210,6 @@
 	QDEL_NULL(cell)
 	QDEL_NULL(scanmod)
 	QDEL_NULL(capacitor)
-	QDEL_NULL(internal_tank)
 	STOP_PROCESSING(SSobj, src)
 	LAZYCLEARLIST(equipment)
 	QDEL_NULL(spark_system)
@@ -355,9 +350,6 @@
 		if(internal_damage & MECHA_INT_FIRE)
 			if(!(internal_damage & MECHA_INT_TEMP_CONTROL) && DT_PROB(2.5, delta_time))
 				clearInternalDamage(MECHA_INT_FIRE)
-
-		if(internal_damage & MECHA_INT_TEMP_CONTROL)
-			internal_temp_regulation = 0
 
 		if(internal_damage & MECHA_INT_SHORT_CIRCUIT)
 			if(get_charge())
