@@ -171,3 +171,9 @@
 		var/obj/item/clothing/suit/space/hardsuit/C = wear_suit
 		J = C.jetpack
 	return J
+
+/obj/item/jetpack/oxygen/captain
+
+/obj/item/jetpack/oxygen
+
+/obj/item/jetpack/oxygen/harness

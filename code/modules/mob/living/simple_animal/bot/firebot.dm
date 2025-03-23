@@ -48,10 +48,6 @@
 
 	create_extinguisher()
 
-/mob/living/simple_animal/bot/firebot/ComponentInitialize()
-	. = ..()
-	AddElement(/datum/element/atmos_sensitive)
-
 /mob/living/simple_animal/bot/firebot/bot_reset()
 	create_extinguisher()
 
@@ -164,11 +160,6 @@
 	if(ismob(target))
 		var/mob/living/M = target
 		if(M.on_fire || (emagged == 2 && !M.on_fire))
-			return TRUE
-
-	else if(isturf(target))
-		var/turf/open/T = target
-		if(T.active_hotspot)
 			return TRUE
 
 	return FALSE

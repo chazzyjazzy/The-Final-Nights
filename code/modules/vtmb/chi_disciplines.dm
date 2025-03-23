@@ -389,13 +389,13 @@
 	desc = "A stone gauntlet to punch someone."
 	item_flags = DROPDEL
 
-/obj/item/tank/internals/oxygen/stone_shintai
+/obj/item/internals/oxygen/stone_shintai
 	item_flags = DROPDEL
 	alpha = 0
 
 /obj/item/melee/powerfist/stone/Initialize()
 	. = ..()
-	tank = new /obj/item/tank/internals/oxygen/stone_shintai()
+	tank = new /obj/item/internals/oxygen/stone_shintai()
 
 /obj/item/melee/powerfist/stone/updateTank(obj/item/tank/internals/thetank, removing = 0, mob/living/carbon/human/user)
 	return FALSE

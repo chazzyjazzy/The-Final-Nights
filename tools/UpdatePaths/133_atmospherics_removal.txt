@@ -1,0 +1,2 @@
+/obj/item/tank/@SUBTYPES : @DELETE
+/obj/item/tank : @DELETE

@@ -33,7 +33,6 @@ GLOBAL_VAR_INIT(hsboxspawn, TRUE)
 			"Space Gear",
 			"Suit Up (Space Travel Gear)"		= "hsbsuit",
 			"Spawn Gas Mask"					= "hsbspawn&path=[/obj/item/clothing/mask/gas]",
-			"Spawn Emergency Air Tank"			= "hsbspawn&path=[/obj/item/tank/internals/emergency_oxygen/double]",
 
 			"Standard Tools",
 			"Spawn Flashlight"					= "hsbspawn&path=[/obj/item/flashlight]",
@@ -171,7 +170,7 @@ GLOBAL_VAR_INIT(hsboxspawn, TRUE)
 					P.back.layer = initial(P.back.layer)
 					P.back.plane = initial(P.back.plane)
 					P.back = null
-				P.back = new/obj/item/tank/jetpack/oxygen(P)
+				P.back = new/obj/item/jetpack/oxygen(P)
 				P.back.layer = ABOVE_HUD_LAYER
 				P.back.plane = ABOVE_HUD_PLANE
 				P.update_inv_back()

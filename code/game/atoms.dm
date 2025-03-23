@@ -1229,10 +1229,6 @@
 /atom/Exited(atom/movable/AM, atom/newLoc)
 	SEND_SIGNAL(src, COMSIG_ATOM_EXITED, AM, newLoc)
 
-///Return atom temperature
-/atom/proc/return_temperature()
-	return
-
 /**
  *Tool behavior procedure. Redirects to tool-specific procs by default.
  *

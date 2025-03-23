@@ -65,6 +65,6 @@
 
 	mask = /obj/item/clothing/mask/gas/sechailer
 	suit = /obj/item/clothing/suit/space/hardsuit/security/hos
-	suit_store = /obj/item/tank/internals/oxygen
+	suit_store = /obj/item/internals/oxygen
 	backpack_contents = list(/obj/item/melee/baton/loaded=1)
 

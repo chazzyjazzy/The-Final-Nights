@@ -272,7 +272,7 @@
 	id = "oxygen_tank"
 	build_type = PROTOLATHE
 	materials = list(/datum/material/iron = 2000)
-	build_path = /obj/item/tank/internals/oxygen/empty
+	build_path = /obj/item/internals/oxygen/empty
 	category = list("Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
@@ -282,7 +282,7 @@
 	id = "plasma_tank"
 	build_type = PROTOLATHE
 	materials = list(/datum/material/iron = 2000)
-	build_path = /obj/item/tank/internals/plasma/empty
+	build_path = /obj/item/internals/plasma/empty
 	category = list("Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 

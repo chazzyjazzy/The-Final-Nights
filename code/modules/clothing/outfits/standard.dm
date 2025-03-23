@@ -44,7 +44,7 @@
 	shoes = /obj/item/clothing/shoes/sneakers/black
 	suit = /obj/item/clothing/suit/space
 	head = /obj/item/clothing/head/helmet/space
-	back = /obj/item/tank/jetpack/oxygen
+	back = /obj/item/jetpack/oxygen
 	mask = /obj/item/clothing/mask/breath
 
 /datum/outfit/tournament
@@ -129,7 +129,7 @@
 	suit = /obj/item/clothing/suit/space/pirate
 	head = /obj/item/clothing/head/helmet/space/pirate/bandana
 	mask = /obj/item/clothing/mask/breath
-	suit_store = /obj/item/tank/internals/oxygen
+	suit_store = /obj/item/internals/oxygen
 	ears = /obj/item/radio/headset/syndicate
 	id = /obj/item/card/id
 
@@ -369,7 +369,7 @@
 
 	head = /obj/item/clothing/head/helmet/space/plasmaman
 	uniform = /obj/item/clothing/under/plasmaman
-	r_hand= /obj/item/tank/internals/plasmaman/belt/full
+	r_hand= /obj/item/internals/plasmaman/belt/full
 	mask = /obj/item/clothing/mask/breath
 	gloves = /obj/item/clothing/gloves/color/plasmaman
 
@@ -386,7 +386,7 @@
 	back = /obj/item/storage/backpack/security
 	l_pocket = /obj/item/melee/transforming/energy/sword/saber
 	r_pocket = /obj/item/shield/energy
-	suit_store = /obj/item/tank/internals/emergency_oxygen/double
+	suit_store = /obj/item/internals/emergency_oxygen/double
 	belt = /obj/item/gun/ballistic/revolver/mateba
 	l_hand = /obj/item/gun/energy/pulse/loyalpin
 	id = /obj/item/card/id/ert/deathsquad
@@ -427,7 +427,7 @@
 	back = /obj/item/chrono_eraser
 	head = /obj/item/clothing/head/helmet/space/chronos
 	mask = /obj/item/clothing/mask/breath
-	suit_store = /obj/item/tank/internals/oxygen
+	suit_store = /obj/item/internals/oxygen
 
 /datum/outfit/debug //Debug objs plus hardsuit
 	name = "Debug outfit"
@@ -440,7 +440,7 @@
 	belt = /obj/item/storage/belt/utility/chief/full
 	shoes = /obj/item/clothing/shoes/magboots/advance
 	id = /obj/item/card/id/debug
-	suit_store = /obj/item/tank/internals/oxygen
+	suit_store = /obj/item/internals/oxygen
 	back = /obj/item/storage/backpack/holding
 	box = /obj/item/storage/box/debugtools
 	internals_slot = ITEM_SLOT_SUITSTORE
@@ -469,7 +469,7 @@
 	belt = /obj/item/storage/belt/utility/chief/full
 	shoes = /obj/item/clothing/shoes/magboots/advance
 	id = /obj/item/card/id/debug
-	suit_store = /obj/item/tank/internals/oxygen
+	suit_store = /obj/item/internals/oxygen
 	back = /obj/item/storage/backpack/holding
 	box = /obj/item/storage/box/debugtools
 	internals_slot = ITEM_SLOT_SUITSTORE

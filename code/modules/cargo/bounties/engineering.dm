@@ -2,14 +2,14 @@
 	name = "Full Tank of Pluoxium"
 	description = "CentCom RnD is researching extra compact internals. Ship us a tank full of Pluoxium and you'll be compensated."
 	reward = CARGO_CRATE_VALUE * 15
-	wanted_types = list(/obj/item/tank)
+	wanted_types = list(/obj/item)
 	var/moles_required = 20 // A full tank is 28 moles, but CentCom ignores that fact.
 	var/gas_type = /datum/gas/pluoxium
 
 /datum/bounty/item/engineering/gas/applies_to(obj/O)
 	if(!..())
 		return FALSE
-	var/obj/item/tank/T = O
+	var/obj/item/T = O
 	if(!T.air_contents.gases[gas_type])
 		return FALSE
 	return T.air_contents.gases[gas_type][MOLES] >= moles_required

@@ -269,7 +269,7 @@
 	id = "emergency_oxygen"
 	build_type = AUTOLATHE | PROTOLATHE
 	materials = list(/datum/material/iron = 500)
-	build_path = /obj/item/tank/internals/emergency_oxygen/empty
+	build_path = /obj/item/internals/emergency_oxygen/empty
 	category = list("initial","Misc","Equipment")
 
 /datum/design/emergency_oxygen_engi
@@ -277,7 +277,7 @@
 	id = "emergency_oxygen_engi"
 	build_type = AUTOLATHE | PROTOLATHE
 	materials = list(/datum/material/iron = 750)
-	build_path = /obj/item/tank/internals/emergency_oxygen/engi/empty
+	build_path = /obj/item/internals/emergency_oxygen/engi/empty
 	category = list("hacked","Misc","Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_CARGO
 
@@ -286,7 +286,7 @@
 	id = "plasmaman_tank_belt"
 	build_type = AUTOLATHE | PROTOLATHE
 	materials = list(/datum/material/iron = 800)
-	build_path = /obj/item/tank/internals/plasmaman/belt/empty
+	build_path = /obj/item/internals/plasmaman/belt/empty
 	category = list("hacked","Misc","Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_CARGO
 
@@ -295,7 +295,7 @@
 	id = "generic_tank"
 	build_type = AUTOLATHE | PROTOLATHE
 	materials = list(/datum/material/iron = 1000)
-	build_path = /obj/item/tank/internals/generic
+	build_path = /obj/item/internals/generic
 	category = list("initial","Misc","Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_CARGO
 

@@ -45,7 +45,7 @@
 
 /datum/objective_item/steal/jetpack
 	name = "the Captain's jetpack."
-	targetitem = /obj/item/tank/jetpack/oxygen/captain
+	targetitem = /obj/item/jetpack/oxygen/captain
 	difficulty = 5
 	excludefromjob = list("Captain")
 
@@ -117,7 +117,7 @@
 //Items with special checks!
 /datum/objective_item/steal/plasma
 	name = "28 moles of plasma (full tank)."
-	targetitem = /obj/item/tank
+	targetitem = /obj/item
 	difficulty = 3
 	excludefromjob = list("Chief Engineer","Research Director","Station Engineer","Scientist","Atmospheric Technician")
 

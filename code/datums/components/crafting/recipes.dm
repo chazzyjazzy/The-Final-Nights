@@ -984,9 +984,9 @@
 
 /datum/crafting_recipe/ghettojetpack
 	name = "Improvised Jetpack"
-	result = /obj/item/tank/jetpack/improvised
+	result = /obj/item/jetpack/improvised
 	time = 30
-	reqs = list(/obj/item/tank/internals/oxygen = 2, /obj/item/extinguisher = 1, /obj/item/pipe = 3, /obj/item/stack/cable_coil = MAXCOIL)
+	reqs = list(/obj/item/extinguisher = 1, /obj/item/pipe = 3, /obj/item/stack/cable_coil = MAXCOIL)
 	category = CAT_MISC
 	tools = list(TOOL_WRENCH, TOOL_WELDER, TOOL_WIRECUTTER)
 
