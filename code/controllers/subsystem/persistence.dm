@@ -34,6 +34,7 @@ SUBSYSTEM_DEF(persistence)
 	LoadRandomizedRecipes()
 	LoadPaintings()
 	load_panic_bunker() // TFN EDIT ADDITION: from skyrat & bubberstation
+	load_all_businesses()
 	return ..()
 
 /datum/controller/subsystem/persistence/proc/LoadPoly()
@@ -183,6 +184,7 @@ SUBSYSTEM_DEF(persistence)
 	SavePaintings()
 	SaveScars()
 	save_panic_bunker() // TFN EDIT ADDITION: from skyrat & bubberstation
+	save_all_businesses()
 
 /datum/controller/subsystem/persistence/proc/GetPhotoAlbums()
 	var/album_path = file("data/photo_albums.json")

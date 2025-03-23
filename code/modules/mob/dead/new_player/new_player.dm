@@ -304,6 +304,12 @@
 			return "Your species cannot be [jobtitle]."
 		if(JOB_UNAVAILABLE_SPECIES_LIMITED)
 			return "Your species has a limit on how many can be [jobtitle]."
+		if(JOB_UNAVAILABLE_CLAN)
+			return "Your clan isn't in the allowed bloodlines list for [jobtitle]."
+		if(JOB_UNAVAILABLE_EXCLUSIVE)
+			return "[jobtitle] requires you to apply in-person and be accepted by the employer."
+		if(JOB_UNAVAILABLE_SUSPENDED)
+			return "The business associated with [jobtitle] is currently suspended."
 	return "Error: Unknown job availability."
 
 /mob/dead/new_player/proc/IsJobUnavailable(rank, latejoin = FALSE)
@@ -344,6 +350,13 @@
 				if(i == client.prefs.clane.name)
 					return JOB_AVAILABLE
 			return JOB_UNAVAILABLE_CLAN
+	if(!job.exclusive_employees.Find(client.prefs.unique_id))
+		return JOB_UNAVAILABLE_EXCLUSIVE
+	if(job.business)
+		var/datum/business/biz = get_business_by_biz_uid(job.business)
+		if(biz?.suspended)
+			return JOB_UNAVAILABLE_SUSPENDED
+
 	return JOB_AVAILABLE
 
 /mob/dead/new_player/proc/AttemptLateSpawn(rank)

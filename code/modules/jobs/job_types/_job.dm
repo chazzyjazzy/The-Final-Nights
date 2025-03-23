@@ -59,6 +59,17 @@
 	var/paycheck = PAYCHECK_MINIMAL
 	var/paycheck_department = ACCOUNT_CIV
 
+	/// Does this position have a department tag?
+	var/department = null
+	/// If this is linked to a business, business ID is here.
+	var/business
+	/// If this job has uids in it, only people of these UIDs can become employees.
+	var/list/exclusive_employees = list()
+	/// If this job is enabled by the employer or not.
+	var/enabled = TRUE
+	/// Flags for determining and setting department on jobs.
+	var/department_flag = 0
+
 	var/list/mind_traits // Traits added to the mind of the mob assigned this job
 
 	///Lazylist of traits added to the liver of the mob assigned this job (used for the classic "cops heal from donuts" reaction, among others)

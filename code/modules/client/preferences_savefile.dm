@@ -5,7 +5,7 @@
 //	You do not need to raise this if you are adding new values that have sane defaults.
 //	Only raise this value when changing the meaning/format/name/layout of an existing value
 //	where you would want the updater procs below to run
-#define SAVEFILE_VERSION_MAX	38
+#define SAVEFILE_VERSION_MAX	39
 
 /*
 SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Carn
@@ -88,7 +88,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 			LAZYADD(key_bindings["Ctrl"], "block_movement")
 
 /datum/preferences/proc/update_character(current_version, savefile/S)
-	return
+	if(current_version < 39)
+		if(!unique_id)
+			unique_id = md5("[parent.ckey][rand(30,50)]")
 
 /// checks through keybindings for outdated unbound keys and updates them
 /datum/preferences/proc/check_keybindings()
@@ -334,6 +336,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["pda_color"], pda_color)
 	WRITE_FILE(S["key_bindings"], key_bindings)
 	WRITE_FILE(S["hearted_until"], (hearted_until > world.realtime ? hearted_until : null))
+	WRITE_FILE(S["unique_id"], unique_id)
 	return TRUE
 
 /datum/preferences/proc/load_character(slot)
@@ -497,6 +500,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	//Quirks
 	READ_FILE(S["all_quirks"], all_quirks)
 
+	READ_FILE(S["unique_id"], unique_id)
+
 	READ_FILE(S["headshot_link"], headshot_link) // TFN EDIT: headshot loading
 	// TFN EDIT START: alt job titles
 	READ_FILE(S["alt_titles_preferences"], alt_titles_preferences)
@@ -520,9 +525,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	body_model = sanitize_integer(body_model, 1, 3, initial(body_model))
 	if(!real_name)
 		real_name = random_unique_name(gender)
-//	if(!clane)
-//		var/newtype = GLOB.clanes_list["Brujah"]
-//		clane = new newtype()
 
 	//Prevent Wighting upon joining a round
 	if(humanity <= 0)

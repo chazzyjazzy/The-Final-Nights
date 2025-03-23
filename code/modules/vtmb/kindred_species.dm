@@ -209,6 +209,13 @@
 		for(var/datum/vtm_bank_account/account in GLOB.bank_account_list)
 			if(host.bank_id == account.bank_id)
 				dat += "<b>My bank account code is: [account.code]</b><BR>"
+
+		var/datum/business/B = get_business_by_owner_uid(host.client.prefs.unique_id)
+		if(B)
+			dat += "<b>Business Name: [B.name]</b><BR>"
+			dat += "<b>Business ID: [B.business_uid]</b><BR>"
+			dat += "<b>Access Password: [B.access_password]</b><BR>"
+
 		host << browse(dat, "window=vampire;size=400x450;border=1;can_resize=1;can_minimize=0")
 		onclose(host, "vampire", src)
 
