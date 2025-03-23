@@ -839,15 +839,6 @@
 	var/area/A = get_area(src)
 	seton(A.lightswitch && A.power_light)
 
-// called when heated
-
-/obj/machinery/light/should_atmos_process(datum/gas_mixture/air, exposed_temperature)
-	return exposed_temperature > 673
-
-/obj/machinery/light/atmos_expose(datum/gas_mixture/air, exposed_temperature)
-	if(prob(max(0, exposed_temperature - 673)))   //0% at <400C, 100% at >500C
-		break_light_tube()
-
 // explode the light
 
 /obj/machinery/light/proc/explode()
@@ -990,8 +981,6 @@
 		status = LIGHT_BROKEN
 		force = 5
 		playsound(src.loc, 'sound/effects/glasshit.ogg', 75, TRUE)
-		if(rigged)
-			atmos_spawn_air("plasma=5") //5u of plasma are required to rig a light bulb/tube
 		update()
 
 
