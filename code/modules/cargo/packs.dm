@@ -826,25 +826,6 @@
 	contains = list(/obj/item/stack/sheet/mineral/wood/fifty)
 	crate_name = "wood planks crate"
 
-/datum/supply_pack/materials/bz
-	name = "BZ Canister Crate"
-	desc = "Contains a canister of BZ. Requires Toxins access to open."
-	cost = CARGO_CRATE_VALUE * 16
-	access = ACCESS_TOXINS
-	access_view = ACCESS_ATMOSPHERICS
-	contains = list(/obj/machinery/portable_atmospherics/canister/bz)
-	crate_name = "BZ canister crate"
-	crate_type = /obj/structure/closet/crate/secure/science
-
-/datum/supply_pack/materials/carbon_dio
-	name = "Carbon Dioxide Canister"
-	desc = "Contains a canister of Carbon Dioxide."
-	cost = CARGO_CRATE_VALUE * 6
-	access_view = ACCESS_ATMOSPHERICS
-	contains = list(/obj/machinery/portable_atmospherics/canister/carbon_dioxide)
-	crate_name = "carbon dioxide canister crate"
-	crate_type = /obj/structure/closet/crate/large
-
 /datum/supply_pack/materials/foamtank
 	name = "Firefighting Foam Tank Crate"
 	desc = "Contains a tank of firefighting foam. Also known as \"plasmaman's bane\"."
@@ -876,48 +857,6 @@
 	access_view = ACCESS_ENGINE
 	contains = list(/obj/structure/reagent_dispensers/fueltank/large)
 	crate_name = "high-capacity fuel tank crate"
-	crate_type = /obj/structure/closet/crate/large
-
-/datum/supply_pack/materials/nitrogen
-	name = "Nitrogen Canister"
-	desc = "Contains a canister of Nitrogen."
-	cost = CARGO_CRATE_VALUE * 4
-	contains = list(/obj/machinery/portable_atmospherics/canister/nitrogen)
-	crate_name = "nitrogen canister crate"
-	crate_type = /obj/structure/closet/crate/large
-
-/datum/supply_pack/materials/nitrous_oxide_canister
-	name = "Nitrous Oxide Canister"
-	desc = "Contains a canister of Nitrous Oxide. Requires Atmospherics access to open."
-	cost = CARGO_CRATE_VALUE * 6
-	access = ACCESS_ATMOSPHERICS
-	access_view = ACCESS_ATMOSPHERICS
-	contains = list(/obj/machinery/portable_atmospherics/canister/nitrous_oxide)
-	crate_name = "nitrous oxide canister crate"
-	crate_type = /obj/structure/closet/crate/secure
-
-/datum/supply_pack/materials/oxygen
-	name = "Oxygen Canister"
-	desc = "Contains a canister of Oxygen. Canned in Druidia."
-	cost = CARGO_CRATE_VALUE * 3
-	contains = list(/obj/machinery/portable_atmospherics/canister/oxygen)
-	crate_name = "oxygen canister crate"
-	crate_type = /obj/structure/closet/crate/large
-
-/datum/supply_pack/materials/watertank
-	name = "Water Tank Crate"
-	desc = "Contains a tank of dihydrogen monoxide... sounds dangerous."
-	cost = CARGO_CRATE_VALUE * 1.2
-	contains = list(/obj/structure/reagent_dispensers/watertank)
-	crate_name = "water tank crate"
-	crate_type = /obj/structure/closet/crate/large
-
-/datum/supply_pack/materials/water_vapor
-	name = "Water Vapor Canister"
-	desc = "Contains a canister of Water Vapor. I swear to god if you open this in the halls..."
-	cost = CARGO_CRATE_VALUE * 4
-	contains = list(/obj/machinery/portable_atmospherics/canister/water_vapor)
-	crate_name = "water vapor canister crate"
 	crate_type = /obj/structure/closet/crate/large
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1089,9 +1028,7 @@
 	cost = CARGO_CRATE_VALUE * 2
 	access = ACCESS_TOXINS
 	access_view = ACCESS_TOXINS
-	contains = list(/obj/item/internals/plasma,
-					/obj/item/internals/plasma,
-					/obj/item/internals/plasma,
+	contains = list(
 					/obj/item/assembly/igniter,
 					/obj/item/assembly/igniter,
 					/obj/item/assembly/igniter,
@@ -1197,17 +1134,6 @@
 					/obj/machinery/power/shieldwallgen)
 	crate_name = "shield generators crate"
 	crate_type = /obj/structure/closet/crate/secure/science
-
-/datum/supply_pack/science/transfer_valves
-	name = "Tank Transfer Valves Crate"
-	desc = "The key ingredient for making a lot of people very angry very fast. Contains two tank transfer valves. Requires RD access to open."
-	cost = CARGO_CRATE_VALUE * 12
-	access = ACCESS_RD
-	contains = list(/obj/item/transfer_valve,
-					/obj/item/transfer_valve)
-	crate_name = "tank transfer valves crate"
-	crate_type = /obj/structure/closet/crate/secure/science
-	dangerous = TRUE
 
 /datum/supply_pack/science/monkey_helmets
 	name = "Monkey Mind Magnification Helmet crate"

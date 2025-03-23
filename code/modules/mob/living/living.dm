@@ -1084,9 +1084,7 @@
 
 /mob/living/proc/get_temperature()
 	var/loc_temp = T0C
-	if(isobj(loc))
-		var/obj/oloc = loc
-	else if(isspaceturf(get_turf(src)))
+	if(isspaceturf(get_turf(src)))
 		var/turf/heat_turf = get_turf(src)
 		loc_temp = heat_turf.temperature
 	return loc_temp

@@ -206,7 +206,7 @@
 			"suit" = create_silhouette_of(/obj/item/clothing/suit/space/eva),
 			"helmet" = create_silhouette_of(/obj/item/clothing/head/helmet/space/eva),
 			"mask" = create_silhouette_of(/obj/item/clothing/mask/breath),
-			"storage" = create_silhouette_of(/obj/item/backpack),
+			"storage" = create_silhouette_of(/obj/item/clothing/suit/armor/vest),
 		)
 
 	. = ..()
