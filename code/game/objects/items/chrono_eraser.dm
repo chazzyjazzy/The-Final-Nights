@@ -252,9 +252,6 @@
 	else
 		return BULLET_ACT_HIT
 
-/obj/structure/chrono_field/assume_air()
-	return 0
-
 /obj/structure/chrono_field/singularity_act()
 	return
 

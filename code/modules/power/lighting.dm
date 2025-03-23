@@ -376,10 +376,6 @@
 				break_light_tube(1)
 	addtimer(CALLBACK(src, PROC_REF(update), 0), 1)
 
-/obj/machinery/light/ComponentInitialize()
-	. = ..()
-	AddElement(/datum/element/atmos_sensitive)
-
 /obj/machinery/light/Destroy()
 	var/area/A = get_area(src)
 	if(A)

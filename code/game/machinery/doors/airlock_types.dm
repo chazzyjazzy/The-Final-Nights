@@ -69,7 +69,6 @@
 
 /obj/machinery/door/airlock/glass/incinerator
 	autoclose = FALSE
-	frequency = FREQ_AIRLOCK_CONTROL
 	heat_proof = TRUE
 	req_access = list(ACCESS_SYNDICATE)
 
@@ -108,7 +107,6 @@
 
 /obj/machinery/door/airlock/research/glass/incinerator
 	autoclose = FALSE
-	frequency = FREQ_AIRLOCK_CONTROL
 	heat_proof = TRUE
 	req_access = list(ACCESS_TOXINS)
 
@@ -210,34 +208,8 @@
 	icon = 'icons/obj/doors/airlocks/station/plasma.dmi'
 	assemblytype = /obj/structure/door_assembly/door_assembly_plasma
 
-/obj/machinery/door/airlock/plasma/ComponentInitialize()
-	. = ..()
-	AddElement(/datum/element/atmos_sensitive)
-
 /obj/machinery/door/airlock/plasma/proc/ignite(exposed_temperature)
-	if(exposed_temperature > 300)
-		PlasmaBurn(exposed_temperature)
-
-/obj/machinery/door/airlock/plasma/should_atmos_process(datum/gas_mixture/air, exposed_temperature)
-	return (exposed_temperature > 300)
-
-/obj/machinery/door/airlock/plasma/atmos_expose(datum/gas_mixture/air, exposed_temperature)
-	PlasmaBurn()
-
-/obj/machinery/door/airlock/plasma/proc/PlasmaBurn()
-	atmos_spawn_air("plasma=500;TEMP=1000")
-	var/obj/structure/door_assembly/DA
-	DA = new /obj/structure/door_assembly(loc)
-	if(glass)
-		DA.glass = TRUE
-	if(heat_proof)
-		DA.heat_proof_finished = TRUE
-	DA.update_icon()
-	DA.update_name()
-	qdel(src)
-
-/obj/machinery/door/airlock/plasma/BlockSuperconductivity() //we don't stop the heat~
-	return 0
+	return TRUE
 
 /obj/machinery/door/airlock/plasma/attackby(obj/item/C, mob/user, params)
 	if(C.get_temperature() > 300)//If the temperature of the object is over 300, then ignite
@@ -318,7 +290,6 @@
 
 /obj/machinery/door/airlock/public/glass/incinerator
 	autoclose = FALSE
-	frequency = FREQ_AIRLOCK_CONTROL
 	heat_proof = TRUE
 	req_one_access = list(ACCESS_ATMOSPHERICS, ACCESS_MAINT_TUNNELS)
 
