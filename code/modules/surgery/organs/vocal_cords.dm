@@ -217,6 +217,18 @@
 		power_multiplier *= (1 + (1/specific_listeners.len)) //2x on a single guy, 1.5x on two and so on
 		message = copytext(message, length(found_string) + 1)
 
+	for(var/V in listeners)
+		if(ishuman(V))
+			var/mob/living/carbon/human/TRGT = V
+			TRGT.remove_overlay(MUTATIONS_LAYER)
+			var/mutable_appearance/dominate_overlay = mutable_appearance('code/modules/wod13/icons.dmi', "dominate", -MUTATIONS_LAYER)
+			dominate_overlay.pixel_z = 2
+			TRGT.overlays_standing[MUTATIONS_LAYER] = dominate_overlay
+			TRGT.apply_overlay(MUTATIONS_LAYER)
+			spawn(2 SECONDS)
+				if(TRGT)
+					TRGT.remove_overlay(MUTATIONS_LAYER)
+
 	//removed some keywords as they don't fit mental domination
 	var/static/regex/stun_words = regex("stop|wait|stand still|hold on|halt|cease")
 	var/static/regex/knockdown_words = regex("drop|fall|trip|knockdown")
@@ -259,7 +271,7 @@
 	var/static/regex/salute_words = regex("salute")
 	var/static/regex/deathgasp_words = regex("play dead")
 	var/static/regex/clap_words = regex("clap|applaud")
-	var/static/regex/honk_words = regex("ho+nk") //hooooooonk
+//	var/static/regex/honk_words = regex("ho+nk") //hooooooonk
 	var/static/regex/multispin_words = regex("like a record baby|right round")
 
 	var/i = 0
@@ -569,7 +581,7 @@
 			addtimer(CALLBACK(L, TYPE_PROC_REF(/mob/living/, emote), "clap"), 5 * i)
 			i++
 
-	//HONK
+/*	//HONK
 	else if((findtext(message, honk_words)))
 		cooldown = COOLDOWN_MEME
 		addtimer(CALLBACK(GLOBAL_PROC, PROC_REF(playsound), get_turf(user), 'sound/items/bikehorn.ogg', 300, 1), 25)
@@ -577,7 +589,7 @@
 			for(var/mob/living/carbon/C in listeners)
 				C.slip(140 * power_multiplier)
 			cooldown = COOLDOWN_MEME
-
+*/
 	//RIGHT ROUND
 	else if((findtext(message, multispin_words)))
 		cooldown = COOLDOWN_MEME
