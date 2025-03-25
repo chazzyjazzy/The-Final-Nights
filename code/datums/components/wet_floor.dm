@@ -112,12 +112,12 @@
 
 /datum/component/wet_floor/process()
 	var/turf/open/T = parent
-	var/decrease = 0
+	var/diff = world.time - last_process
+	var/decrease = ((T.air.temperature - T0C) / SSwet_floors.temperature_coeff) * (diff / SSwet_floors.time_ratio)
 	decrease = max(0, decrease)
-	if((is_wet() & TURF_WET_ICE))		//Ice melts into water!
+	if((is_wet() & TURF_WET_ICE) && t > T0C) //Ice melts into water!
 		for(var/obj/O in T.contents)
-			if(O.obj_flags & FROZEN)
-				O.make_unfrozen()
+			O.unfreeze()
 		add_wet(TURF_WET_WATER, max_time_left())
 		dry(null, TURF_WET_ICE)
 	dry(null, ALL, FALSE, decrease)
