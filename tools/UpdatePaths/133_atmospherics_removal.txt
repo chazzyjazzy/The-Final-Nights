@@ -1,2 +1,2 @@
-/obj/item/tank/@SUBTYPES : @DELETE
-/obj/item/tank : @DELETE
+/obj/machinery/atmospherics/@SUBTYPES : @DELETE
+/obj/machinery/atmospherics : @DELETE
