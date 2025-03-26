@@ -622,7 +622,7 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 
 	if(iskindred(speaker_mob))
 		var/mob/living/carbon/human/speaker_man = speaker
-		if(speaker_man.clane && speaker_man.clane.name == "Lasombra")
+		if(speaker_man.clane?.name == "Lasombra")
 			raw_message = scramble_lasombra_message(raw_message)
 			playsound(src, 'code/modules/wod13/sounds/lasombra_whisper.ogg', 30, FALSE)
 
