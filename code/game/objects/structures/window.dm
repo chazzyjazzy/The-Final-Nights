@@ -85,6 +85,11 @@
 /obj/structure/window/narsie_act()
 	add_atom_colour(NARSIE_WINDOW_COLOUR, FIXED_COLOUR_PRIORITY)
 
+/obj/structure/window/MouseDrop_T(atom/dropping, mob/user)
+	. = ..()
+
+	LoadComponent(/datum/component/leanable, dropping)
+
 /obj/structure/window/CanAllowThrough(atom/movable/mover, turf/target)
 	. = ..()
 	if(.)
