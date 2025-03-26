@@ -620,6 +620,12 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 	if(!check_signal())
 		return
 
+	if(iskindred(speaker_mob))
+		var/mob/living/carbon/human/speaker_man = speaker
+		if(speaker_man.clane && speaker_man.clane.name == "Lasombra")
+			raw_message = scramble_lasombra_message(raw_message)
+			playsound(src, 'code/modules/wod13/sounds/lasombra_whisper.ogg', 30, FALSE)
+
 	var/formatted = format_message(raw_message)
 	for(var/mob/M in get_hearers_in_view(1, get_turf(src)))
 		to_chat(M, formatted)
