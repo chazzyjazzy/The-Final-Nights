@@ -123,9 +123,12 @@
 		throw_alert("not_enough_oxy", /atom/movable/screen/alert/not_enough_oxy)
 		return FALSE
 
+	failed_last_breath = FALSE
+	if(health >= crit_threshold)
+		adjustOxyLoss(-5)
+	clear_alert("not_enough_oxy")
+
 	return TRUE
-
-
 
 /mob/living/carbon/proc/get_breath_from_internal(volume_needed)
 	if(internal)
