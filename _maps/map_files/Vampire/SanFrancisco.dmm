@@ -44760,11 +44760,10 @@
 /turf/open/floor/plating/vampwood,
 /area/vtm/northbeach)
 "nfM" = (
-/obj/machinery/light/small/red{
-	pixel_y = 24
+/obj/item/paper{
+	info = "Once, something horrible was here."
 	},
-/obj/structure/toilet/secret,
-/turf/open/floor/plating/shit,
+/turf/open/floor/plating/rough/cave,
 /area/vtm/sewer/nosferatu_town)
 "nfQ" = (
 /obj/item/flashlight/lamp{
@@ -113363,7 +113362,7 @@ nYS
 nYS
 wJn
 nfM
-cSf
+fZO
 nxc
 tiZ
 nof
