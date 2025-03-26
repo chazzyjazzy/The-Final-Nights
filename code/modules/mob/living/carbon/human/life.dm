@@ -108,6 +108,7 @@
 		if(istype(L, /obj/item/organ/lungs))
 			var/obj/item/organ/lungs/lun = L
 			lun.check_breath(src)
+			..()
 
 /**
  * Adjust the core temperature of a mob

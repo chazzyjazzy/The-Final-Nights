@@ -127,7 +127,6 @@
 	if(health >= crit_threshold)
 		adjustOxyLoss(-5)
 	clear_alert("not_enough_oxy")
-
 	return TRUE
 
 /mob/living/carbon/proc/get_breath_from_internal(volume_needed)

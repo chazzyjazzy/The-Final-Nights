@@ -23,7 +23,16 @@
 	food_reagents = list(/datum/reagent/consumable/nutriment = 5, /datum/reagent/medicine/salbutamol = 5)
 
 /obj/item/organ/lungs/proc/check_breath(mob/living/carbon/human/H)
-	return TRUE
+	if(H.status_flags & GODMODE)
+		H.failed_last_breath = FALSE //clear oxy issues
+		H.clear_alert("not_enough_oxy")
+		return
+	if(HAS_TRAIT(H, TRAIT_NOBREATH))
+		return
+	if(istype(H.loc, /obj/werewolf_holder/transformation))
+		H.failed_last_breath = FALSE //clear oxy issues
+		H.clear_alert("not_enough_oxy")
+	return
 
 
 /obj/item/organ/lungs/proc/handle_too_little_breath(mob/living/carbon/human/H = null, breath_pp = 0, safe_breath_min = 0, true_pp = 0)
