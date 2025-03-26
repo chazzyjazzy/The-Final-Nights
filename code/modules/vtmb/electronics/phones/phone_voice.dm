@@ -27,11 +27,11 @@ var/list/zalgo_letters = list(
 	var/gibberish_message = ""
 	var/totalsocial = 0
 	if(lasombra)
-		totalsocial = (lasombra.social+lasombra.additional_social) * 5
+		totalsocial = (lasombra.social+lasombra.additional_social) * 3 // +3% chance per social. 15 max, 18 avg, 24 beauty.9
 	for(var/i = 1 to length(message))
 		var/char = message[i]
 		// Randomize or replace characters with gibberish
-		var/chance = 50 + totalsocial // 50% + 5% chance per point of social to keep intact.
+		var/chance = 70 + totalsocial // 70% + totalsocial chance per point of social to keep intact.
 		if(prob(chance))
 			gibberish_message += char
 		else
