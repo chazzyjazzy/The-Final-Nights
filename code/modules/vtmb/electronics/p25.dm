@@ -624,7 +624,7 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 		var/mob/living/carbon/human/speaker_man = speaker
 		if(speaker_man.clane?.name == "Lasombra")
 			raw_message = scramble_lasombra_message(raw_message,speaker_man)
-			playsound(src, 'code/modules/wod13/sounds/lasombra_whisper.ogg', 30, FALSE)
+			playsound(src, 'code/modules/wod13/sounds/lasombra_whisper.ogg', 10, FALSE, ignore_walls = FALSE)
 
 	var/formatted = format_message(raw_message)
 	for(var/mob/M in get_hearers_in_view(1, get_turf(src)))
