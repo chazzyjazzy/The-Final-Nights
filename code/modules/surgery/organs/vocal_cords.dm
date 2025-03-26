@@ -217,9 +217,9 @@
 		power_multiplier *= (1 + (1/specific_listeners.len)) //2x on a single guy, 1.5x on two and so on
 		message = copytext(message, length(found_string) + 1)
 
-	for(var/V in listeners)
-		if(ishuman(V))
-			var/mob/living/carbon/human/dominate_target = V
+	for(var/affected in listeners)
+		if(ishuman(affected))
+			var/mob/living/carbon/human/dominate_target = affected
 			dominate_target.remove_overlay(MUTATIONS_LAYER)
 			var/mutable_appearance/dominate_overlay = mutable_appearance('code/modules/wod13/icons.dmi', "dominate", -MUTATIONS_LAYER)
 			dominate_overlay.pixel_z = 2
