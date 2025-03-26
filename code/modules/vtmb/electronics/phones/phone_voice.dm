@@ -25,10 +25,13 @@ var/list/zalgo_letters = list(
 
 /proc/scramble_lasombra_message(var/message,var/mob/living/carbon/human/lasombra)
 	var/gibberish_message = ""
+	var/totalsocial = 0
+	if(lasombra)
+		totalsocial = (lasombra.social+lasombra.additional_social) * 5
 	for(var/i = 1 to length(message))
 		var/char = message[i]
 		// Randomize or replace characters with gibberish
-		var/chance = ((lasombra.social+lasombra.additional_social)*10) //10% chance per point of social to keep intact.
+		var/chance = 50 + totalsocial // 50% + 5% chance per point of social to keep intact.
 		if(prob(chance))
 			gibberish_message += char
 		else
