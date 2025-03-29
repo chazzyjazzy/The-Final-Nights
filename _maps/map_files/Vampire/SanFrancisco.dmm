@@ -1051,6 +1051,9 @@
 	},
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/anarch/basement)
+"apB" = (
+/turf/open/floor/plasteel/marauder/damaged,
+/area/vtm/interior/penumbra/fake_world)
 "apI" = (
 /obj/structure/railing{
 	pixel_y = -5
@@ -10684,6 +10687,11 @@
 /obj/structure/flora/ausbushes/fullgrass,
 /turf/open/floor/plating/vampgrass,
 /area/vtm/northbeach)
+"dbe" = (
+/obj/structure/chair/comfy/shuttle,
+/obj/effect/landmark/treyliam,
+/turf/open/floor/plasteel/marauder/damaged,
+/area/vtm/interior/penumbra/fake_world)
 "dbg" = (
 /obj/transfer_point_vamp{
 	dir = 1;
@@ -31200,6 +31208,12 @@
 /obj/item/stack/dollar/hundred,
 /turf/open/floor/plating/concrete,
 /area/vtm/anarch/basement)
+"jfz" = (
+/obj/machinery/light/dim{
+	dir = 4
+	},
+/turf/open/floor/plasteel/marauder/damaged,
+/area/vtm/interior/penumbra/fake_world)
 "jfC" = (
 /turf/open/floor/plating/rough/cave,
 /area/vtm/interior/gnawer)
@@ -41200,6 +41214,9 @@
 /obj/structure/vampfence/rich,
 /turf/open/floor/plating/rough/cave,
 /area/vtm/interior)
+"mgH" = (
+/turf/closed/wall/vampwall/rust,
+/area/vtm/interior/penumbra/fake_world)
 "mgL" = (
 /obj/effect/decal/bordur{
 	dir = 5
@@ -43959,6 +43976,12 @@
 /obj/effect/decal/gut_floor,
 /turf/open/floor/plating/concrete,
 /area/vtm/sewer)
+"mUc" = (
+/obj/machinery/light/dim{
+	dir = 8
+	},
+/turf/open/floor/plasteel/marauder/damaged,
+/area/vtm/interior/penumbra/fake_world)
 "mUn" = (
 /obj/machinery/light{
 	dir = 1
@@ -55810,6 +55833,13 @@
 	},
 /turf/open/floor/plating/sidewalk/rich,
 /area/vtm/financialdistrict)
+"qpL" = (
+/obj/machinery/light/dim{
+	dir = 1;
+	pixel_y = -17
+	},
+/turf/open/floor/plasteel/marauder/damaged,
+/area/vtm/interior/penumbra/fake_world)
 "qpS" = (
 /obj/effect/decal/litter,
 /obj/item/melee/skateboard/pro,
@@ -63729,6 +63759,10 @@
 /obj/structure/clothinghanger,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior)
+"svX" = (
+/obj/structure/fake_door,
+/turf/open/floor/plasteel/marauder,
+/area/vtm/interior/penumbra/fake_world)
 "svZ" = (
 /obj/structure/vampipe{
 	icon_state = "piping32"
@@ -77858,6 +77892,10 @@
 	},
 /turf/open/floor/plating/rough,
 /area/vtm/interior/mansion)
+"wHY" = (
+/obj/item/gun/ballistic/vampire/revolver/last_resort,
+/turf/open/floor/plasteel/marauder/damaged,
+/area/vtm/interior/penumbra/fake_world)
 "wIe" = (
 /obj/effect/decal/bordur{
 	dir = 1
@@ -354996,16 +355034,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
 dhc
 dhc
 dhc
@@ -355253,16 +355291,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+mgH
+mgH
+mgH
+mgH
+mgH
+mgH
+mgH
+mgH
+nYS
 dhc
 dhc
 dhc
@@ -355510,16 +355548,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+svX
+apB
+mUc
+apB
+apB
+apB
+apB
+mgH
+nYS
 dhc
 dhc
 dhc
@@ -355767,16 +355805,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+mgH
+apB
+apB
+apB
+apB
+apB
+qpL
+mgH
+nYS
 dhc
 dhc
 dhc
@@ -356024,16 +356062,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+mgH
+apB
+apB
+dbe
+wHY
+apB
+apB
+mgH
+nYS
 dhc
 dhc
 dhc
@@ -356281,16 +356319,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+mgH
+apB
+apB
+apB
+apB
+apB
+qpL
+mgH
+nYS
 dhc
 dhc
 dhc
@@ -356538,16 +356576,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+svX
+apB
+jfz
+apB
+apB
+apB
+apB
+mgH
+nYS
 dhc
 dhc
 dhc
@@ -356795,16 +356833,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+mgH
+mgH
+mgH
+mgH
+mgH
+mgH
+mgH
+mgH
+nYS
 dhc
 dhc
 dhc
@@ -357052,16 +357090,16 @@ dhc
 dhc
 dhc
 dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
-dhc
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
+nYS
 dhc
 dhc
 dhc

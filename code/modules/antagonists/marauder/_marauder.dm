@@ -100,7 +100,7 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 	owner.learned_recipes |= recipe_progression[1]
 	forge_villain_objectives()
 	if(length(objectives))
-		SEND_SOUND(owner.current, 'code/modules/antagonists/marauder/sounds/ascendant_intro.ogg')
+		SEND_SOUND(owner.current, 'sound/marauder/ascendant_intro.ogg')
 		to_chat(owner.current, span_danger("[antag_memory]"))
 		owner.announce_objectives()
 	START_PROCESSING(SSobj, src)
@@ -169,7 +169,7 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 	objectives += wakeup
 
 /datum/antagonist/marauder/proc/agony(mob/living/carbon/dreamer)
-	var/sound/im_sick = sound('code/modules/antagonists/marauder/sounds/imsick.ogg', TRUE, FALSE, CHANNEL_DREAMER, 100)
+	var/sound/im_sick = sound('sound/marauder/imsick.ogg', TRUE, FALSE, CHANNEL_DREAMER, 100)
 	SEND_SOUND(dreamer, im_sick)
 	dreamer.overlay_fullscreen("dream", /atom/movable/screen/fullscreen/dreaming)
 	dreamer.overlay_fullscreen("wakeup", /atom/movable/screen/fullscreen/dreaming/waking_up)
@@ -201,7 +201,7 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 	return
 
 /datum/antagonist/marauder/proc/wake_up()
-	if(GLOB.marauder_highlander) // another Maniac has TRIUMPHED before we could
+	if(GLOB.marauder_highlander) // another Marauder has TRIUMPHED before we could
 		if(src.owner && src.owner.current)
 			var/straggler = src.owner.current
 			to_chat(straggler, span_danger("IT'S NO USE! I CAN'T WAKE UP!"))
@@ -211,8 +211,8 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 	triumphed = TRUE
 	waking_up = FALSE
 	var/mob/living/carbon/dreamer = owner.current
-	dreamer.log_message("prayed their sum ([sum_keys]), beginning the Maniac TRIUMPH sequence and the end of the round.", LOG_GAME)
-	message_admins("[ADMIN_LOOKUPFLW(dreamer)] as Maniac TRIUMPHED[sum_keys ? " with sum [sum_keys]" : ""]. The round will end shortly.")
+	dreamer.log_message("prayed their sum ([sum_keys]), beginning the Marauder TRIUMPH sequence and the end of the round.", LOG_GAME)
+	message_admins("[ADMIN_LOOKUPFLW(dreamer)] as Marauder TRIUMPHED[sum_keys ? " with sum [sum_keys]" : ""]. The round will end shortly.")
 	// var/client/dreamer_client = dreamer.client // Trust me, we need it later
 	to_chat(dreamer, "...It couldn't be.")
 	dreamer.clear_fullscreen("dream")
@@ -226,7 +226,7 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 		if(!connected_player.client)
 			continue
 		SEND_SOUND(connected_player, sound(null))
-		SEND_SOUND(connected_player, 'code/modules/antagonists/marauder/sounds/dreamer_win.ogg')
+		SEND_SOUND(connected_player, 'sound/marauder/dreamer_win.ogg')
 	var/mob/living/carbon/human/trey_liam = PROC_REF(spawn_trey_liam)
 	if(trey_liam)
 		owner.transfer_to(trey_liam)
@@ -244,24 +244,28 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 			qdel(brain)
 		cull_competitors(trey_liam)
 		trey_liam.SetSleeping(25 SECONDS)
+		// TODO: replace with addtimer
 		sleep(1.5 SECONDS)
 		to_chat(trey_liam, span_deadsay("<span class='reallybig'>... WHERE AM I? ...</span>"))
+		// TODO: replace with addtimer
 		sleep(1.5 SECONDS)
 		var/static/list/slop_lore = list(
-			span_deadsay("... Rockhill? Vanderlin? No ... They doesn't exist ..."),
+			span_deadsay("... San Francisco? 2015? No ... That can't be ..."),
 			span_deadsay("... My name is Trey. Trey Liam, Scientific Overseer ..."),
 			span_deadsay("... I'm on the Aeon, a self sustaining ship, used to preserve what remains of humanity ..."),
 			span_deadsay("... Launched into the stars, preserving their memories ... Their personalities ..."),
-			span_deadsay("... Keeps them alive in cyberspace, oblivious to the catastrophe ..."),
+			span_deadsay("... Keeps them alive in cyberspace, oblivious to the catastrophe of 1999 ..."),
 			span_deadsay("... There is no hope left. Only the cyberspace deck lets me live in the forgery ..."),
 			span_deadsay("... What have I done!? ..."),
 		)
 		for(var/slop in slop_lore)
 			to_chat(trey_liam, slop)
+			// TODO: replace with addtimer
 			sleep(3 SECONDS)
 	else
 		INVOKE_ASYNC(src, PROC_REF(cant_wake_up), dreamer)
 		cull_competitors(dreamer)
+	// TODO: replace with addtimer
 	sleep(15 SECONDS)
 	to_chat(world, span_deadsay("<span class='reallybig'>The Marauder has AWAKENED!</span>"))
 	SSticker.declare_completion()
@@ -270,9 +274,11 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 	if(!iscarbon(dreamer))
 		return
 	to_chat(dreamer, span_deadsay("<span class='reallybig'>I CAN'T WAKE UP.</span>"))
+	// TODO: replace with addtimer
 	sleep(2 SECONDS)
 	for(var/i in 1 to 10)
 		to_chat(dreamer, span_deadsay("<span class='reallybig'>ICANTWAKEUP</span>"))
+		// TODO: replace with addtimer
 		sleep(0.5 SECONDS)
 	var/obj/item/organ/brain/brain = dreamer.getorganslot(ORGAN_SLOT_BRAIN)
 	var/obj/item/bodypart/head/head = dreamer.get_bodypart(BODY_ZONE_HEAD)
@@ -298,11 +304,14 @@ GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 				animate(cnc, C.pixel_y)
 			REMOVE_TRAIT(C, TRAIT_SCREENSHAKE, "/datum/antagonist/marauder")
 			REMOVE_TRAIT(C, TRAIT_SCHIZO_AMBIENCE, "/datum/antagonist/marauder")
-			C.log_message("was culled by the TRIUMPH of Maniac [key_name(victor)].", LOG_GAME)
+			C.log_message("was culled by the TRIUMPH of Marauder [key_name(victor)].", LOG_GAME)
+			// TODO: replace with addtimer
 			sleep(1 SECONDS)
 			to_chat(C, span_userdanger("What?! No, no, this can't be!"))
+			// TODO: replace with addtimer
 			sleep(2 SECONDS)
 			to_chat(C, span_userdanger("How can I be TOO LATE-"))
+			// TODO: replace with addtimer
 			sleep(1 SECONDS)
 			INVOKE_ASYNC(src, PROC_REF(cant_wake_up), C)
 			QDEL_LIST(competitor.wonders_made)

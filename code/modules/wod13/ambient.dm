@@ -32,8 +32,11 @@
 /area/vtm/proc/break_elysium()
 	if(zone_type == "masquerade")
 		zone_type = "battle"
-		spawn(1800)
-			zone_type = "masquerade"
+
+		addtimer(CALLBACK(src, PROC_REF(reset_elysium)), 3 MINUTES)
+
+/area/vtm/proc/reset_elysium()
+	zone_type = "masquerade"
 
 /area/vtm/interior
 	name = "Interior"
@@ -522,6 +525,12 @@
 /area/vtm/interior/penumbra/enoch
 	name = "???"
 
+// The Marauder's fake world
+/area/vtm/interior/penumbra/fake_world
+	name = "???"
+	ambience_index = AMBIENCE_INTERIOR
+	music = null
+
 /area/vtm/interior/chantry
 	name = "Chantry"
 	icon_state = "theatre"
@@ -757,7 +766,7 @@
 			else if(dreamer)
 				if(last_vampire_ambience+wait_for_music+10 < world.time)
 					wait_for_music = 1620
-					SEND_SOUND(src, sound('code/modules/antagonists/marauder/sounds/dreamer_is_still_asleep.ogg', 0, 0, CHANNEL_LOBBYMUSIC, 10))
+					SEND_SOUND(src, sound('sound/marauder/dreamer_is_still_asleep.ogg', 0, 0, CHANNEL_LOBBYMUSIC, 10))
 					last_vampire_ambience = world.time
 
 #undef VERY_HIGH_WALL_RATING
