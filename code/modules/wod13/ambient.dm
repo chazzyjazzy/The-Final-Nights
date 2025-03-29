@@ -757,7 +757,7 @@
 			else if(dreamer)
 				if(last_vampire_ambience+wait_for_music+10 < world.time)
 					wait_for_music = 1620
-					SEND_SOUND(src, sound('code/modules/antagonists/maniac/sounds/dreamer_is_still_asleep.ogg', 0, 0, CHANNEL_LOBBYMUSIC, 10))
+					SEND_SOUND(src, sound('code/modules/antagonists/marauder/sounds/dreamer_is_still_asleep.ogg', 0, 0, CHANNEL_LOBBYMUSIC, 10))
 					last_vampire_ambience = world.time
 
 #undef VERY_HIGH_WALL_RATING

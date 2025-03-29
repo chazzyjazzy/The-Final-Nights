@@ -3,9 +3,9 @@
 	explanation_text = "FOLLOWING my HEART shall be the WHOLE of the law."
 
 /datum/antagonist/marauder
-	name = "Maniac"
-	roundend_category = "maniacs"
-	antagpanel_category = "Maniac"
+	name = "Marauder"
+	roundend_category = "marauders"
+	antagpanel_category = "Marauder"
 	antag_memory = "<b>Recently I've been visited by a lot of VISIONS. They're all about another WORLD, ANOTHER life. I will do EVERYTHING to know the TRUTH, and return to the REAL world.</b>"
 	job_rank = ROLE_MARAUDER
 	antag_hud_type = ANTAG_HUD_TRAITOR
@@ -58,18 +58,17 @@
 	/// Wonders we have made
 	var/list/wonders_made = list()
 	/// Hallucinations screen object
-	var/atom/movable/screen/fullscreen/maniac/hallucinations
+	var/atom/movable/screen/fullscreen/marauder/hallucinations
 	/// Film grain screen object
 	var/atom/movable/screen/fullscreen/film_grain
 	/// Special items that can be drawn from certain structures
 	var/list/special_items = list()
 
-GLOBAL_VAR_INIT(maniac_highlander, 0) // THERE CAN ONLY BE ONE!
+GLOBAL_VAR_INIT(marauder_highlander, 0) // THERE CAN ONLY BE ONE!
 
 /datum/antagonist/marauder/New()
 	set_keys()
-	// TODO: port this
-	load_strings_file("maniac.json")
+	load_strings_file("marauder.json")
 	return ..()
 
 /datum/antagonist/marauder/Destroy()
@@ -87,21 +86,21 @@ GLOBAL_VAR_INIT(maniac_highlander, 0) // THERE CAN ONLY BE ONE!
 			var/mob/living/carbon/human/dreamer = owner.current
 			regenerate_stats(dreamer)
 			var/obj/item/organ/heart/heart = dreamer.getorganslot(ORGAN_SLOT_HEART)
-			if(heart) // clear any inscryptions, in case of being made maniac midround
+			if(heart) // clear any inscryptions, in case of being made marauder midround
 				heart.inscryptions = list()
 				heart.inscryption_keys = list()
-				heart.maniacs2wonder_ids = list()
-				heart.maniacs = list()
+				heart.marauders2wonder_ids = list()
+				heart.marauders = list()
 		for(var/trait in applied_traits)
 			ADD_TRAIT(owner.current, trait, "[type]")
-		hallucinations = owner.current.overlay_fullscreen("maniac", /atom/movable/screen/fullscreen/maniac)
+		hallucinations = owner.current.overlay_fullscreen("marauder", /atom/movable/screen/fullscreen/marauder)
 		film_grain = owner.current.overlay_fullscreen("film_grain", /atom/movable/screen/fullscreen/film_grain)
 		film_grain.icon_state = "[rand(1, 9)]h"
 	LAZYINITLIST(owner.learned_recipes)
 	owner.learned_recipes |= recipe_progression[1]
 	forge_villain_objectives()
 	if(length(objectives))
-		SEND_SOUND(owner.current, 'code/modules/antagonists/maniac/sounds/ascendant_intro.ogg')
+		SEND_SOUND(owner.current, 'code/modules/antagonists/marauder/sounds/ascendant_intro.ogg')
 		to_chat(owner.current, span_danger("[antag_memory]"))
 		owner.announce_objectives()
 	START_PROCESSING(SSobj, src)
@@ -120,7 +119,7 @@ GLOBAL_VAR_INIT(maniac_highlander, 0) // THERE CAN ONLY BE ONE!
 			REMOVE_TRAIT(owner.current, trait, "[type]")
 		for(var/trait in final_traits)
 			REMOVE_TRAIT(owner.current, trait, "[type]")
-		owner.current.clear_fullscreen("maniac")
+		owner.current.clear_fullscreen("marauder")
 	QDEL_LIST(wonders_made)
 	wonders_made = null
 	owner.learned_recipes -= recipe_progression
@@ -170,7 +169,7 @@ GLOBAL_VAR_INIT(maniac_highlander, 0) // THERE CAN ONLY BE ONE!
 	objectives += wakeup
 
 /datum/antagonist/marauder/proc/agony(mob/living/carbon/dreamer)
-	var/sound/im_sick = sound('code/modules/antagonists/maniac/sounds/imsick.ogg', TRUE, FALSE, CHANNEL_DREAMER, 100)
+	var/sound/im_sick = sound('code/modules/antagonists/marauder/sounds/imsick.ogg', TRUE, FALSE, CHANNEL_DREAMER, 100)
 	SEND_SOUND(dreamer, im_sick)
 	dreamer.overlay_fullscreen("dream", /atom/movable/screen/fullscreen/dreaming)
 	dreamer.overlay_fullscreen("wakeup", /atom/movable/screen/fullscreen/dreaming/waking_up)
@@ -202,12 +201,12 @@ GLOBAL_VAR_INIT(maniac_highlander, 0) // THERE CAN ONLY BE ONE!
 	return
 
 /datum/antagonist/marauder/proc/wake_up()
-	if(GLOB.maniac_highlander) // another Maniac has TRIUMPHED before we could
+	if(GLOB.marauder_highlander) // another Maniac has TRIUMPHED before we could
 		if(src.owner && src.owner.current)
 			var/straggler = src.owner.current
 			to_chat(straggler, span_danger("IT'S NO USE! I CAN'T WAKE UP!"))
 		return
-	GLOB.maniac_highlander = 1
+	GLOB.marauder_highlander = 1
 	STOP_PROCESSING(SSobj, src)
 	triumphed = TRUE
 	waking_up = FALSE
@@ -227,7 +226,7 @@ GLOBAL_VAR_INIT(maniac_highlander, 0) // THERE CAN ONLY BE ONE!
 		if(!connected_player.client)
 			continue
 		SEND_SOUND(connected_player, sound(null))
-		SEND_SOUND(connected_player, 'code/modules/antagonists/maniac/sounds/dreamer_win.ogg')
+		SEND_SOUND(connected_player, 'code/modules/antagonists/marauder/sounds/dreamer_win.ogg')
 	var/mob/living/carbon/human/trey_liam = PROC_REF(spawn_trey_liam)
 	if(trey_liam)
 		owner.transfer_to(trey_liam)
@@ -284,7 +283,7 @@ GLOBAL_VAR_INIT(maniac_highlander, 0) // THERE CAN ONLY BE ONE!
 	if(brain)
 		qdel(brain)
 
-// Culls any living maniacs in the world apart from the victor.
+// Culls any living marauders in the world apart from the victor.
 /datum/antagonist/marauder/proc/cull_competitors(mob/living/carbon/victor)
 	for(var/mob/living/carbon/C in GLOB.carbon_list - victor)
 		var/datum/antagonist/marauder/competitor = C.mind?.has_antag_datum(/datum/antagonist/marauder)
