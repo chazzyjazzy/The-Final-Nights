@@ -300,3 +300,12 @@
 #define TRAIT_DRIED "trait_dried"
 //Trait for customizable reagent holder
 #define TRAIT_CUSTOMIZABLE_REAGENT_HOLDER "customizable_reagent_holder"
+
+// Marauder stuff
+
+/// Replaces all ambience with creepy shit
+#define TRAIT_SCHIZO_AMBIENCE "schizo_ambience"
+/// Screen will always be shaking, you cannot stop it
+#define TRAIT_SCREENSHAKE "screenshake"
+/// The Marauder has awoken!
+#define TRAIT_MARAUDER_AWOKEN "Awoken"

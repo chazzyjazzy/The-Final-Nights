@@ -708,14 +708,8 @@
 	if(istype(get_area(T), /area/vtm))
 		var/area/vtm/VTM = get_area(T)
 		if(VTM)
-			/*
-			if(VTM.upper)
-				if(SScityweather.raining)
-					SEND_SOUND(src, sound('code/modules/wod13/sounds/rain.ogg', 0, 0, CHANNEL_RAIN, 25))
-					wash(CLEAN_WASH)
-			*/
-
 			var/cacophony = FALSE
+			var/dreamer = FALSE
 
 			if(iskindred(src))
 				var/mob/living/carbon/human/H = src
@@ -723,7 +717,12 @@
 					if(H.clane.name == "Daughters of Cacophony")
 						cacophony = FALSE //This Variable was TRUE, which makes the DoC music loop play.
 
-			if(!cacophony)
+			if(ishuman(src))
+				var/mob/living/carbon/human/H = src
+				if(HAS_TRAIT(H, TRAIT_SCHIZO_AMBIENCE))
+					dreamer = TRUE
+
+			if(!cacophony && !dreamer)
 				if(!(client && (client.prefs.toggles & SOUND_AMBIENCE)))
 					return
 
@@ -750,10 +749,15 @@
 					client << sound(VMPMSC.sound, 0, 0, CHANNEL_LOBBYMUSIC, 10)
 					last_vampire_ambience = world.time
 				qdel(VMPMSC)
-			else
+			else if(cacophony)
 				if(last_vampire_ambience+wait_for_music+10 < world.time)
 					wait_for_music = 1740
 					client << sound('code/modules/wod13/sounds/daughters.ogg', 0, 0, CHANNEL_LOBBYMUSIC, 5)
+					last_vampire_ambience = world.time
+			else if(dreamer)
+				if(last_vampire_ambience+wait_for_music+10 < world.time)
+					wait_for_music = 1620
+					SEND_SOUND(src, sound('code/modules/antagonists/maniac/sounds/dreamer_is_still_asleep.ogg', 0, 0, CHANNEL_LOBBYMUSIC, 10))
 					last_vampire_ambience = world.time
 
 #undef VERY_HIGH_WALL_RATING
