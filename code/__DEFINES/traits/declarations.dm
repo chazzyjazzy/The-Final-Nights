@@ -306,7 +306,6 @@
 /// A trait gained by leaning against a wall
 #define TRAIT_LEANING "leaning"
 
-
 // Marauder stuff
 
 /// Replaces all ambience with creepy shit
