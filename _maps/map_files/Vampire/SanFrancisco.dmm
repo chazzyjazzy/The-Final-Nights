@@ -58249,7 +58249,7 @@
 "qWc" = (
 /obj/structure/table/wood/fancy/black,
 /obj/machinery/button/curtain{
-	id = lasombraprim
+	id = "lasombraprim"
 	},
 /turf/open/floor/plating/church,
 /area/vtm/church/interior/haven)
@@ -64903,7 +64903,7 @@
 /obj/item/paper_bin,
 /obj/item/pen/fountain,
 /obj/machinery/button/curtain{
-	id = lasombraprim;
+	id = "lasombraprim";
 	pixel_y = 11
 	},
 /turf/open/floor/carpet/royalblack,
@@ -71001,7 +71001,7 @@
 /obj/item/paper_bin,
 /obj/item/pen/fountain,
 /obj/machinery/button/curtain{
-	id = banu;
+	id = "banu";
 	pixel_y = 12
 	},
 /turf/open/floor/plating/parquetry/old,
@@ -75706,7 +75706,7 @@
 /area/vtm/sewer)
 "wag" = (
 /obj/machinery/button/curtain{
-	id = ventrueprim
+	id = "ventrueprim"
 	},
 /obj/structure/table/wood/fancy/royalblue,
 /turf/open/floor/carpet/royalblue,
@@ -77029,7 +77029,7 @@
 /obj/item/stack/dollar/hundred,
 /obj/item/stack/dollar/hundred,
 /obj/machinery/button/curtain{
-	id = sheriffcurtain
+	id = "sheriffcurtain"
 	},
 /turf/open/floor/carpet/black,
 /area/vtm/interior/millennium_tower/f3)
@@ -78478,7 +78478,7 @@
 "wRj" = (
 /obj/structure/table/wood/fancy/royalblack,
 /obj/machinery/button/curtain{
-	id = lasombra
+	id = "lasombra"
 	},
 /turf/open/floor/plating/church,
 /area/vtm/church/interior/haven)
