@@ -234,22 +234,42 @@
 
 /datum/discipline_power/thaumaturgy/cauldron_of_blood/activate(mob/living/target)
 	. = ..()
-	if(iscarbon(target))
-		target.visible_message(span_danger("[target] reddens and quakes!"), span_userdanger("Your veins feel like they're on fire!"))
-		//Add a prob roll here, we want it to have a bias towards succeeding than not, but there's still an advantage to having higher phys.
-		if(!prob(clamp((target.get_total_physique() * 10), 10, 30)))
-			target.Stun(2.5 SECONDS)
-			target.apply_damage(20, BURN, owner.zone_selected)
+	if(!iscarbon(target)) return
+
+	target.visible_message(span_danger("[target] reddens and quakes!"), span_userdanger("Your veins feel like they're on fire!"))
+
+	var/phys = clamp(target.get_total_physique() * 10, 10, 80)
+	var/stage = 0
+
+	// Stage 1
+	if(!prob(clamp(phys, 10, 30)))
+		stage = 1
+		sleep(2.5 SECONDS)
+
+		// Stage 2
+		if(!prob(clamp(phys, 20, 40)))
+			stage = 2
 			sleep(2.5 SECONDS)
-			//It's a little heinous
-			if(!prob(clamp((target.get_total_physique() * 10), 20, 40)))
+
+			// Stage 3
+			if(!prob(clamp(phys + 20, 40, 80)))
+				stage = 3
+
+	for(var/i = 1 to stage)
+		switch(i)
+			if(1)
+				target.Stun(2.5 SECONDS)
+				target.apply_damage(20, BURN, owner.zone_selected)
+
+			if(2)
+				target.Stun(2.5 SECONDS)
 				to_chat(target, span_userdanger("Your blood continues to burn!"))
 				target.apply_damage(25, BURN, owner.zone_selected)
-				sleep(2.5 SECONDS)
-				if(!prob(clamp((target.get_total_physique() * 10 + 20), 40, 80)))
-					target.Stun(2.5 SECONDS)
-					to_chat(target, span_userdanger("IT BURNS! IT BURNS!! IT BURNS!!!"))
-					target.apply_damage(30, BURN, owner.zone_selected)
+
+			if(3)
+				target.Stun(2.5 SECONDS)
+				to_chat(target, span_userdanger("IT BURNS! IT BURNS!! IT BURNS!!!"))
+				target.apply_damage(30, BURN, owner.zone_selected)
 	else
 		owner.bloodpool = min(owner.bloodpool + target.bloodpool, owner.maxbloodpool)
 		if(!istype(target, /mob/living/simple_animal/hostile/megafauna))
