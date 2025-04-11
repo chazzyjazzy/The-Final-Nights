@@ -76,7 +76,7 @@
 					var/sucked = min(VL.bloodpool, 2)
 					VL.bloodpool = max(VL.bloodpool - sucked, 0)
 					VL.apply_damage(45, BURN)
-					VL.visible_message(span_danger("[target]'s wounds spray boiling hot blood!"), "<span class='userdanger'>Your blood boils!</span>")
+					VL.visible_message(span_danger("[target]'s wounds spray boiling hot blood!"), span_userdanger("Your blood boils!"))
 					VL.add_splatter_floor(get_turf(target))
 					VL.add_splatter_floor(get_turf(get_step(target, target.dir)))
 				if(!iskindred(target))
@@ -210,13 +210,28 @@
 		target.add_splatter_floor(get_turf(get_step(target, target.dir)))
 		if(target.bloodpool >= 2)
 			target.bloodpool -= 2
-			owner.bloodpool += 3 // it costs 1 blood to cast, this way you draw 2 blood, get 2 blood
+			owner.bloodpool += 3 // costs 1 bp to cast
 	else
 		owner.bloodpool = min(owner.bloodpool + target.bloodpool, owner.maxbloodpool)
 		if(!istype(target, /mob/living/simple_animal/hostile/megafauna))
 			target.tremere_gib()
 
 //CAULDRON OF BLOOD
+/datum/discipline_power/thaumaturgy/cauldron_of_blood
+	name = "Cauldron of Blood"
+	desc = "Boil your target's blood in their body, killing almost anyone."
+
+	level = 5
+
+	//effect_sound = 'code/modules/wod13/sounds/bloodcauldron.ogg'
+
+	grouped_powers = list(
+		/datum/discipline_power/thaumaturgy/a_taste_for_blood,
+		/datum/discipline_power/thaumaturgy/blood_rage,
+		/datum/discipline_power/thaumaturgy/blood_of_potency,
+		/datum/discipline_power/thaumaturgy/theft_of_vitae
+	)
+
 /datum/discipline_power/thaumaturgy/cauldron_of_blood
 	name = "Cauldron of Blood"
 	desc = "Boil your target's blood in their body, killing almost anyone."
@@ -249,7 +264,7 @@
 
 			// Stage 2
 			if(!prob(clamp(phys, 20, 40)))
-				target.Stun(1.0 SECONDS)
+				target.Stun(2.5 SECONDS)
 				target.apply_damage(20, BURN, owner.zone_selected)
 				target.emote("scream")
 				target.emote("twitch")
@@ -257,7 +272,7 @@
 				sleep(2.5 SECONDS)
 
 				// Stage 3
-				if(!prob(clamp(phys + 20, 40, 80)))
+				if(!prob(clamp(phys, 40, 80)))
 					target.Stun(2.5 SECONDS)
 					target.apply_damage(25, BURN, owner.zone_selected)
 					target.visible_message(span_warning("[target] collapses to the floor, thrashing in torment!"), span_userdanger("IT BURNS! IT BURNS!! IT BURNS!!!"))
