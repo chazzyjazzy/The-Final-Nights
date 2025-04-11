@@ -257,7 +257,7 @@
 		// Stage 1
 		if(!prob(clamp(phys, 10, 30)))
 			target.Stun(2.5 SECONDS)
-			target.apply_damage(15, BURN, owner.zone_selected)
+			target.apply_damage(20, BURN, owner.zone_selected)
 			target.emote("twitch")
 			target.visible_message(span_warning("[target] begins to violently shake!"), span_userdanger("You feel yourself trembling uncontrollably!"))
 			sleep(2.5 SECONDS)
@@ -272,7 +272,7 @@
 				sleep(2.5 SECONDS)
 
 				// Stage 3
-				if(!prob(clamp(phys, 40, 80)))
+				if(!prob(clamp(phys + 15, 40, 80)))
 					target.Stun(2.5 SECONDS)
 					target.apply_damage(25, BURN, owner.zone_selected)
 					target.visible_message(span_warning("[target] collapses to the floor, thrashing in torment!"), span_userdanger("IT BURNS! IT BURNS!! IT BURNS!!!"))
