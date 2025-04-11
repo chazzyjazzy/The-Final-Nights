@@ -264,7 +264,6 @@
 
 			// Stage 2
 			if(!prob(clamp(phys, 20, 40)))
-				target.Stun(1.0 SECONDS)
 				target.apply_damage(20, BURN, owner.zone_selected)
 				target.emote("scream")
 				target.emote("twitch")
