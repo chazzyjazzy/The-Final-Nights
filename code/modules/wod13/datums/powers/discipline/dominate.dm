@@ -32,17 +32,6 @@
 /datum/movespeed_modifier/dominate
 	multiplicative_slowdown = 5
 
-	// Calculate the difference
-	var/diff = mypower - theirpower
-
-	// Modify chance based on stat difference
-	var/prob_chance = clamp(base_chance + (diff * 5), 10, 95)
-	
-	if(prob(prob_chance))
-		return TRUE
-	else
-		to_chat(owner, span_warning("[target]'s mind resists your domination! ([prob_chance]% chance)"))
-		return FALSE
 
 //COMMAND
 /datum/discipline_power/dominate/command
