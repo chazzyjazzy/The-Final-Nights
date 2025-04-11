@@ -32,15 +32,6 @@
 /datum/movespeed_modifier/dominate
 	multiplicative_slowdown = 5
 
-/datum/discipline_power/dominate/proc/stat_based_success(mob/living/target, base_chance)
-	var/mypower = owner.get_total_social()
-	var/theirpower = target.get_total_mentality()
-
-	if(ishuman(target))
-		var/mob/living/carbon/human/human_target = target
-		if(human_target.clane?.name == "Gargoyle")
-			return TRUE // Gargoyles are still always valid
-
 	// Calculate the difference
 	var/diff = mypower - theirpower
 
@@ -69,7 +60,16 @@
 	range = 7
 
 /datum/discipline_power/dominate/command/pre_activation_checks(mob/living/target)
-	return stat_based_success(target, 70) // base 70% chance to succeed if stats are equal
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 4, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		if(human_target.clane?.name == "Gargoyle")
+			return TRUE
+	if((theirpower >= mypower) || (owner.generation > target.generation))
+		to_chat(owner, span_warning("[target]'s mind is too powerful to dominate!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/dominate/command/activate(mob/living/target)
 	. = ..()
@@ -96,7 +96,16 @@
 	range = 7
 
 /datum/discipline_power/dominate/mesmerize/pre_activation_checks(mob/living/target)
-	return stat_based_success(target, 60) // base 60% chance to land if stats are equal
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 5, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		if(human_target.clane?.name == "Gargoyle")
+			return TRUE
+	if((theirpower >= mypower) || (owner.generation > target.generation))
+		to_chat(owner, span_warning("[target]'s mind is too powerful to dominate!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/dominate/mesmerize/activate(mob/living/target)
 	. = ..()
@@ -125,7 +134,16 @@
 	range = 7
 
 /datum/discipline_power/dominate/the_forgetful_mind/pre_activation_checks(mob/living/target)
-	return stat_based_success(target, 50) // base 50% chance to land if stats are equal
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 6, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		if(human_target.clane?.name == "Gargoyle")
+			return TRUE
+	if((theirpower >= mypower) || (owner.generation > target.generation))
+		to_chat(owner, span_warning("[target]'s mind is too powerful to dominate!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/dominate/the_forgetful_mind/activate(mob/living/target)
 	. = ..()
@@ -153,7 +171,16 @@
 	range = 7
 
 /datum/discipline_power/dominate/conditioning/pre_activation_checks(mob/living/target)
-	return stat_based_success(target, 50) // base 50% chance to land if stats are equal (its literally the same as the last dot)
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 6, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		if(human_target.clane?.name == "Gargoyle")
+			return TRUE
+	if((theirpower >= mypower) || (owner.generation > target.generation))
+		to_chat(owner, span_warning("[target]'s mind is too powerful to dominate!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/dominate/conditioning/activate(mob/living/target)
 	. = ..()
@@ -180,7 +207,16 @@
 	range = 7
 
 /datum/discipline_power/dominate/possession/pre_activation_checks(mob/living/target)
-	return stat_based_success(target, 40) // base 40% chance to land if stats are equal - this one is super powerful so less than 50% feels right
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 7, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		if(human_target.clane?.name == "Gargoyle")
+			return TRUE
+	if((theirpower >= mypower) || (owner.generation > target.generation))
+		to_chat(owner, span_warning("[target]'s mind is too powerful to dominate!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/dominate/possession/activate(mob/living/carbon/human/target)
 	. = ..()
