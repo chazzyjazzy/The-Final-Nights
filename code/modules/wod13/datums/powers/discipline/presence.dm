@@ -11,24 +11,6 @@
 	activate_sound = 'code/modules/wod13/sounds/presence_activate.ogg'
 	deactivate_sound = 'code/modules/wod13/sounds/presence_deactivate.ogg'
 
-/datum/discipline_power/presence/proc/stat_based_success(mob/living/target, base_chance)
-	var/mypower = owner.get_total_social()
-	var/theirpower = target.get_total_mentality()
-
-	var/diff = mypower - theirpower
-	var/prob_chance = clamp(base_chance + (diff * 5), 10, 95)
-
-	if((owner.generation - 3) >= target.generation)
-		to_chat(owner, span_warning("[target]'s blood is too potent for your presence to affect them!"))
-		return FALSE
-
-	if(prob(prob_chance))
-		return TRUE
-	else
-		to_chat(owner, span_warning("[target] resists your unnatural presence! ([prob_chance]% chance)"))
-		return FALSE
-
-
 //AWE
 /datum/discipline_power/presence/awe
 	name = "Awe"
@@ -46,7 +28,12 @@
 	duration_length = 5 SECONDS
 
 /datum/discipline_power/presence/awe/pre_activation_checks(mob/living/target)
-	return stat_based_success(target,70) // base chance 70%
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 4, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if((theirpower >= mypower) || (owner.generation-3) >= target.generation)
+		to_chat(owner, span_warning("[target]'s mind is too powerful to sway!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/presence/awe/activate(mob/living/carbon/human/target)
 	. = ..()
@@ -89,7 +76,12 @@
 	duration_length = 5 SECONDS
 
 /datum/discipline_power/presence/dread_gaze/pre_activation_checks(mob/living/target)
-	return stat_based_success(target,60) // base chance 60%
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 5, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if((theirpower >= mypower) || (owner.generation-3) >= target.generation)
+		to_chat(owner, span_warning("[target]'s mind is too powerful to sway!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/presence/dread_gaze/activate(mob/living/carbon/human/target)
 	. = ..()
@@ -125,7 +117,12 @@
 	duration_length = 5 SECONDS
 
 /datum/discipline_power/presence/entrancement/pre_activation_checks(mob/living/target)
-	return stat_based_success(target,50) // base chance 50%
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 6, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if((theirpower >= mypower) || (owner.generation-3) >= target.generation)
+		to_chat(owner, span_warning("[target]'s mind is too powerful to sway!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/presence/entrancement/activate(mob/living/carbon/human/target)
 	. = ..()
@@ -168,7 +165,12 @@
 	duration_length = 5 SECONDS
 
 /datum/discipline_power/presence/summon/pre_activation_checks(mob/living/target)
-	return stat_based_success(target,50) // base chance 50%
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 6, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if((theirpower >= mypower) || (owner.generation-3) >= target.generation)
+		to_chat(owner, span_warning("[target]'s mind is too powerful to sway!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/presence/summon/activate(mob/living/carbon/human/target)
 	. = ..()
@@ -212,7 +214,12 @@
 	duration_length = 5 SECONDS
 
 /datum/discipline_power/presence/majesty/pre_activation_checks(mob/living/target)
-	return stat_based_success(target,40) // base chance 40%
+	var/mypower =  SSroll.storyteller_roll(owner.get_total_social(), difficulty = 7, mobs_to_show_output = owner, numerical = 1)
+	var/theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = 1)
+	if((theirpower >= mypower) || (owner.generation-3) >= target.generation)
+		to_chat(owner, span_warning("[target]'s mind is too powerful to sway!"))
+		return FALSE
+	return TRUE
 
 /datum/discipline_power/presence/majesty/activate(mob/living/carbon/human/target)
 	. = ..()
