@@ -386,6 +386,10 @@
 	fire_controled = TRUE
 	wall_rating = LOW_WALL_RATING
 
+/area/vtm/sabbat_lair
+	name = "Interior"
+	zone_type = "elysium"
+
 /area/vtm/church/interior/haven
 	name = "Church - Restricted Floor"
 	icon_state = "old_clan_tzimisce"
