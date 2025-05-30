@@ -34,24 +34,7 @@
 	. = ..()
 	logged_in = "Millenium Stock Department"
 
-/obj/machinery/computer/stockexchange/proc/balance()
-	if (!logged_in)
-		return 0
-	return get_fuckin_card_number_balance(logged_in)
 
-/proc/get_fuckin_card_number_balance(logged)
-	for(var/obj/item/stocks_license/S in GLOB.stock_licenses)
-		if(S)
-			if(S.whose == logged)
-				return S.balance
-	return 0
-
-/proc/get_fuckin_card_number(logged)
-	for(var/obj/item/stocks_license/S in GLOB.stock_licenses)
-		if(S)
-			if(S.whose == logged)
-				return S
-	return 0
 
 /obj/machinery/computer/stockexchange/ui_interact(mob/user)
 	. = ..()

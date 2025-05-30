@@ -15,9 +15,7 @@
 	if(name == "unbound stocks trading license")
 		if(ishuman(user))
 			var/mob/living/carbon/human/H = user
-			var/obj/item/stocks_license/CR = get_fuckin_card_number(H.true_real_name)
-			if(CR)
-				return
+			//var/obj/item/stocks_license/CR = get_fuckin_card_number(H.true_real_name)
 			name = "[H.true_real_name]'s stocks trading license"
 			whose = H.true_real_name
 
