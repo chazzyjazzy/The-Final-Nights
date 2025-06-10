@@ -226,6 +226,10 @@
 	M.update_health_hud()
 	M.update_blood_hud()
 	playsound(M.loc,'sound/items/drink.ogg', 50, TRUE)
+	if(stored_blood >= 20)
+		stored_blood -= 2
+	else
+		stored_blood -= 1
 	return
 
 /obj/item/vtm_artifact/rand
