@@ -1,10 +1,3 @@
-//supposedly the fastest way to do this according to https://gist.github.com/Giacom/be635398926bb463b42a
-#define RANGE_TURFS(RADIUS, CENTER) \
-	block( \
-	locate(max(CENTER.x-(RADIUS),1),          max(CENTER.y-(RADIUS),1),          CENTER.z), \
-	locate(min(CENTER.x+(RADIUS),world.maxx), min(CENTER.y+(RADIUS),world.maxy), CENTER.z) \
-	)
-
 #define Z_TURFS(ZLEVEL) block(locate(1,1,ZLEVEL), locate(world.maxx, world.maxy, ZLEVEL))
 #define CULT_POLL_WAIT 2400
 
@@ -419,9 +412,8 @@
 	if(!(GLOB.ghost_role_flags & GHOSTROLE_STATION_SENTIENCE))
 		return candidates
 
-	for(var/mob/dead/observer/G in GLOB.player_list)
-		if(!G.auspex_ghosted) //No Auspex ghosts as candidates.
-			candidates += G
+	for(var/mob/dead/observer/G in (GLOB.dead_mob_list - GLOB.avatar_list))
+		candidates += G
 
 	return pollCandidates(Question, jobbanType, gametypeCheck, be_special_flag, poll_time, ignore_category, flashwindow, candidates)
 

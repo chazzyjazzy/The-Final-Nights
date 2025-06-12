@@ -645,7 +645,7 @@
 		for (var/rule in subtypesof(/datum/dynamic_ruleset/roundstart))
 			var/datum/dynamic_ruleset/roundstart/newrule = new rule()
 			roundstart_rules[newrule.name] = newrule
-		var/added_rule = input(usr,"What ruleset do you want to force? This will bypass threat level and population restrictions.", "Rigging Roundstart", null) as null|anything in sortList(roundstart_rules)
+		var/added_rule = input(usr,"What ruleset do you want to force? This will bypass threat level and population restrictions.", "Rigging Roundstart", null) as null|anything in sort_list(roundstart_rules)
 		if (added_rule)
 			GLOB.dynamic_forced_roundstart_ruleset += roundstart_rules[added_rule]
 			log_admin("[key_name(usr)] set [added_rule] to be a forced roundstart ruleset.")
@@ -1290,12 +1290,18 @@
 			else
 				gender_description = "<font color='red'><b>[M.gender]</b></font>"
 
-		to_chat(src.owner, "<b>Info about [M.name]:</b> ", confidential = TRUE)
-		to_chat(src.owner, "Mob type = [M.type]; Gender = [gender_description] Damage = [health_description]", confidential = TRUE)
-		to_chat(src.owner, "Name = <b>[M.name]</b>; Real_name = [M.real_name]; Mind_name = [M.mind?"[M.mind.name]":""]; Key = <b>[M.key]</b>;", confidential = TRUE)
-		to_chat(src.owner, "Location = [location_description];", confidential = TRUE)
-		to_chat(src.owner, "[special_role_description]", confidential = TRUE)
-		to_chat(src.owner, ADMIN_FULLMONTY_NONAME(M), confidential = TRUE)
+		//Full Output
+		var/exportable_text = "[span_bold("Info about [M.name]:")]<br>"
+		exportable_text += "Key - [span_bold(M.key)]<br>"
+		exportable_text += "Mob Type - [M.type]<br>"
+		exportable_text += "Gender - [gender_description]<br>"
+		exportable_text += "[health_description]<br>"
+		exportable_text += "Name: [span_bold(M.name)] - Real Name: [M.real_name] - Mind Name: [M.mind?"[M.mind.name]":""]<br>"
+		exportable_text += "Location is [location_description]<br>"
+		exportable_text += "[special_role_description]<br>"
+		exportable_text += ADMIN_FULLMONTY_NONAME(M)
+
+		to_chat(src.owner, boxed_message(exportable_text), confidential = TRUE)
 
 	else if(href_list["addjobslot"])
 		if(!check_rights(R_ADMIN))

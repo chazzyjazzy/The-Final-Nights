@@ -127,7 +127,7 @@
 
 	if(owner.hud_used)
 		var/atom/movable/screen/inventory/hand/hand_screen_object = owner.hud_used.hand_slots["[held_index]"]
-		hand_screen_object?.update_icon()
+		hand_screen_object?.update_appearance()
 
 
 /obj/item/bodypart/l_arm/monkey
@@ -170,6 +170,8 @@
 	max_stamina_damage = 50
 	can_be_disabled = TRUE
 
+/obj/item/bodypart/r_arm/corvid_corax //the talons of a raven, used to pick up stuff, hopefully.
+	max_damage = 125
 
 /obj/item/bodypart/r_arm/set_owner(new_owner)
 	. = ..()
@@ -225,7 +227,7 @@
 
 	if(owner.hud_used)
 		var/atom/movable/screen/inventory/hand/hand_screen_object = owner.hud_used.hand_slots["[held_index]"]
-		hand_screen_object?.update_icon()
+		hand_screen_object?.update_appearance()
 
 
 /obj/item/bodypart/r_arm/monkey

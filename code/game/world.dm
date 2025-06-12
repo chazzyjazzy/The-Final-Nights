@@ -58,6 +58,8 @@ GLOBAL_VAR(restart_counter)
 	SSdbcore.SetRoundID()
 	load_poll_data()
 
+	populate_gear_list() // TFN ADDITION START: loadout
+
 #ifndef USE_CUSTOM_ERROR_HANDLER
 	world.log = file("[GLOB.log_directory]/dd.log")
 #else
@@ -136,7 +138,7 @@ GLOBAL_VAR(restart_counter)
 
 	logger.init_logging()
 
-	var/latest_changelog = file("[global.config.directory]/../html/changelogs/archive/" + time2text(world.timeofday, "YYYY-MM", 0) + ".yml")
+	var/latest_changelog = file("[global.config.directory]/../html/changelogs/archive/" + time2text(world.timeofday, "YYYY-MM", TIMEZONE_UTC) + ".yml")
 	GLOB.changelog_hash = fexists(latest_changelog) ? md5(latest_changelog) : 0 //for telling if the changelog has changed recently
 
 	if(GLOB.round_id)
@@ -268,7 +270,7 @@ GLOBAL_VAR(restart_counter)
 		if (server_name)
 			s += "<a href=\"https://discord.gg/invite/hQHAK67Drd\"><b>[server_name] \[18+\] &#8212; Apply on Discord!</b></a>"
 
-	s += "<br>Persistent 18+ immersive roleplay set in the World of Darkness, running modified WoD13 code. <br>Hosted by <b>Alanii, the Dark God.</b>"
+	s += "<br>Persistent 18+ Heavy-RP immersive roleplay set in the World of Darkness, running modified WoD13 code. <br>Hosted by <b>The Regime</b>"
 
 	var/players = GLOB.clients.len
 
@@ -365,3 +367,5 @@ GLOBAL_VAR(restart_counter)
 		// IE: path_to_save/a/apple.json
 		json_son.path = (path_to_save + dir_name[1] + path_char + dir_name + path_char + file_name)
 		json_son.save()
+
+#undef RESTART_COUNTER_PATH

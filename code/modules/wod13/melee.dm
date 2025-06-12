@@ -18,6 +18,14 @@
 			user.Paralyze(1)
 
 
+/obj/item/melee/vampirearms/afterattack(atom/A, mob/living/carbon/human/user, proximity)
+	. = ..()
+	if(!proximity)
+		return
+	if(quieted && isliving(A))
+		user.bloodpool -= 1
+
+
 /obj/item
 	var/masquerade_violating = FALSE
 
@@ -53,7 +61,7 @@
 /obj/item/melee/vampirearms/fireaxe/ComponentInitialize()
 	. = ..()
 	AddComponent(/datum/component/butchering, 100, 80, 0 , hitsound)
-	AddComponent(/datum/component/two_handed, force_unwielded=10, force_wielded=40, icon_wielded="fireaxe1")
+	AddComponent(/datum/component/two_handed, force_unwielded=10, force_wielded=50, icon_wielded="fireaxe1")
 
 /obj/item/melee/vampirearms/fireaxe/proc/on_wield(obj/item/source, mob/user)
 	SIGNAL_HANDLER
@@ -66,6 +74,7 @@
 	wielded = FALSE
 
 /obj/item/melee/vampirearms/fireaxe/update_icon_state()
+	. = ..()
 	icon_state = "fireaxe0"
 
 /obj/item/melee/vampirearms/fireaxe/afterattack(atom/A, mob/user, proximity)
@@ -75,7 +84,7 @@
 	if(wielded)
 		if(istype(A, /obj/structure/window) || istype(A, /obj/structure/grille))
 			var/obj/structure/W = A
-			W.obj_destruction("fireaxe")
+			W.atom_destruction("fireaxe")
 
 /obj/item/melee/vampirearms/fireaxe/axetzi
 	icon = 'code/modules/wod13/48x32weapons.dmi'
@@ -87,9 +96,10 @@
 /obj/item/melee/vampirearms/fireaxe/axetzi/ComponentInitialize()
 	. = ..()
 	AddComponent(/datum/component/butchering, 100, 80, 0 , hitsound)
-	AddComponent(/datum/component/two_handed, force_unwielded=10, force_wielded=40, icon_wielded="axetzi1")
+	AddComponent(/datum/component/two_handed, force_unwielded=10, force_wielded=50, icon_wielded="axetzi1")
 
 /obj/item/melee/vampirearms/fireaxe/axetzi/update_icon_state()
+	. = ..()
 	icon_state = "axetzi0"
 
 
@@ -99,7 +109,7 @@
 	icon = 'code/modules/wod13/48x32weapons.dmi'
 	icon_state = "katana"
 	flags_1 = CONDUCT_1
-	force = 35
+	force = 45
 	throwforce = 10
 	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = ITEM_SLOT_BACK | ITEM_SLOT_BELT
@@ -122,30 +132,20 @@
 	icon_state = "firetana"
 	pixel_w = -8
 	cost = 0
+	damtype = BURN
 	item_flags = DROPDEL
 	is_iron = FALSE
 	masquerade_violating = TRUE
-
-/obj/item/melee/vampirearms/katana/fire/afterattack(atom/target, mob/living/carbon/user, proximity)
-	. = ..()
-	if (isliving(target) && proximity)
-		var/mob/living/burnt_mob = target
-		burnt_mob.apply_damage(30, BURN)
 
 /obj/item/melee/vampirearms/katana/blood
 	name = "bloody katana"
 	color = "#bb0000"
 	pixel_w = -8
 	cost = 0
+	damtype = CLONE
 	item_flags = DROPDEL
 	is_iron = FALSE
 	masquerade_violating = TRUE
-
-/obj/item/melee/vampirearms/katana/blood/afterattack(atom/target, mob/living/carbon/user, proximity)
-	. = ..()
-	if (isliving(target) && proximity)
-		var/mob/living/burnt_mob = target
-		burnt_mob.apply_damage(30, CLONE)
 
 /obj/item/melee/vampirearms/rapier
 	name = "rapier"
@@ -153,7 +153,7 @@
 	icon = 'code/modules/wod13/weapons.dmi'
 	icon_state = "rapier"
 	flags_1 = CONDUCT_1
-	force = 35
+	force = 45
 	throwforce = 10
 	block_chance = 45
 	armour_penetration = 30
@@ -170,27 +170,27 @@
 	is_iron = TRUE
 
 /obj/item/melee/vampirearms/machete
-    name = "machete"
-    desc = "A certified chopper fit for the jungles...but you don't see any vines around. Well-weighted enough to be thrown."
-    icon = 'code/modules/wod13/weapons.dmi'
-    icon_state = "machete"
-    flags_1 = CONDUCT_1
-    force = 25
-    throwforce = 30
-    w_class = WEIGHT_CLASS_BULKY
-    slot_flags = ITEM_SLOT_BACK | ITEM_SLOT_BELT
-    block_chance = 40
-    armour_penetration = 25
-    sharpness = SHARP_EDGED
-    attack_verb_continuous = list("slashes", "cuts")
-    attack_verb_simple = list("slash", "cut")
-    hitsound = 'sound/weapons/rapierhit.ogg'
-    wound_bonus = 5
-    bare_wound_bonus = 25
-    pixel_w = -8
-    resistance_flags = FIRE_PROOF
-    masquerade_violating = FALSE
-    cost = 150
+	name = "machete"
+	desc = "A certified chopper fit for the jungles...but you don't see any vines around. Well-weighted enough to be thrown."
+	icon = 'code/modules/wod13/weapons.dmi'
+	icon_state = "machete"
+	flags_1 = CONDUCT_1
+	force = 40
+	throwforce = 30
+	w_class = WEIGHT_CLASS_BULKY
+	slot_flags = ITEM_SLOT_BACK | ITEM_SLOT_BELT
+	block_chance = 40
+	armour_penetration = 25
+	sharpness = SHARP_EDGED
+	attack_verb_continuous = list("slashes", "cuts")
+	attack_verb_simple = list("slash", "cut")
+	hitsound = 'sound/weapons/rapierhit.ogg'
+	wound_bonus = 5
+	bare_wound_bonus = 25
+	pixel_w = -8
+	resistance_flags = FIRE_PROOF
+	masquerade_violating = FALSE
+	cost = 150
 
 /obj/item/melee/vampirearms/sabre
 	name = "sabre"
@@ -198,7 +198,7 @@
 	icon = 'code/modules/wod13/weapons.dmi'
 	icon_state = "sabre"
 	flags_1 = CONDUCT_1
-	force = 30
+	force = 45
 	throwforce = 10
 	w_class = WEIGHT_CLASS_BULKY
 	block_chance = 35
@@ -220,7 +220,7 @@
 	icon = 'code/modules/wod13/weapons.dmi'
 	icon_state = "longsword"
 	flags_1 = CONDUCT_1
-	force = 35
+	force = 45
 	throwforce = 10
 	w_class = WEIGHT_CLASS_BULKY
 	block_chance = 40
@@ -244,7 +244,7 @@
 	color = "#C0C0C0"
 	flags_1 = CONDUCT_1
 	w_class = WEIGHT_CLASS_BULKY
-	force = 40
+	force = 50
 	block_chance = 45
 	armour_penetration = 40
 	sharpness = SHARP_EDGED
@@ -332,11 +332,12 @@
 		var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 		if(STR)
 			STR.grid_remove_item(I)
-		update_icon()
+		update_appearance()
 	else
 		to_chat(user, "<span class='warning'>[src] is empty!</span>")
 
 /obj/item/storage/belt/vampire/sheathe/update_icon_state()
+	. = ..()
 	icon_state = initial(icon_state)
 	if(contents.len)
 		var/obj/item/I = contents[1]
@@ -362,7 +363,7 @@
 		new /obj/item/melee/vampirearms/rapier(src)
 	else if(istype(src, /obj/item/storage/belt/vampire/sheathe/sabre))
 		new /obj/item/melee/vampirearms/sabre(src)
-	update_icon()
+	update_appearance()
 
 //end of sheathe code
 
@@ -372,7 +373,7 @@
 	desc = "There ain't a skull in the league that can withstand a swatter."
 	icon = 'code/modules/wod13/weapons.dmi'
 	icon_state = "baseball"
-	force = 30
+	force = 35
 	wound_bonus = 5
 	throwforce = 10
 	slot_flags = ITEM_SLOT_BELT
@@ -395,7 +396,7 @@
 	name = "ripped arm"
 	desc = "Wow, that was someone's arm."
 	icon_state = "hand"
-	force = 25
+	force = 35
 	block_chance = 25
 	masquerade_violating = TRUE
 	is_wood = FALSE
@@ -405,7 +406,7 @@
 	desc = "Can be used as a tool or as a weapon."
 	icon = 'code/modules/wod13/weapons.dmi'
 	icon_state = "pipe"
-	force = 20
+	force = 25
 	wound_bonus = 10
 	throwforce = 10
 	attack_verb_continuous = list("beats", "smacks")
@@ -459,35 +460,25 @@
 	name = "claws"
 	icon_state = "gangrel"
 	w_class = WEIGHT_CLASS_BULKY
-	force = 10
-	armour_penetration = 100	//It's magical damage
+	force = 35
+	armour_penetration = 50
+	damtype = CLONE
 	block_chance = 20
 	item_flags = DROPDEL
 	masquerade_violating = TRUE
 	is_iron = FALSE
 
-/obj/item/melee/vampirearms/knife/gangrel/afterattack(atom/target, mob/living/carbon/user, proximity)
-	if(!proximity)
-		return
-	if(isliving(target))
-		var/mob/living/L = target
-		L.apply_damage(10, CLONE)
 
 /obj/item/melee/vampirearms/knife/gangrel/lasombra
 	name = "shadow tentacle"
-	force = 10
-	armour_penetration = 100
+	force = 20
+	damtype = BURN
+	armour_penetration = 0
 	block_chance = 0
 	icon_state = "lasombra"
 	masquerade_violating = TRUE
 
-/obj/item/melee/vampirearms/knife/gangrel/lasombra/afterattack(atom/target, mob/living/carbon/user, proximity)
-	if(!proximity)
-		return
-	if(isliving(target))
-		var/mob/living/L = target
-		L.apply_damage(10, BURN)
-		L.apply_damage(10, CLONE)
+
 
 /obj/item/melee/touch_attack/werewolf
 	name = "\improper falling touch"
@@ -510,6 +501,23 @@
 			L.toggle_resting()
 	return ..()
 
+/obj/item/melee/touch_attack/werewolf/gift_of_the_termite
+	name = "\improper gift of the termite"
+	desc = "REJECT ALL BOUNDARIES."
+
+/obj/item/melee/touch_attack/werewolf/gift_of_the_termite/afterattack(atom/target, mob/living/carbon/user, proximity)
+	if(!proximity)
+		return
+	if(istype(target,/turf/closed/wall))
+		var/turf/closed/wall/twall = target
+		for(var/obj/matrix in orange(1,twall))
+			to_chat(user, "This particular wall feels reinforced too harshly by the veil to dissolve.")
+			return
+		twall.dismantle_wall(1,0)
+		if(user.CheckEyewitness(user, user, 7, FALSE))
+			user.adjust_veil(-2)
+	return ..()
+
 /obj/item/melee/vampirearms/knife/gangrel/Initialize()
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
@@ -521,7 +529,7 @@
 	icon_state = "chainsaw"
 	flags_1 = CONDUCT_1
 	force = 15
-	var/force_on = 50
+	var/force_on = 60
 	w_class = WEIGHT_CLASS_BULKY
 	throwforce = 10
 	throw_speed = 2
@@ -628,7 +636,7 @@
 	icon_state = "shovel"
 	name = "shovel"
 	desc = "Great weapon against mortal or immortal."
-	force = 25
+	force = 30
 	throwforce = 10
 	block_chance = 30
 	w_class = WEIGHT_CLASS_BULKY
@@ -653,7 +661,7 @@
 	desc = "More instrument, than a weapon. Instrumentally cuts heads..."
 	icon = 'code/modules/wod13/weapons.dmi'
 	icon_state = "kosa"
-	force = 35
+	force = 45
 	w_class = WEIGHT_CLASS_NORMAL
 	slot_flags = null
 	block_chance = 12
@@ -672,7 +680,7 @@
 	icon_state = "rock0"
 	name = "electric guitar"
 	desc = "You are pretty fly for a white guy..."
-	force = 35
+	force = 45
 	throwforce = 25
 	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = ITEM_SLOT_BACK | ITEM_SLOT_BELT
@@ -728,6 +736,7 @@
 	wielded = FALSE
 
 /obj/item/melee/vampirearms/eguitar/update_icon_state()
+	. = ..()
 	icon_state = "rock0"
 
 /obj/item/shield/door
@@ -758,7 +767,7 @@
 	w_class = WEIGHT_CLASS_NORMAL
 	attack_verb_continuous = list("bludgeons", "bashes", "beats")
 	attack_verb_simple = list("bludgeon", "bash", "beat")
-	force = 25
+	force = 35
 	wound_bonus = 15
 	block_chance = 10
 	slot_flags = ITEM_SLOT_BELT | ITEM_SLOT_SUITSTORE
@@ -861,3 +870,67 @@
 		grid_width = 2 GRID_BOXES
 		grid_height = 1 GRID_BOXES
 
+/obj/item/melee/vampirearms/tzimisce
+	name = "armblade"
+	desc = "A monstrous weapon, made out of sharpened bone."
+	icon = 'code/modules/wod13/weapons.dmi'
+	icon_state = "armblade"
+	force = 35
+	w_class = WEIGHT_CLASS_BULKY
+	block_chance = 40
+	armour_penetration = 40
+	sharpness = SHARP_EDGED
+	attack_verb_continuous = list("slashes", "cuts")
+	attack_verb_simple = list("slash", "cut")
+	hitsound = 'sound/weapons/rapierhit.ogg'
+	wound_bonus = 5
+	bare_wound_bonus = 25
+	resistance_flags = FIRE_PROOF
+	masquerade_violating = TRUE
+
+/obj/item/melee/vampirearms/tzimisce/venom
+	name = "nematocyst whip"
+	desc = "An elongated tendril covered with stinging cells."
+	icon = 'code/modules/wod13/weapons.dmi'
+	icon_state = "lasombra"
+	damtype = TOX
+	force = 16
+	w_class = WEIGHT_CLASS_BULKY
+	block_chance = 10
+	armour_penetration = 10
+	sharpness = SHARP_NONE
+	attack_verb_continuous = list("slashes", "cuts")
+	attack_verb_simple = list("slash", "cut")
+	hitsound = 'sound/weapons/rapierhit.ogg'
+	wound_bonus = 0
+	bare_wound_bonus = 0
+	resistance_flags = FIRE_PROOF
+	masquerade_violating = TRUE
+
+/obj/item/melee/vampirearms/tzimisce/shock
+	name = "electrocyte whip"
+	desc = "An elongated tendril covered with electricity generating cells."
+	icon = 'code/modules/wod13/weapons.dmi'
+	icon_state = "lasombra"
+	damtype = BURN
+	force = 8
+	w_class = WEIGHT_CLASS_BULKY
+	block_chance = 10
+	armour_penetration = 10
+	sharpness = SHARP_NONE
+	attack_verb_continuous = list("slashes", "cuts")
+	attack_verb_simple = list("slash", "cut")
+	hitsound = 'sound/weapons/rapierhit.ogg'
+	wound_bonus = 0
+	bare_wound_bonus = 0
+	resistance_flags = FIRE_PROOF
+	masquerade_violating = TRUE
+
+/obj/item/melee/vampirearms/tzimisce/shock/afterattack(atom/target, mob/living/carbon/user, proximity)
+	if(!proximity)
+		return
+	if(isliving(target))
+		var/mob/living/L = target
+		L.adjustStaminaLoss(50)
+		L.Jitter(20)
+	return ..()

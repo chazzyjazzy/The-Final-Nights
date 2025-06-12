@@ -268,7 +268,7 @@
 	worn_icon = 'code/modules/wod13/worn.dmi'
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	icon_state = "glock21"
-	ammo_type = /obj/item/ammo_casing/vampire/c9mm
+	ammo_type = /obj/item/ammo_casing/vampire/c45acp
 	caliber = CALIBER_45
 	max_ammo = 12
 	multiple_sprites = AMMO_BOX_FULL_EMPTY
@@ -330,7 +330,7 @@
 	icon_state = "beretta_toreador"
 	inhand_icon_state = "beretta_toreador"
 	worn_icon_state = "beretta"
-	projectile_damage_multiplier = 2.5
+	projectile_damage_multiplier = 2
 	fire_sound_volume = 110
 	cost = 666
 
@@ -410,6 +410,38 @@
 	rack_sound = 'sound/weapons/gun/pistol/slide_lock.ogg'
 	fire_sound = 'code/modules/wod13/sounds/mp5.ogg'
 	cost = 200
+
+/obj/item/ammo_box/magazine/vamp46mp7
+	name = "mp7 magazine (4.6mm)"
+	icon = 'code/modules/wod13/ammo.dmi'
+//	lefthand_file = 'code/modules/wod13/righthand.dmi'
+//	righthand_file = 'code/modules/wod13/lefthand.dmi'
+	worn_icon = 'code/modules/wod13/worn.dmi'
+	onflooricon = 'code/modules/wod13/onfloor.dmi'
+	icon_state = "mp7"
+	ammo_type = /obj/item/ammo_casing/vampire/c46mm
+	caliber = CALIBER_46
+	max_ammo = 40
+	multiple_sprites = AMMO_BOX_FULL_EMPTY
+
+/obj/item/gun/ballistic/automatic/vampire/mp7
+	name = "\improper HK MP7"
+	desc = "A lightweight, burst-fire submachine gun. Uses 4.6mm."
+	icon_state = "mp7"
+	icon = 'code/modules/wod13/48x32weapons.dmi'
+	inhand_icon_state = "mp7"
+	worn_icon_state = "mp7"
+	mag_type = /obj/item/ammo_box/magazine/vamp46mp7
+	burst_size = 4
+	spread = 2
+	recoil = 1
+	fire_delay = 1
+	bolt_type = BOLT_TYPE_LOCKING
+	show_bolt_icon = FALSE
+	mag_display = TRUE
+	rack_sound = 'sound/weapons/gun/pistol/slide_lock.ogg'
+	fire_sound = 'code/modules/wod13/sounds/mp5.ogg'
+	cost = 250
 
 /obj/item/ammo_box/magazine/vamp556
 	name = "carbine magazine (5.56mm)"
@@ -605,7 +637,7 @@
 	zoom_amt = 10 //Long range, enough to see in front of you, but no tiles behind you.
 	zoom_out_amt = 5
 	slot_flags = ITEM_SLOT_BACK
-	projectile_damage_multiplier = 2 //140 damage. Nice.
+	projectile_damage_multiplier = 2.2 //154 damage. Nice.
 	actions_types = list()
 	masquerade_violating = TRUE
 	cost = 250

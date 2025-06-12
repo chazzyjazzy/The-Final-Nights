@@ -306,7 +306,7 @@
 	var/dry = FALSE
 
 /obj/structure/flora/ausbushes/tallgrass/dry
-	icon_state = "dry_tallgrass_1"
+	icon_state = "drytallgrass_1"
 	dry = TRUE
 
 /obj/structure/flora/ausbushes/tallgrass/Initialize()
@@ -347,7 +347,7 @@
 
 	/// Can this plant be trimmed by someone with TRAIT_BONSAI
 	var/trimmable = TRUE
-	var/list/static/random_plant_states
+	var/static/list/random_plant_states
 
 /obj/item/kirbyplants/ComponentInitialize()
 	. = ..()

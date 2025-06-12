@@ -11,7 +11,7 @@
 	if(damage_type == BURN)//the stickiness of the web mutes all attack sounds except fire damage type
 		playsound(loc, 'sound/items/welder.ogg', 100, TRUE)
 
-/obj/structure/spider/run_obj_armor(damage_amount, damage_type, damage_flag = 0, attack_dir)
+/obj/structure/spider/run_atom_armor(damage_amount, damage_type, damage_flag = 0, attack_dir)
 	if(damage_flag == MELEE)
 		switch(damage_type)
 			if(BURN)
@@ -115,7 +115,7 @@
 		spider_list[initial(spider.name)] = choice
 		var/image/spider_image = image(icon = initial(spider.icon), icon_state = initial(spider.icon_state))
 		display_spiders += list(initial(spider.name) = spider_image)
-	sortList(display_spiders)
+	sort_list(display_spiders)
 	var/chosen_spider = show_radial_menu(user, src, display_spiders, radius = 38, require_near = TRUE)
 	chosen_spider = spider_list[chosen_spider]
 	if(QDELETED(src) || QDELETED(user) || !chosen_spider)

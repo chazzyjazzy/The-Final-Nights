@@ -1,7 +1,3 @@
-#define ALCOHOL_THRESHOLD_MODIFIER 1 //Greater numbers mean that less alcohol has greater intoxication potential
-#define ALCOHOL_RATE 0.005 //The rate at which alcohol affects you
-#define ALCOHOL_EXPONENT 1.6 //The exponent applied to boozepwr to make higher volume alcohol at least a little bit damaging to the liver
-
 ////////////// I don't know who made this header before I refactored alcohols but I'm going to fucking strangle them because it was so ugly, holy Christ
 // ALCOHOLS //
 //////////////
@@ -302,8 +298,6 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	glass_icon_state = "wineglass"
 	glass_name = "glass of wine"
 	glass_desc = "A very classy looking drink."
-	shot_glass_icon_state = "shotglassred"
-	empty_glass_icon_state = "wine_glass"
 
 /datum/reagent/consumable/ethanol/wine/wine_glass
 	name = "red wine"

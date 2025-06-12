@@ -1,10 +1,3 @@
-#define ROTATION_ALTCLICK			(1<<0)
-#define ROTATION_WRENCH				(1<<1)
-#define ROTATION_VERBS				(1<<2)
-#define ROTATION_COUNTERCLOCKWISE	(1<<3)
-#define ROTATION_CLOCKWISE			(1<<4)
-#define ROTATION_FLIP				(1<<5)
-
 /datum/component/simple_rotation
 	var/datum/callback/can_user_rotate //Checks if user can rotate
 	var/datum/callback/can_be_rotated  //Check if object can be rotated at all
@@ -76,7 +69,7 @@
 	add_signals()
 	. = ..()
 
-/datum/component/simple_rotation/PostTransfer()
+/datum/component/simple_rotation/PostTransfer(datum/new_parent)
 	//Because of the callbacks which we don't track cleanly we can't transfer this
 	//item cleanly, better to let the new of the new item create a new rotation datum
 	//instead (there's no real state worth transferring)
@@ -92,10 +85,6 @@
 	QDEL_NULL(can_be_rotated)
 	QDEL_NULL(after_rotation)
 	//Signals + verbs removed via UnRegister
-	. = ..()
-
-/datum/component/simple_rotation/RemoveComponent()
-	remove_verbs()
 	. = ..()
 
 /datum/component/simple_rotation/proc/ExamineMessage(datum/source, mob/user, list/examine_list)

@@ -70,7 +70,7 @@
 	. = ..()
 	GLOB.allCasters += src
 	GLOB.allbountyboards += src
-	update_icon()
+	update_appearance()
 
 /obj/machinery/newscaster/Destroy()
 	GLOB.allCasters -= src
@@ -102,7 +102,7 @@
 			. += mutable_appearance(icon, "[base_icon_state]_alert")
 		//	. += emissive_appearance(icon, "[base_icon_state]_alert", src, alpha = src.alpha,)
 
-	var/hp_percent = obj_integrity * 100 / max_integrity
+	var/hp_percent = atom_integrity * 100 / max_integrity
 	switch(hp_percent)
 		if(75 to 100)
 			return
@@ -123,7 +123,7 @@
 		ui = new(user, src, "PhysicalNewscaster", name)
 		ui.open()
 	alert = FALSE //We're checking our messages!
-	update_icon()
+	update_appearance()
 
 /obj/machinery/newscaster/ui_data(mob/user)
 	var/list/data = list()
@@ -398,7 +398,7 @@
 		if("toggleWanted")
 			alert = FALSE
 			viewing_wanted = TRUE
-			update_icon()
+			update_appearance()
 			return TRUE
 
 		if("setCriminalName")
@@ -425,7 +425,7 @@
 		if("clearWantedIssue")
 			clear_wanted_issue(user = usr)
 			for(var/obj/machinery/newscaster/other_newscaster in GLOB.allCasters)
-				other_newscaster.update_icon()
+				other_newscaster.update_appearance()
 				return TRUE
 
 		if("printNewspaper")
@@ -470,7 +470,7 @@
 
 /obj/machinery/newscaster/on_set_machine_stat(old_value)
 	. = ..()
-	update_icon()
+	update_appearance()
 
 /obj/machinery/newscaster/attackby(obj/item/attacking_item, mob/living/user, params)
 	if(istype(attacking_item, /obj/item/paper))
@@ -501,7 +501,7 @@
 		user.balloon_alert_to_viewers("stopped welding!", "interrupted the repair!")
 		return
 	user.balloon_alert_to_viewers("repaired [src]")
-	obj_integrity = max_integrity
+	atom_integrity = max_integrity
 	set_machine_stat(machine_stat & ~BROKEN)
 
 /obj/machinery/newscaster/wrench_act(mob/living/user, obj/item/tool)
@@ -536,7 +536,7 @@
 	new /obj/item/shard(loc)
 	new /obj/item/shard(loc)
 
-/obj/machinery/newscaster/obj_break(damage_flag)
+/obj/machinery/newscaster/atom_break(damage_flag)
 	. = ..()
 	if(.)
 		playsound(loc, 'sound/effects/glassbr3.ogg', 100, TRUE)
@@ -550,7 +550,7 @@
 
 /obj/machinery/newscaster/take_damage(damage_amount, damage_type = BRUTE, damage_flag = 0, sound_effect = 1, attack_dir)
 	. = ..()
-	update_icon()
+	update_appearance()
 
 /**
  * Sends photo data to build the newscaster article.
@@ -611,7 +611,7 @@
  */
 /obj/machinery/newscaster/proc/remove_alert()
 	alert = FALSE
-	update_icon()
+	update_appearance()
 
 /**
  * When a new feed message is made that will alert all newscasters, this causes the newscasters to sent out a spoken message as well as create a sound.
@@ -622,7 +622,7 @@
 			say("Breaking news from [channel]!")
 			playsound(loc, 'sound/machines/twobeep_high.ogg', 75, TRUE)
 		alert = TRUE
-		update_icon()
+		update_appearance()
 		addtimer(CALLBACK(src, PROC_REF(remove_alert)), ALERT_DELAY, TIMER_UNIQUE|TIMER_OVERRIDE)
 
 	else if(!channel && update_alert)

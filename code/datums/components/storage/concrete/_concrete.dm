@@ -47,13 +47,13 @@
 			_contents_limbo += AM
 			AM.moveToNullspace()
 
-/datum/component/storage/concrete/PostTransfer()
-	if(!isatom(parent))
+/datum/component/storage/concrete/PostTransfer(datum/new_parent)
+	if(!isatom(new_parent))
 		return COMPONENT_INCOMPATIBLE
 	if(transfer_contents_on_component_transfer)
 		for(var/i in _contents_limbo)
 			var/atom/movable/AM = i
-			AM.forceMove(parent)
+			AM.forceMove(new_parent)
 		_contents_limbo = null
 	if(_user_limbo)
 		for(var/i in _user_limbo)
@@ -139,7 +139,7 @@
 	refresh_mob_views()
 	if(isobj(parent))
 		var/obj/O = parent
-		O.update_icon()
+		O.update_appearance()
 	return TRUE
 
 /datum/component/storage/concrete/proc/slave_can_insert_object(datum/component/storage/slave, obj/item/I, stop_messages = FALSE, mob/M)
@@ -189,13 +189,13 @@
 			parent.add_fingerprint(M)
 			if(!prevent_warning)
 				mob_item_insertion_feedback(usr, M, I)
-	update_icon()
+	update_appearance()
 	return TRUE
 
-/datum/component/storage/concrete/update_icon()
+/datum/component/storage/concrete/update_appearance()
 	if(isobj(parent))
 		var/obj/O = parent
-		O.update_icon()
+		O.update_appearance()
 	for(var/i in slaves)
 		var/datum/component/storage/slave = i
-		slave.update_icon()
+		slave.update_appearance()

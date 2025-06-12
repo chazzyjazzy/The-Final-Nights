@@ -42,25 +42,36 @@
 
 /obj/projectile/beam/beam_rifle/vampire/vamp9mm
 	name = "9mm bullet"
-	damage = 14
+	damage = 20
 	bare_wound_bonus = 10
 
 /obj/projectile/beam/beam_rifle/vampire/vamp9mm/plus
 	name = "9mm HV bullet"
-	damage = 17
+	damage = 23
 	armour_penetration = 10
 
 /obj/projectile/beam/beam_rifle/vampire/vamp45acp
 	name = ".45 ACP bullet"
-	damage = 18
-	armour_penetration = 2
+	damage = 24
+
+/obj/projectile/beam/beam_rifle/vampire/vamp45acp/HP
+	name = "45acp hollow point bullet"
+	damage = 25
+	armour_penetration = 0
+	bare_wound_bonus = 5
+	wound_bonus = 5
 
 /obj/projectile/beam/beam_rifle/vampire/vamp44
 	name = ".44 bullet"
-	damage = 20
+	damage = 30
 	armour_penetration = 15
 	bare_wound_bonus = -5
 	wound_bonus = 10
+
+/obj/projectile/beam/beam_rifle/vampire/vamp46mm
+	name = "4.6mm"
+	damage = 18
+	armour_penetration = 35
 
 /obj/projectile/beam/beam_rifle/vampire/vamp50
 	name = ".50 bullet"
@@ -71,21 +82,21 @@
 
 /obj/projectile/beam/beam_rifle/vampire/vamp556mm
 	name = "5.56mm bullet"
-	damage = 35
+	damage = 40
 	armour_penetration = 25
 	bare_wound_bonus = -5
 	wound_bonus = 5
 
 /obj/projectile/beam/beam_rifle/vampire/vamp545mm
 	name = "5.45mm bullet"
-	damage = 35
+	damage = 40
 	armour_penetration = 30
 	bare_wound_bonus = 5
 	wound_bonus = -5
 
 /obj/projectile/beam/beam_rifle/vampire/vamp12g
 	name = "12g shotgun slug"
-	damage = 60
+	damage = 70
 	armour_penetration = 15
 	bare_wound_bonus = 10
 	wound_bonus = 5
@@ -105,7 +116,7 @@
 
 /obj/projectile/beam/beam_rifle/vampire/shotpellet
 	name = "12g shotgun pellet"
-	damage = 8
+	damage = 10
 	range = 22 //range of where you can see + one screen after
 	armour_penetration = 15
 	bare_wound_bonus = 5
@@ -120,12 +131,12 @@
 /obj/projectile/beam/beam_rifle/vampire/vamp556mm/incendiary
 	armour_penetration = 0
 	damage = 35
-	var/fire_stacks = 4
+	var/fire_stacks = 2 //These always come in guns that fire in bursts.
 
 /obj/projectile/beam/beam_rifle/vampire/vamp556mm/incendiary/on_hit(atom/target, blocked = FALSE)
 	if(iscarbon(target))
 		var/mob/living/carbon/M = target
-		M.adjust_fire_stacks(fire_stacks)
+		M.adjust_fire_stacks(fire_stacks, 5) //No more than one roll.
 		M.IgniteMob()
 
 /obj/projectile/bullet/crossbow_bolt
@@ -160,6 +171,9 @@
 	icon_state = "45"
 	base_iconstate = "45"
 
+/obj/item/ammo_casing/vampire/c45acp/HP
+	projectile_type = /obj/projectile/beam/beam_rifle/vampire/vamp45acp/HP
+
 /obj/item/ammo_casing/vampire/c44
 	name = ".44 bullet casing"
 	desc = "A .44 bullet casing."
@@ -167,6 +181,14 @@
 	projectile_type = /obj/projectile/beam/beam_rifle/vampire/vamp44
 	icon_state = "44"
 	base_iconstate = "44"
+
+/obj/item/ammo_casing/vampire/c46mm
+	name = "4.6mm bullet casing"
+	desc = "A 4.6mm bullet casing."
+	caliber = CALIBER_46
+	projectile_type = /obj/projectile/beam/beam_rifle/vampire/vamp46mm
+	icon_state = "46"
+	base_iconstate = "46"
 
 /obj/item/ammo_casing/vampire/c50
 	name = ".50 bullet casing"
@@ -236,10 +258,22 @@
 	multiple_sprites = AMMO_BOX_PER_BULLET
 
 //////////////////
+
+/obj/item/ammo_box/vampire/c46mm
+	name = "ammo box (4.6X30mm)"
+	icon_state = "46box"
+	ammo_type = /obj/item/ammo_casing/vampire/c46mm
+	max_ammo = 120
+
 /obj/item/ammo_box/vampire/c45acp
 	name = "ammo box (.45 ACP)"
 	icon_state = "45box"
 	ammo_type = /obj/item/ammo_casing/vampire/c45acp
+	max_ammo = 100
+
+/obj/item/ammo_box/vampire/c45acp/HP
+	name = "ammo box (.45 ACP HP)"
+	ammo_type = /obj/item/ammo_casing/vampire/c45acp/HP
 	max_ammo = 100
 
 /obj/item/ammo_box/vampire/c44
@@ -333,7 +367,7 @@
 
 /obj/projectile/beam/beam_rifle/vampire/vamp44/silver
 	name = ".44 silver bullet"
-	icon_state = "s44"
+	icon_state = "44"
 
 /obj/projectile/beam/beam_rifle/vampire/vamp44/silver/on_hit(atom/target, blocked = FALSE)
 	. = ..()
@@ -350,8 +384,8 @@
 	name = "9mm silver bullet casing"
 	desc = "A 9mm silver bullet casing."
 	projectile_type = /obj/projectile/beam/beam_rifle/vampire/vamp9mm/silver
-	icon_state = "s9"
-	base_iconstate = "s9"
+	icon_state = "9"
+	base_iconstate = "9"
 
 /obj/item/ammo_casing/vampire/c45acp/silver
 	name = ".45 ACP silver bullet casing"
@@ -362,15 +396,15 @@
 	name = ".44 silver bullet casing"
 	desc = "A .44 silver bullet casing."
 	projectile_type = /obj/projectile/beam/beam_rifle/vampire/vamp44/silver
-	icon_state = "s44"
-	base_iconstate = "s44"
+	icon_state = "44"
+	base_iconstate = "44"
 
 /obj/item/ammo_casing/vampire/c556mm/silver
 	name = "5.56mm silver bullet casing"
 	desc = "A 5.56mm silver bullet casing."
 	projectile_type = /obj/projectile/beam/beam_rifle/vampire/vamp556mm/silver
-	icon_state = "s556"
-	base_iconstate = "s556"
+	icon_state = "556"
+	base_iconstate = "556"
 
 /obj/item/ammo_box/vampire/c9mm/silver
 	name = "ammo box (9mm silver)"

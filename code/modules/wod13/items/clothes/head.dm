@@ -149,6 +149,7 @@
 	dynamic_hair_suffix = ""
 	dynamic_fhair_suffix = ""
 	armor = list(MELEE = 40, BULLET = 40, LASER = 40, ENERGY = 40, BOMB = 20, BIO = 0, RAD = 0, FIRE = 20, ACID = 40, WOUND = 25)
+	max_heat_protection_temperature = ARMOR_MAX_TEMP_PROTECT
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 //	clothing_traits = list(TRAIT_UNMASQUERADE)
 	masquerade_violating = TRUE
@@ -185,16 +186,17 @@
 	masquerade_violating = TRUE
 
 /obj/item/clothing/head/vampire/hardhat
-    name = "construction helmet"
-    desc = "A thermoplastic hard helmet used to protect the head from injury."
-    icon_state = "hardhat"
-    armor = list(MELEE = 20, BULLET = 5, LASER = 0, ENERGY = 0, BOMB = 10, BIO = 0, RAD = 0, FIRE = 5, ACID = 0, WOUND = 15)
+	name = "construction helmet"
+	desc = "A thermoplastic hard helmet used to protect the head from injury."
+	icon_state = "hardhat"
+	armor = list(MELEE = 20, BULLET = 5, LASER = 0, ENERGY = 0, BOMB = 10, BIO = 0, RAD = 0, FIRE = 5, ACID = 0, WOUND = 15)
 
 /obj/item/clothing/head/vampire/eod
 	name = "EOD helmet"
 	desc = "Looks dangerous. Provides best protection against nearly everything."
 	icon_state = "bomb"
 	armor = list(MELEE = 70, BULLET = 70, LASER = 90, ENERGY = 90, BOMB = 100, BIO = 0, RAD = 0, FIRE = 50, ACID = 90, WOUND = 40)
+	heat_protection = HEAD
 	flags_inv = HIDEMASK|HIDEEARS|HIDEEYES|HIDEHAIR
 	clothing_flags = NO_HAT_TRICKS|SNUG_FIT
 	dynamic_hair_suffix = ""

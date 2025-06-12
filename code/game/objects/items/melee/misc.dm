@@ -500,18 +500,18 @@
 			held_sausage = target
 		else
 			to_chat(user, "<span class='warning'>[target] doesn't seem to want to get on [src]!</span>")
-	update_icon()
+	update_appearance()
 
 /obj/item/melee/roastingstick/attack_hand(mob/user)
 	..()
 	if (held_sausage)
 		user.put_in_hands(held_sausage)
 		held_sausage = null
-	update_icon()
+	update_appearance()
 
 /obj/item/melee/roastingstick/update_overlays()
 	. = ..()
-	if (held_sausage)
+	if(held_sausage)
 		. += mutable_appearance(icon, "roastingstick_sausage")
 
 /obj/item/melee/roastingstick/proc/extend(user)
@@ -529,7 +529,7 @@
 /obj/item/melee/roastingstick/handle_atom_del(atom/target)
 	if (target == held_sausage)
 		held_sausage = null
-		update_icon()
+		update_appearance()
 
 /obj/item/melee/roastingstick/afterattack(atom/target, mob/user, proximity)
 	. = ..()
@@ -556,18 +556,16 @@
 	held_sausage.add_atom_colour(rgb(103,63,24), FIXED_COLOUR_PRIORITY)
 	held_sausage.name = "[target.name]-roasted [held_sausage.name]"
 	held_sausage.desc = "[held_sausage.desc] It has been cooked to perfection on \a [target]."
-	update_icon()
+	update_appearance()
 
 /obj/item/melee/cleric_mace
 	name = "cleric mace"
 	desc = "The grandson of the club, yet the grandfather of the baseball bat. Most notably used by holy orders in days past."
-	icon = 'icons/obj/items_and_weapons.dmi'
-	icon_state = "mace_greyscale"
-	inhand_icon_state = "mace_greyscale"
-	worn_icon_state = "mace"
-	lefthand_file = 'icons/mob/inhands/weapons/melee_lefthand.dmi'
-	righthand_file = 'icons/mob/inhands/weapons/melee_righthand.dmi'
-	material_flags = MATERIAL_ADD_PREFIX | MATERIAL_COLOR | MATERIAL_AFFECT_STATISTICS //Material type changes the prefix as well as the color.
+	icon = 'icons/obj/items/cleric_mace.dmi'
+	icon_state = "default"
+	inhand_icon_state = "default"
+	worn_icon_state = "default_worn"
+	material_flags = MATERIAL_ADD_PREFIX | MATERIAL_GREYSCALE | MATERIAL_AFFECT_STATISTICS //Material type changes the prefix as well as the color.
 	custom_materials = list(/datum/material/iron = 12000)  //Defaults to an Iron Mace.
 	slot_flags = ITEM_SLOT_BELT
 	force = 14
@@ -577,11 +575,3 @@
 	armour_penetration = 50
 	attack_verb_continuous = list("smacks", "strikes", "cracks", "beats")
 	attack_verb_simple = list("smack", "strike", "crack", "beat")
-	var/overlay_state = "mace_handle"
-	var/mutable_appearance/overlay
-
-/obj/item/melee/cleric_mace/Initialize()
-	. = ..()
-	overlay = mutable_appearance(icon, overlay_state)
-	overlay.appearance_flags = RESET_COLOR | RESET_ALPHA | KEEP_APART
-	add_overlay(overlay)

@@ -62,7 +62,7 @@
 	idle_threads = list()
 	if(looping_sound)
 		soundloop = new(list(src), enabled)
-	update_icon()
+	update_appearance()
 
 /obj/item/modular_computer/Destroy()
 	kill_program(forced = TRUE)
@@ -160,30 +160,25 @@
 
 /obj/item/modular_computer/examine(mob/user)
 	. = ..()
-	if(obj_integrity <= integrity_failure * max_integrity)
-		. += "<span class='danger'>It is heavily damaged!</span>"
-	else if(obj_integrity < max_integrity)
-		. += "<span class='warning'>It is damaged.</span>"
+	if(atom_integrity <= integrity_failure * max_integrity)
+		. += span_danger("It is heavily damaged!")
+	else if(atom_integrity < max_integrity)
+		. += span_warning("It is damaged.")
 
 	. += get_modular_computer_parts_examine(user)
 
 /obj/item/modular_computer/update_icon_state()
-	if(!enabled)
-		icon_state = icon_state_unpowered
-	else
-		icon_state = icon_state_powered
+	icon_state = enabled ? icon_state_powered : icon_state_unpowered
+	return ..()
 
 /obj/item/modular_computer/update_overlays()
 	. = ..()
 	if(!display_overlays)
 		return
-	if(enabled)
-		if(active_program)
-			. += active_program.program_icon_state ? active_program.program_icon_state : icon_state_menu
-		else
-			. += icon_state_menu
 
-	if(obj_integrity <= integrity_failure * max_integrity)
+	if(enabled)
+		. += active_program?.program_icon_state || icon_state_menu
+	if(atom_integrity <= integrity_failure * max_integrity)
 		. += "bsod"
 		. += "broken"
 
@@ -197,7 +192,7 @@
 
 /obj/item/modular_computer/proc/turn_on(mob/user)
 	var/issynth = issilicon(user) // Robots and AIs get different activation messages.
-	if(obj_integrity <= integrity_failure * max_integrity)
+	if(atom_integrity <= integrity_failure * max_integrity)
 		if(issynth)
 			to_chat(user, "<span class='warning'>You send an activation signal to \the [src], but it responds with an error code. It must be damaged.</span>")
 		else
@@ -217,7 +212,7 @@
 		if(looping_sound)
 			soundloop.start()
 		enabled = 1
-		update_icon()
+		update_appearance()
 		ui_interact(user)
 		return TRUE
 	else // Unpowered
@@ -233,7 +228,7 @@
 		last_power_usage = 0
 		return
 
-	if(obj_integrity <= integrity_failure * max_integrity)
+	if(atom_integrity <= integrity_failure * max_integrity)
 		shutdown_computer()
 		return
 
@@ -353,7 +348,7 @@
 	var/mob/user = usr
 	if(user && istype(user))
 		ui_interact(user) // Re-open the UI on this computer. It should show the main screen now.
-	update_icon()
+	update_appearance()
 
 // Returns 0 for No Signal, 1 for Low Signal and 2 for Good Signal. 3 is for wired connection (always-on)
 /obj/item/modular_computer/proc/get_ntnet_status(specific_action = 0)
@@ -380,7 +375,7 @@
 	if(loud)
 		physical.visible_message("<span class='notice'>\The [src] shuts down.</span>")
 	enabled = 0
-	update_icon()
+	update_appearance()
 
 /**
  * Toggles the computer's flashlight, if it has one.
@@ -423,7 +418,7 @@
 		var/obj/item/computer_hardware/H = all_components[h]
 		component_names.Add(H.name)
 
-	var/choice = input(user, "Which component do you want to uninstall?", "Computer maintenance", null) as null|anything in sortList(component_names)
+	var/choice = input(user, "Which component do you want to uninstall?", "Computer maintenance", null) as null|anything in sort_list(component_names)
 
 	if(!choice)
 		return
@@ -467,8 +462,8 @@
 		return
 
 	if(W.tool_behaviour == TOOL_WELDER)
-		if(obj_integrity == max_integrity)
-			to_chat(user, "<span class='warning'>\The [src] does not require repairs.</span>")
+		if(atom_integrity == max_integrity)
+			to_chat(user, span_warning("\The [src] does not require repairs."))
 			return
 
 		if(!W.tool_start_check(user, amount=1))
@@ -476,8 +471,8 @@
 
 		to_chat(user, "<span class='notice'>You begin repairing damage to \the [src]...</span>")
 		if(W.use_tool(src, user, 20, volume=50, amount=1))
-			obj_integrity = max_integrity
-			to_chat(user, "<span class='notice'>You repair \the [src].</span>")
+			atom_integrity = max_integrity
+			to_chat(user, span_notice("You repair \the [src]."))
 		return
 
 	..()

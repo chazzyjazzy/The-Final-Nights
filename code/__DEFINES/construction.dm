@@ -60,9 +60,6 @@
 
 //other construction-related things
 
-//windows affected by Nar'Sie turn this color.
-#define NARSIE_WINDOW_COLOUR "#7D1919"
-
 //The amount of materials you get from a sheet of mineral like iron/diamond/glass etc
 #define MINERAL_MATERIAL_AMOUNT 2000
 //The maximum size of a stack object.
@@ -112,9 +109,14 @@
 #define RCD_UPGRADE_SILO_LINK (1<<2)
 #define RCD_UPGRADE_FURNISHING (1<<3)
 
-#define RPD_UPGRADE_UNWRENCH (1<<0)
-
 #define RCD_WINDOW_FULLTILE "full tile"
 #define RCD_WINDOW_DIRECTIONAL "directional"
 #define RCD_WINDOW_NORMAL "glass"
 #define RCD_WINDOW_REINFORCED "reinforced glass"
+
+//Migrated from components/construction.dm due to widespread use outside of local file
+#define FORWARD 1
+#define BACKWARD -1
+
+#define ITEM_DELETE "delete"
+#define ITEM_MOVE_INSIDE "move_inside"

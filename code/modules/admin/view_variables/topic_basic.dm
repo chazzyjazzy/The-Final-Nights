@@ -21,6 +21,7 @@
 						var/mob/living/L = target
 						if(istype(L))
 							vv_update_display(target, "real_name", L.real_name || "No real name")
+
 			if(href_list[VV_HK_BASIC_CHANGE])
 				modify_variables(target, target_var, 0)
 			if(href_list[VV_HK_BASIC_MASSEDIT])
@@ -63,11 +64,11 @@
 		if(!check_rights(NONE))
 			return
 		var/list/names = list()
-		var/list/componentsubtypes = sortList(subtypesof(/datum/component), GLOBAL_PROC_REF(cmp_typepaths_asc))
+		var/list/componentsubtypes = sort_list(subtypesof(/datum/component), GLOBAL_PROC_REF(cmp_typepaths_asc))
 		names += "---Components---"
 		names += componentsubtypes
 		names += "---Elements---"
-		names += sortList(subtypesof(/datum/element), GLOBAL_PROC_REF(cmp_typepaths_asc))
+		names += sort_list(subtypesof(/datum/element), GLOBAL_PROC_REF(cmp_typepaths_asc))
 		var/result = input(usr, "Choose a component/element to add","better know what ur fuckin doin pal") as null|anything in names
 		if(!usr || !result || result == "---Components---" || result == "---Elements---")
 			return
@@ -87,6 +88,11 @@
 			target._AddElement(lst)
 		log_admin("[key_name(usr)] has added [result] [datumname] to [key_name(target)].")
 		message_admins("<span class='notice'>[key_name_admin(usr)] has added [result] [datumname] to [key_name_admin(target)].</span>")
+	if(href_list[VV_HK_MODIFY_GREYSCALE])
+		if(!check_rights(NONE))
+			return
+		var/datum/greyscale_modify_menu/menu = new(target, usr, SSgreyscale.configurations, unlocked = TRUE)
+		menu.ui_interact(usr)
 	if(href_list[VV_HK_CALLPROC])
 		usr.client.callproc_datum(target)
 

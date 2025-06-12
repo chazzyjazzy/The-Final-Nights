@@ -29,7 +29,7 @@
 /obj/vehicle/ridden/wheelchair/motorized/get_cell()
 	return power_cell
 
-/obj/vehicle/ridden/wheelchair/motorized/obj_destruction(damage_flag)
+/obj/vehicle/ridden/wheelchair/motorized/atom_destruction(damage_flag)
 	var/turf/T = get_turf(src)
 	for(var/c in contents)
 		var/atom/movable/thing = c
@@ -60,7 +60,7 @@
 /obj/vehicle/ridden/wheelchair/motorized/attack_hand(mob/living/user)
 	if(!power_cell || !panel_open)
 		return ..()
-	power_cell.update_icon()
+	power_cell.update_appearance()
 	to_chat(user, "<span class='notice'>You remove [power_cell] from [src].</span>")
 	user.put_in_hands(power_cell)
 	power_cell = null

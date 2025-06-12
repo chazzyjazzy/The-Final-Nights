@@ -444,7 +444,7 @@ Difficulty: Hard
 		wander = TRUE
 		did_reset = FALSE
 
-/mob/living/simple_animal/hostile/megafauna/hierophant/AttackingTarget()
+/mob/living/simple_animal/hostile/megafauna/hierophant/AttackingTarget(atom/attacked_target)
 	if(!blinking)
 		if(target && isliving(target))
 			var/mob/living/L = target
@@ -741,7 +741,7 @@ Difficulty: Hard
 				new /obj/effect/temp_visual/hierophant/telegraph/teleport(get_turf(src), user)
 				to_chat(user, "<span class='hierophant_warning'>You collect [src], reattaching it to the club!</span>")
 				H.beacon = null
-				H.update_icon()
+				H.update_appearance()
 				user.update_action_buttons_icon()
 				qdel(src)
 		else

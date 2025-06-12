@@ -12,7 +12,7 @@
 
 /obj/machinery/plumbing/growing_vat/create_reagents(max_vol, flags)
 	. = ..()
-	RegisterSignal(reagents, list(COMSIG_REAGENTS_NEW_REAGENT, COMSIG_REAGENTS_ADD_REAGENT, COMSIG_REAGENTS_DEL_REAGENT, COMSIG_REAGENTS_REM_REAGENT), PROC_REF(on_reagent_change))
+	RegisterSignals(reagents, list(COMSIG_REAGENTS_NEW_REAGENT, COMSIG_REAGENTS_ADD_REAGENT, COMSIG_REAGENTS_DEL_REAGENT, COMSIG_REAGENTS_REM_REAGENT), PROC_REF(on_reagent_change))
 	RegisterSignal(reagents, COMSIG_PARENT_QDELETING, PROC_REF(on_reagents_del))
 
 /// Handles properly detaching signal hooks.
@@ -57,7 +57,7 @@
 	biological_sample.sample_color = petri.sample.sample_color
 	to_chat(user, "<span class='warning'>You put some of the sample in the vat!</span>")
 	playsound(src, 'sound/effects/bubbles.ogg', 50, TRUE)
-	update_icon()
+	update_appearance()
 
 ///Adds text for when there is a sample in the vat
 /obj/machinery/plumbing/growing_vat/examine(mob/user)
@@ -76,7 +76,7 @@
 /// Call update icon when reagents change to update the reagent content icons. Eats signal args.
 /obj/machinery/plumbing/growing_vat/proc/on_reagent_change(datum/reagents/holder, ...)
 	SIGNAL_HANDLER
-	update_icon()
+	update_appearance()
 	return NONE
 
 ///Adds overlays to show the reagent contents

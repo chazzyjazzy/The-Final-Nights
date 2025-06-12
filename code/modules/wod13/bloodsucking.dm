@@ -7,7 +7,7 @@
 		if(src)
 			remove_overlay(BITE_LAYER)
 
-/proc/get_needed_difference_between_numbers(var/number1, var/number2)
+/proc/get_needed_difference_between_numbers(number1, number2)
 	if(number1 > number2)
 		return number1 - number2
 	else if(number1 < number2)
@@ -15,7 +15,9 @@
 	else
 		return 1
 
-/mob/living/carbon/human/proc/drinksomeblood(var/mob/living/mob)
+/mob/living/carbon/human/proc/drinksomeblood(mob/living/mob)
+	if(!mob)
+		return
 	var/bloodgain = max(1, mob.bloodquality-1)
 	var/fumbled = FALSE
 	last_drinkblood_use = world.time
@@ -98,6 +100,26 @@
 				playsound(get_turf(src), 'code/modules/wod13/sounds/vomit.ogg', 75, TRUE)
 				if(isturf(loc))
 					add_splatter_floor(loc)
+				stop_sound_channel(CHANNEL_BLOOD)
+				if(client)
+					client.images -= suckbar
+				qdel(suckbar)
+				return
+		if(HAS_TRAIT(src, TRAIT_ORGANOVORE))
+			mob.adjustBruteLoss(20, TRUE) // sharp teeth
+			to_chat(src, span_warning("You can't drink this disgusting <b>BLOOD</b>. Go find something meatier!"))
+			visible_message(span_danger("[src] throws up!"), span_userdanger("You throw up!"))
+			playsound(get_turf(src), 'code/modules/wod13/sounds/vomit.ogg', 75, TRUE)
+			if(isturf(loc))
+				add_splatter_floor(loc)
+			stop_sound_channel(CHANNEL_BLOOD)
+			if(client)
+				client.images -= suckbar
+			qdel(suckbar)
+			return
+		if(clane.name == "Salubri Warrior" && (ishumanbasic(mob) || isghoul(mob))) //passes by if it's not a supernatural
+			if( (!HAS_TRAIT_FROM(mob, TRAIT_INCAPACITATED, STAMINA)) && mob.stat < SOFT_CRIT) //Needs to be KO'd to feed on
+				to_chat(src, span_warning("I HAVE NOT BESTED THIS ONE IN COMBAT!! I FEED ON WARRIORS, NOT CATTLE!!"))
 				stop_sound_channel(CHANNEL_BLOOD)
 				if(client)
 					client.images -= suckbar
@@ -211,7 +233,6 @@
 			stop_sound_channel(CHANNEL_BLOOD)
 			drinksomeblood(mob)
 	else
-		last_drinkblood_use = 0
 		if(client)
 			client.images -= suckbar
 		qdel(suckbar)

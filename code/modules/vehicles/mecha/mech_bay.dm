@@ -54,17 +54,17 @@
 	if(!recharging_mech)
 		recharging_mech = locate(/obj/vehicle/sealed/mecha) in recharging_turf
 		if(recharging_mech)
-			recharge_console.update_icon()
+			recharge_console.update_appearance()
 	if(recharging_mech && recharging_mech.cell)
 		if(recharging_mech.cell.charge < recharging_mech.cell.maxcharge)
 			var/delta = min(recharge_power * delta_time, recharging_mech.cell.maxcharge - recharging_mech.cell.charge)
 			recharging_mech.give_power(delta)
 			use_power(delta*150)
 		else
-			recharge_console.update_icon()
+			recharge_console.update_appearance()
 		if(recharging_mech.loc != recharging_turf)
 			recharging_mech = null
-			recharge_console.update_icon()
+			recharge_console.update_appearance()
 
 
 /obj/machinery/mech_bay_recharge_port/attackby(obj/item/I, mob/user, params)
@@ -102,14 +102,14 @@
 		if("reconnect")
 			reconnect()
 			. = TRUE
-			update_icon()
+			update_appearance()
 
 /obj/machinery/computer/mech_bay_power_console/ui_data(mob/user)
 	var/list/data = list()
 	if(recharge_port && !QDELETED(recharge_port))
 		data["recharge_port"] = list("mech" = null)
 		if(recharge_port.recharging_mech && !QDELETED(recharge_port.recharging_mech))
-			data["recharge_port"]["mech"] = list("health" = recharge_port.recharging_mech.obj_integrity, "maxhealth" = recharge_port.recharging_mech.max_integrity, "cell" = null, "name" = recharge_port.recharging_mech.name,)
+			data["recharge_port"]["mech"] = list("health" = recharge_port.recharging_mech.get_integrity(), "maxhealth" = recharge_port.recharging_mech.max_integrity, "cell" = null, "name" = recharge_port.recharging_mech.name,)
 			if(recharge_port.recharging_mech.cell && !QDELETED(recharge_port.recharging_mech.cell))
 				data["recharge_port"]["mech"]["cell"] = list(
 				"charge" = recharge_port.recharging_mech.cell.charge,
@@ -137,7 +137,11 @@
 
 /obj/machinery/computer/mech_bay_power_console/update_overlays()
 	. = ..()
-	if(!recharge_port || !recharge_port.recharging_mech || !recharge_port.recharging_mech.cell || !(recharge_port.recharging_mech.cell.charge < recharge_port.recharging_mech.cell.maxcharge) || machine_stat & (NOPOWER|BROKEN))
+	if(machine_stat & (NOPOWER|BROKEN))
+		return
+	if(!recharge_port?.recharging_mech?.cell)
+		return
+	if(recharge_port.recharging_mech.cell.charge >= recharge_port.recharging_mech.cell.maxcharge)
 		return
 	. += "recharge_comp_on"
 

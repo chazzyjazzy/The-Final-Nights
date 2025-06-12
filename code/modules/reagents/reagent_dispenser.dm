@@ -22,7 +22,7 @@
 
 /obj/structure/reagent_dispensers/take_damage(damage_amount, damage_type = BRUTE, damage_flag = 0, sound_effect = 1, attack_dir)
 	. = ..()
-	if(. && obj_integrity > 0)
+	if(. && atom_integrity > 0)
 		if(tank_volume && (damage_flag == BULLET || damage_flag == LASER))
 			boom()
 
@@ -138,7 +138,9 @@
 	density = FALSE
 	reagent_id = /datum/reagent/consumable/condensedcapsaicin
 
-/obj/structure/reagent_dispensers/peppertank/Initialize()
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/reagent_dispensers/peppertank, 30)
+
+/obj/structure/reagent_dispensers/peppertank/Initialize(mapload)
 	. = ..()
 	if(prob(1))
 		desc = "IT'S PEPPER TIME, BITCH!"
@@ -194,6 +196,7 @@
 	density = FALSE
 	reagent_id = /datum/reagent/consumable/virus_food
 
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/reagent_dispensers/virusfood, 30)
 
 /obj/structure/reagent_dispensers/cooking_oil
 	name = "vat of cooking oil"

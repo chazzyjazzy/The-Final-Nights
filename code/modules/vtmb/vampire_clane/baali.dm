@@ -10,14 +10,12 @@
 	male_clothes = /obj/item/clothing/under/vampire/baali
 	female_clothes = /obj/item/clothing/under/vampire/baali/female
 	is_enlightened = TRUE
-	whitelisted = FALSE
+	whitelisted = TRUE
 	clan_keys = /obj/item/vamp/keys/baali
 
 /datum/vampireclane/baali/on_gain(mob/living/carbon/human/H)
 	..()
 	H.faction |= "Baali"
-	var/datum/brain_trauma/mild/phobia/security/religious_trauma = new()
-	H.gain_trauma(religious_trauma, TRAUMA_RESILIENCE_ABSOLUTE)
 
 /mob/living/simple_animal/hostile/baali_guard
 	name = "Infernal Creature"

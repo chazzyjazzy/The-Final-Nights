@@ -39,7 +39,7 @@
 
 /obj/item/card/data/Initialize()
 	.=..()
-	update_icon()
+	update_appearance()
 
 /obj/item/card/data/update_overlays()
 	. = ..()
@@ -88,6 +88,8 @@
 	var/uses_overlays = TRUE
 	var/icon/cached_flat_icon
 	var/registered_age = 13 // default age for ss13 players
+	/// Whether one can learn about the name registered to this ID at a glance.
+	var/registered_name_is_public = TRUE
 
 /obj/item/card/id/Initialize(mapload)
 	. = ..()
@@ -313,7 +315,7 @@
 		var/obj/item/storage/wallet/powergaming = loc
 		if(powergaming.front_id == src)
 			powergaming.update_label()
-			powergaming.update_icon()
+			powergaming.update_appearance()
 
 /obj/item/card/id/proc/get_cached_flat_icon()
 	if(!cached_flat_icon)
@@ -333,9 +335,9 @@ update_label()
 */
 
 /obj/item/card/id/proc/update_label()
-	var/blank = !registered_name
-	name = "[blank ? id_type_name : "[registered_name]'s"] [initial(name)]"
-	update_icon()
+	var/blank = !(registered_name && registered_name_is_public)
+	name = blank ? id_type_name : "[registered_name]'s [initial(name)]"
+	update_appearance()
 
 /obj/item/card/id/silver
 	name = "silver identification card"
@@ -513,7 +515,7 @@ update_label()
 /obj/item/card/id/captains_spare/update_label() //so it doesn't change to Captain's ID card (Captain) on a sneeze
 	if(registered_name == "Captain")
 		name = "[id_type_name][(!assignment || assignment == "Captain") ? "" : " ([assignment])"]"
-		update_icon()
+		update_appearance()
 	else
 		..()
 

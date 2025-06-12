@@ -46,19 +46,19 @@
 			playsound(user.loc, 'sound/effects/shieldbash.ogg', 50, TRUE)
 			cooldown = world.time
 	else if(istype(W, /obj/item/stack/sheet/mineral/titanium))
-		if (obj_integrity >= max_integrity)
-			to_chat(user, "<span class='warning'>[src] is already in perfect condition.</span>")
+		if (atom_integrity >= max_integrity)
+			to_chat(user, span_warning("[src] is already in perfect condition."))
 		else
 			var/obj/item/stack/sheet/mineral/titanium/T = W
 			T.use(1)
-			obj_integrity = max_integrity
-			to_chat(user, "<span class='notice'>You repair [src] with [T].</span>")
+			atom_integrity = max_integrity
+			to_chat(user, span_notice("You repair [src] with [T]."))
 	else
 		return ..()
 
 /obj/item/shield/riot/examine(mob/user)
 	. = ..()
-	var/healthpercent = round((obj_integrity/max_integrity) * 100, 1)
+	var/healthpercent = round((atom_integrity/max_integrity) * 100, 1)
 	switch(healthpercent)
 		if(50 to 99)
 			. += "<span class='info'>It looks slightly damaged.</span>"
@@ -72,7 +72,7 @@
 	new /obj/item/shard((get_turf(src)))
 
 /obj/item/shield/riot/on_shield_block(mob/living/carbon/human/owner, atom/movable/hitby, attack_text = "the attack", damage = 0, attack_type = MELEE_ATTACK)
-	if (obj_integrity <= damage)
+	if (atom_integrity <= damage)
 		var/turf/T = get_turf(owner)
 		T.visible_message("<span class='warning'>[hitby] destroys [src]!</span>")
 		shatter(owner)
@@ -137,17 +137,17 @@
 
 /obj/item/shield/riot/flash/attack(mob/living/M, mob/user)
 	. =  embedded_flash.attack(M, user)
-	update_icon()
+	update_appearance()
 
 /obj/item/shield/riot/flash/attack_self(mob/living/carbon/user)
 	. = embedded_flash.attack_self(user)
-	update_icon()
+	update_appearance()
 
 /obj/item/shield/riot/flash/hit_reaction(mob/living/carbon/human/owner, atom/movable/hitby, attack_text = "the attack", final_block_chance = 0, damage = 0, attack_type = MELEE_ATTACK)
 	. = ..()
 	if (. && !embedded_flash.burnt_out)
 		embedded_flash.activate()
-		update_icon()
+		update_appearance()
 
 
 /obj/item/shield/riot/flash/attackby(obj/item/W, mob/user)
@@ -165,14 +165,14 @@
 				qdel(embedded_flash)
 				embedded_flash = flash
 				flash.forceMove(src)
-				update_icon()
+				update_appearance()
 				return
 	..()
 
 /obj/item/shield/riot/flash/emp_act(severity)
 	. = ..()
 	embedded_flash.emp_act(severity)
-	update_icon()
+	update_appearance()
 
 /obj/item/shield/riot/flash/update_icon_state()
 	if(!embedded_flash || embedded_flash.burnt_out)
@@ -181,6 +181,7 @@
 	else
 		icon_state = "flashshield"
 		inhand_icon_state = "flashshield"
+	return ..()
 
 /obj/item/shield/riot/flash/examine(mob/user)
 	. = ..()

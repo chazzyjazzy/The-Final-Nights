@@ -55,7 +55,7 @@
 		core.overmind = src
 		blobs_legit += src
 		blob_core = core
-		core.update_icon()
+		core.update_appearance()
 	update_health_hud()
 	placed = TRUE
 	announcement_time = world.time + OVERMIND_ANNOUNCEMENT_MAX_TIME
@@ -116,7 +116,7 @@
 	if(S)
 		if(!can_buy(BLOB_UPGRADE_REFLECTOR_COST))
 			return
-		if(S.obj_integrity < S.max_integrity * 0.5)
+		if(S.get_integrity() < S.max_integrity * 0.5)
 			add_points(BLOB_UPGRADE_REFLECTOR_COST)
 			to_chat(src, "<span class='warning'>This shield blob is too damaged to be modified properly!</span>")
 			return
@@ -134,7 +134,7 @@
 	if(B.naut) //if it already made a blobbernaut, it can't do it again
 		to_chat(src, "<span class='warning'>This factory blob is already sustaining a blobbernaut.</span>")
 		return
-	if(B.obj_integrity < B.max_integrity * 0.5)
+	if(B.get_integrity() < B.max_integrity * 0.5)
 		to_chat(src, "<span class='warning'>This factory blob is too damaged to sustain a blobbernaut.</span>")
 		return
 	if(!can_buy(BLOBMOB_BLOBBERNAUT_RESOURCE_COST))
@@ -145,8 +145,8 @@
 	var/list/mob/dead/observer/candidates = pollGhostCandidates("Do you want to play as a [blobstrain.name] blobbernaut?", ROLE_BLOB, null, ROLE_BLOB, 50) //players must answer rapidly
 	if(LAZYLEN(candidates)) //if we got at least one candidate, they're a blobbernaut now.
 		B.max_integrity = initial(B.max_integrity) * 0.25 //factories that produced a blobbernaut have much lower health
-		B.obj_integrity = min(B.obj_integrity, B.max_integrity)
-		B.update_icon()
+		B.update_integrity(min(B.get_integrity(), B.max_integrity))
+		B.update_appearance()
 		B.visible_message("<span class='warning'><b>The blobbernaut [pick("rips", "tears", "shreds")] its way out of the factory blob!</b></span>")
 		playsound(B.loc, 'sound/effects/splat.ogg', 50, TRUE)
 		var/mob/living/simple_animal/hostile/blob/blobbernaut/blobber = new /mob/living/simple_animal/hostile/blob/blobbernaut(get_turf(B))

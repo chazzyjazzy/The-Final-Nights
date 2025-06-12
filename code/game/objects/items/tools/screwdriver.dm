@@ -7,7 +7,7 @@
 	worn_icon_state = "screwdriver"
 	lefthand_file = 'icons/mob/inhands/equipment/tools_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/tools_righthand.dmi'
-	flags_1 = CONDUCT_1
+	flags_1 = CONDUCT_1 | IS_PLAYER_COLORABLE_1
 	slot_flags = ITEM_SLOT_BELT
 	force = 5
 	w_class = WEIGHT_CLASS_TINY
@@ -26,7 +26,9 @@
 	pickup_sound =  'sound/items/handling/screwdriver_pickup.ogg'
 	item_flags = EYE_STAB
 	sharpness = SHARP_POINTY
-	var/random_color = TRUE //if the screwdriver uses random coloring
+	/// If the item should be assigned a random color
+	var/random_color = TRUE
+	/// List of possible random colors
 	var/static/list/screwdriver_colors = list(
 		"blue" = rgb(24, 97, 213),
 		"red" = rgb(255, 0, 0),
@@ -47,7 +49,7 @@
 		icon_state = "screwdriver"
 		var/our_color = pick(screwdriver_colors)
 		add_atom_colour(screwdriver_colors[our_color], FIXED_COLOUR_PRIORITY)
-		update_icon()
+		update_appearance()
 	if(prob(75))
 		pixel_y = rand(0, 16)
 
@@ -85,6 +87,8 @@
 	usesound = 'sound/items/pshoom.ogg'
 	toolspeed = 0.1
 	random_color = FALSE
+	greyscale_config_inhand_left = null
+	greyscale_config_inhand_right = null
 
 /obj/item/screwdriver/abductor/get_belt_overlay()
 	return mutable_appearance('icons/obj/clothing/belt_overlays.dmi', "screwdriver_nuke")
@@ -109,6 +113,8 @@
 	usesound = 'sound/items/drill_use.ogg'
 	toolspeed = 0.7
 	random_color = FALSE
+	greyscale_config_inhand_left = null
+	greyscale_config_inhand_right = null
 
 /obj/item/screwdriver/power/examine()
 	. = ..()

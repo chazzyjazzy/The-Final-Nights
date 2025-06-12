@@ -6,6 +6,7 @@
 	inhand_icon_state = "cutters"
 	lefthand_file = 'icons/mob/inhands/equipment/tools_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/tools_righthand.dmi'
+
 	flags_1 = CONDUCT_1
 	slot_flags = ITEM_SLOT_BELT
 	force = 6
@@ -41,7 +42,7 @@
 		icon_state = "cutters"
 		var/our_color = pick(wirecutter_colors)
 		add_atom_colour(wirecutter_colors[our_color], FIXED_COLOUR_PRIORITY)
-		update_icon()
+		update_appearance()
 
 /obj/item/wirecutters/update_overlays()
 	. = ..()

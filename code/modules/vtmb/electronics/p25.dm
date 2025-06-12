@@ -73,7 +73,7 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 					playsound(R, 'sound/effects/radioonn.ogg', 50, FALSE)
 					for(var/mob/M in get_hearers_in_view(1, get_turf(R)))
 						to_chat(M, "<span class='notice'>The [R] chirps as it establishes connection to the transceiver.</span>")
-		update_icon()
+		update_appearance()
 
 	if(href_list["view_callsigns"])
 		var/dat = "<div class='statusDisplay'>"
@@ -199,7 +199,7 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 	return TRUE
 
 // ==============================
-// Clinic/Tower Transceivers
+// Clinic/Tower/Anarch Transceivers
 // ==============================
 
 /obj/machinery/p25transceiver/clinic
@@ -211,6 +211,11 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 	name = "tower P25 transceiver"
 	desc = "A P25 radio transceiver configured for general communications."
 	p25_network = "tower"
+
+/obj/machinery/p25transceiver/anarch
+	name = "bar staff P25 transceiver"
+	desc = "A P25 radio transceiver configured for ... some waitresses and a barback?"
+	p25_network = "bar"
 
 // ==============================
 // Police Transceiver

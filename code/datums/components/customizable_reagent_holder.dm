@@ -58,7 +58,7 @@
 	RegisterSignal(parent, COMSIG_PARENT_ATTACKBY, PROC_REF(customizable_attack))
 	RegisterSignal(parent, COMSIG_PARENT_EXAMINE, PROC_REF(on_examine))
 	RegisterSignal(parent, COMSIG_ATOM_PROCESSED, PROC_REF(on_processed))
-	ADD_TRAIT(parent, TRAIT_CUSTOMIZABLE_REAGENT_HOLDER, src)
+	ADD_TRAIT(parent, TRAIT_CUSTOMIZABLE_REAGENT_HOLDER, REF(src))
 
 
 /datum/component/customizable_reagent_holder/UnregisterFromParent()
@@ -68,13 +68,13 @@
 		COMSIG_PARENT_EXAMINE,
 		COMSIG_ATOM_PROCESSED,
 	))
-	REMOVE_TRAIT(parent, TRAIT_CUSTOMIZABLE_REAGENT_HOLDER, src)
+	REMOVE_TRAIT(parent, TRAIT_CUSTOMIZABLE_REAGENT_HOLDER, REF(src))
 
 
-/datum/component/customizable_reagent_holder/PostTransfer()
-	if(!isatom(parent))
+/datum/component/customizable_reagent_holder/PostTransfer(datum/new_parent)
+	if(!isatom(new_parent))
 		return COMPONENT_INCOMPATIBLE
-	var/atom/atom_parent = parent
+	var/atom/atom_parent = new_parent
 	if (!atom_parent.reagents)
 		return COMPONENT_INCOMPATIBLE
 
@@ -125,8 +125,8 @@
 		var/atom/replacement_parent = new replacement(atom_parent.loc)
 		ingredient.forceMove(replacement_parent)
 		replacement = null
-		RemoveComponent()
 		replacement_parent.TakeComponent(src)
+		handle_reagents(ingredient)
 		qdel(atom_parent)
 	handle_reagents(ingredient)
 	add_ingredient(ingredient)

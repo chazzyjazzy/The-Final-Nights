@@ -1,8 +1,3 @@
-
-#define PUNISHMENT_MURDER "murder"
-#define PUNISHMENT_GIB "gib"
-#define PUNISHMENT_TELEPORT "teleport"
-
 //very similar to stationloving, but more made for mobs and not objects. used on derelict drones currently
 
 
@@ -21,7 +16,7 @@ It has a punishment variable that is what happens to the parent when they leave 
 	if(!isliving(parent))
 		return COMPONENT_INCOMPATIBLE
 	var/mob/living/L = parent
-	RegisterSignal(L, list(COMSIG_MOVABLE_Z_CHANGED), PROC_REF(punish))
+	RegisterSignals(L, list(COMSIG_MOVABLE_Z_CHANGED), PROC_REF(punish))
 	punishment = _punishment
 	message = _message
 	stuck_zlevel = L.z

@@ -172,7 +172,7 @@ GLOBAL_LIST_INIT(malk_hallucinations, list(
 		if(target.client)
 			target.client.images |= current_image
 
-/obj/effect/hallucination/simple/update_icon(new_state,new_icon,new_px=0,new_py=0)
+/obj/effect/hallucination/simple/update_icon(updates=ALL, new_state, new_icon, new_px=0, new_py=0)
 	image_state = new_state
 	if(new_icon)
 		image_icon = new_icon
@@ -180,6 +180,7 @@ GLOBAL_LIST_INIT(malk_hallucinations, list(
 		image_icon = initial(image_icon)
 	px = new_px
 	py = new_py
+	. = ..()
 	Show()
 
 /obj/effect/hallucination/simple/Moved(atom/OldLoc, Dir)
@@ -286,7 +287,7 @@ GLOBAL_LIST_INIT(malk_hallucinations, list(
 	name = "alien hunter ([rand(1, 1000)])"
 
 /obj/effect/hallucination/simple/xeno/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
-	update_icon("alienh_pounce")
+	update_icon(ALL, "alienh_pounce")
 	if(hit_atom == target && target.stat!=DEAD)
 		target.Paralyze(100)
 		target.visible_message("<span class='danger'>[target] flails around wildly.</span>","<span class='userdanger'>[name] pounces on you!</span>")
@@ -308,6 +309,11 @@ GLOBAL_LIST_INIT(malk_hallucinations, list(
 	image_icon = 'icons/mob/32x64.dmi'
 	image_state = "eva"
 //	px = -32
+
+/obj/effect/hallucination/simple/demon
+	name = "Infernal Creature"
+	image_icon = 'code/modules/wod13/32x48.dmi'
+	image_state = "baali"
 
 /datum/hallucination/oh_yeah
 	var/obj/effect/hallucination/simple/bubblegum/bubblegum
@@ -379,6 +385,60 @@ GLOBAL_LIST_INIT(malk_hallucinations, list(
 	QDEL_NULL(fakebroken)
 	QDEL_NULL(fakerune)
 	QDEL_NULL(bubblegum)
+	STOP_PROCESSING(SSfastprocess, src)
+	return ..()
+
+/datum/hallucination/baali
+	var/obj/effect/hallucination/simple/demon/demon
+	var/turf/landing
+	var/charged
+	COOLDOWN_DECLARE(next_cooldown)
+
+/datum/hallucination/baali/New(mob/living/carbon/C, forced = TRUE)
+	set waitfor = FALSE
+	. = ..()
+	var/turf/closed/wall/wall
+	for(var/turf/closed/wall/W in range(7,target))
+		wall = W
+		break
+	if(!wall)
+		return INITIALIZE_HINT_QDEL
+	feedback_details += "Source: [wall.x],[wall.y],[wall.z]"
+	target.playsound_local(wall,'sound/effects/meteorimpact.ogg', 150, 1)
+	demon = new(wall, target)
+	addtimer(CALLBACK(src, PROC_REF(start_processing)), 10)
+
+
+/datum/hallucination/baali/proc/start_processing()
+	if (isnull(target))
+		qdel(src)
+		return
+	START_PROCESSING(SSfastprocess, src)
+
+/datum/hallucination/baali/process(delta_time)
+	if(!COOLDOWN_FINISHED(src, next_cooldown))
+		return
+
+	if (target?.stat != DEAD)
+		demon.forceMove(get_step_towards(demon, target))
+		demon.setDir(get_dir(demon, target))
+		target.playsound_local(get_turf(demon), 'sound/effects/meteorimpact.ogg', 150, 1)
+		QDEL_IN(src, 4 SECONDS)
+		if(demon.Adjacent(target) && !charged)
+			charged = TRUE
+			target.Paralyze(1 SECONDS)
+			target.adjustStaminaLoss(200)
+			step_away(target, demon)
+			target.visible_message(span_warning("[target] jumps backwards, falling on the ground!"), span_warning("[demon] slams into you!"),)
+			STOP_PROCESSING(SSfastprocess, src)
+			qdel(src)
+		COOLDOWN_START(src, next_cooldown, 2 SECONDS)
+	else
+		STOP_PROCESSING(SSfastprocess, src)
+		QDEL_IN(src, 3 SECONDS)
+
+/datum/hallucination/baali/Destroy()
+	QDEL_NULL(demon)
 	STOP_PROCESSING(SSfastprocess, src)
 	return ..()
 
@@ -1011,9 +1071,24 @@ GLOBAL_LIST_INIT(malk_hallucinations, list(
 			target.playsound_local(source, 'code/modules/wod13/sounds/fuck.ogg', 50)
 		if("laughter")
 			if(prob(50))
-				target.playsound_local(source, 'sound/mobs/humanoids/human/laugh/womanlaugh.ogg', 50, 1)
+				target.playsound_local(source, pick(
+				'sound/mobs/humanoids/human/laugh/female_laugh_1.ogg',
+				'sound/mobs/humanoids/human/laugh/female_laugh_2.ogg',
+				'sound/mobs/humanoids/human/laugh/chuckle/female_chuckle_1.ogg',
+				'sound/mobs/humanoids/human/laugh/chuckle/female_chuckle_2.ogg',
+				'sound/mobs/humanoids/human/laugh/chuckle/female_chuckle_3.ogg',
+				'sound/mobs/humanoids/human/laugh/crazy/female_crazylaugh_1.ogg',
+				), 50, 1)
 			else
-				target.playsound_local(source, pick('sound/mobs/humanoids/human/laugh/manlaugh1.ogg', 'sound/mobs/humanoids/human/laugh/manlaugh2.ogg'), 50, 1)
+				target.playsound_local(source, pick(
+				'sound/mobs/humanoids/human/laugh/male_laugh_1.ogg',
+				'sound/mobs/humanoids/human/laugh/male_laugh_2.ogg',
+				'sound/mobs/humanoids/human/laugh/chuckle/male_chuckle_1.ogg',
+				'sound/mobs/humanoids/human/laugh/crazy/male_crazylaugh_1.ogg',
+				'sound/mobs/humanoids/human/laugh/crazy/male_crazylaugh_2.ogg',
+				'sound/mobs/humanoids/human/laugh/crazy/male_crazylaugh_3.ogg',
+				'sound/mobs/humanoids/human/laugh/crazy/male_crazylaugh_4.ogg',
+				 ), 50, 1)
 		if("creepy")
 		//These sounds are (mostly) taken from Hidden: Source
 			target.playsound_local(source, pick(GLOB.creepy_ambience), 50, 1)

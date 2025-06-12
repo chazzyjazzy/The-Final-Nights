@@ -31,7 +31,11 @@
 	/// If blind drop option is available
 	var/blind_drop_ready = TRUE
 
-/obj/machinery/computer/auxiliary_base/Initialize()
+	density = FALSE //this is a wallmount
+
+MAPPING_DIRECTIONAL_HELPERS(/obj/machinery/computer/auxiliary_base, 32)
+
+/obj/machinery/computer/auxiliary_base/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/gps, "NT_AUX")
 
@@ -56,7 +60,7 @@
 	if(LAZYLEN(turrets))
 		for(var/turret in turrets)
 			var/obj/machinery/porta_turret/aux_base/base_turret = turret
-			var/turret_integrity = max((base_turret.obj_integrity - base_turret.integrity_failure * base_turret.max_integrity) / (base_turret.max_integrity - base_turret.integrity_failure * max_integrity) * 100, 0)
+			var/turret_integrity = max((base_turret.get_integrity() - base_turret.integrity_failure * base_turret.max_integrity) / (base_turret.max_integrity - base_turret.integrity_failure * max_integrity) * 100, 0)
 			var/turret_status
 			if(base_turret.machine_stat & BROKEN)
 				turret_status = "ERROR"

@@ -10,12 +10,11 @@
 				return
 	..()
 
-/mob/living/carbon/proc/rollfrenzy()
+/mob/living/carbon/proc/rollfrenzy(frenzyoverride = 0)
 	if(client)
 		var/mob/living/carbon/human/H
 		if(ishuman(src))
 			H = src
-
 		if(isgarou(src) || iswerewolf(src))
 			to_chat(src, "I'm full of <span class='danger'><b>ANGER</b></span>, and I'm about to flare up in <span class='danger'><b>RAGE</b></span>. Rolling...")
 		else if(iskindred(src))
@@ -26,33 +25,39 @@
 			to_chat(src, "I'm too <span class='danger'><b>AFRAID</b></span> to continue doing this. Rolling...")
 		SEND_SOUND(src, sound('code/modules/wod13/sounds/bloodneed.ogg', 0, 0, 50))
 		var/check
+		var/frenzydicepool = 1
+		var/frenzydiff = 4
 		if(iscathayan(src))
-			check = SSroll.storyteller_roll(max(1, mind.dharma.Hun), min(10, (mind.dharma.level*2)-max_demon_chi), src)
-		else
-			check = SSroll.storyteller_roll(max(1, round(H.morality_path.score/2)), min(frenzy_chance_boost, frenzy_hardness), src)
+			frenzydicepool = max(1, mind.dharma.Hun)
+			frenzydiff = max(frenzy_hardness, (mind.dharma.level*2)-max_demon_chi)
+		else if(iskindred(src))
+			frenzydicepool = max(1, round(H.morality_path.score/2))
+			frenzydiff = frenzy_hardness
+		else if(isgarou(src) || iswerewolf(src))
+			frenzydicepool = max(1, max(round(wisdom/2),renownrank))
+			frenzydiff = frenzy_hardness
+		if(frenzyoverride)
+			frenzydiff = frenzyoverride
+		check = SSroll.storyteller_roll(frenzydicepool, difficulty = frenzydiff, mobs_to_show_output = src)
 		switch(check)
-			if(DICE_FAILURE)
-				enter_frenzymod()
+			if(ROLL_FAILURE)
+				src.enter_frenzymod()
 				if(iskindred(src))
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 100*H.clane.frenzymod)
 					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
 				else
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 100)
-				frenzy_hardness = 1
-			if(DICE_CRIT_FAILURE)
-				enter_frenzymod()
+				frenzy_hardness = initial(src.frenzy_hardness)
+			if(ROLL_BOTCH)
+				src.enter_frenzymod()
 				if(iskindred(src))
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 200*H.clane.frenzymod)
 					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
 				else
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 200)
-				frenzy_hardness = 1
-			if(DICE_CRIT_WIN)
-				frenzy_hardness = max(1, frenzy_hardness-1)
-				if(iskindred(src))
-					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_UP)
+				frenzy_hardness = initial(src.frenzy_hardness)
 			else
-				frenzy_hardness = min(10, frenzy_hardness+1)
+				frenzy_hardness = min(10, src.frenzy_hardness+1)
 
 /mob/living/carbon/proc/enter_frenzymod()
 	if (in_frenzy)
@@ -62,7 +67,8 @@
 	in_frenzy = TRUE
 	add_client_colour(/datum/client_colour/glass_colour/red)
 	demon_chi = 0
-	adjust_rage(-10, src, TRUE)
+	if(isgarou(src) || iswerewolf(src))
+		adjust_rage(-10, src, TRUE)
 	GLOB.frenzy_list += src
 
 /mob/living/carbon/proc/exit_frenzymod()
@@ -90,6 +96,40 @@
 	if(HAS_TRAIT(src, TRAIT_RESTRAINED))
 		return TRUE
 
+/mob/living/carbon/proc/do_frenzy_bite(target)
+	if(frenzy_target.client)
+		return
+	if(!frenzy_target?.bloodpool)
+		return
+	if(!COOLDOWN_FINISHED(src, frenzy_bite_cooldown))
+		return
+
+	COOLDOWN_START(src, frenzy_bite_cooldown, rand(6 SECONDS, 12 SECONDS))
+	frenzy_target.grabbedby(src)
+	if(ishuman(frenzy_target))
+		var/mob/living/carbon/human/humie = frenzy_target
+		frenzy_target.emote("scream")
+		humie.add_bite_animation()
+	var/mob/living/carbon/human/vamp = src
+	if(CheckEyewitness(frenzy_target, vamp, 7, FALSE))
+		vamp.AdjustMasquerade(-1)
+	playsound(src, 'code/modules/wod13/sounds/drinkblood1.ogg', 50, TRUE)
+	frenzy_target?.visible_message(span_warning("<b>[src] bites [frenzy_target]'s neck!</b>"), span_warning("<b>[src] bites your neck!</b></span>"))
+	vamp.drinksomeblood(frenzy_target)
+	vamp.Immobilize(5 SECONDS) //ai like to move around, so hold still
+
+/mob/living/carbon/proc/try_frenzy_bite(target)
+	frenzy_target = target
+	if(get_dist(frenzy_target, src) > 1) //check again to avoid biting people from 2 tiles away in some cases
+		return
+	if(frenzy_target.stat != DEAD && !HAS_TRAIT(frenzy_target, TRAIT_DEATHCOMA))
+		if(prob(75)) //prevent AIs from having frame perfect attacks every tick
+			face_atom(frenzy_target)
+			do_frenzy_bite(frenzy_target)
+	else //target died, let go of them
+		frenzy_target = null
+		stop_pulling()
+
 /mob/living/carbon/proc/frenzystep()
 	if(!isturf(loc) || CheckFrenzyMove())
 		return
@@ -99,97 +139,68 @@
 
 	var/atom/fear
 	for(var/obj/effect/fire/F in GLOB.fires_list)
-		if(F)
-			if(get_dist(src, F) < 7 && F.z == src.z)
-				if(get_dist(src, F) < 6)
-					fear = F
-				if(get_dist(src, F) < 5)
-					fear = F
-				if(get_dist(src, F) < 4)
-					fear = F
-				if(get_dist(src, F) < 3)
-					fear = F
-				if(get_dist(src, F) < 2)
-					fear = F
-				if(get_dist(src, F) < 1)
-					fear = F
-
-//	if(!fear && !frenzy_target)
-//		return
-
-	if(iskindred(src))
-		if(fear)
-			step_away(src,fear,99)
-			if(prob(25))
-				emote("scream")
-		else
-			var/mob/living/carbon/human/H = src
-			if(get_dist(frenzy_target, src) <= 1)
-				if(isliving(frenzy_target))
-					var/mob/living/L = frenzy_target
-					if(L.bloodpool && L.stat != DEAD && last_drinkblood_use+95 <= world.time)
-						L.grabbedby(src)
-						if(ishuman(L))
-							L.emote("scream")
-							var/mob/living/carbon/human/BT = L
-							BT.add_bite_animation()
-						if(CheckEyewitness(L, src, 7, FALSE))
-							H.AdjustMasquerade(-1)
-						playsound(src, 'code/modules/wod13/sounds/drinkblood1.ogg', 50, TRUE)
-						L.visible_message("<span class='warning'><b>[src] bites [L]'s neck!</b></span>", "<span class='warning'><b>[src] bites your neck!</b></span>")
-						face_atom(L)
-						H.drinksomeblood(L)
-			else
-				step_to(src,frenzy_target,0)
-				face_atom(frenzy_target)
+		if(get_dist(src, F) < 7 && F.z == src.z)
+			fear = F
+	if(fear)
+		step_away(src,fear,99)
+		if(prob(25))
+			emote("scream")
+		return
+	a_intent = INTENT_HARM
+	if(get_dist(frenzy_target, src) <= 1)
+		if(iskindred(src))
+			try_frenzy_bite(frenzy_target)
+		if(!COOLDOWN_FINISHED(src, frenzy_attack_cooldown))
+			return
+		COOLDOWN_START(src, frenzy_attack_cooldown, 1 SECONDS)
+		UnarmedAttack(frenzy_target)
 	else
-		if(get_dist(frenzy_target, src) <= 1)
-			if(isliving(frenzy_target))
-				var/mob/living/L = frenzy_target
-				if(L.stat != DEAD)
-					a_intent = INTENT_HARM
-					if(last_rage_hit+5 < world.time)
-						last_rage_hit = world.time
-						UnarmedAttack(L)
-		else
-			step_to(src,frenzy_target,0)
-			face_atom(frenzy_target)
+		if(prob(50))
+			jump(frenzy_target)
+		step_to(src,frenzy_target,0)
+		face_atom(frenzy_target)
 
 /mob/living/carbon/proc/get_frenzy_targets()
+	var/list/ignore_list = list(
+	/mob/living/carbon/human/npc/shop,
+	/mob/living/carbon/human/npc/sabbat,
+	/mob/living/simple_animal/hostile
+	)
 	var/list/targets = list()
-	if(iskindred(src))
-		for(var/mob/living/L in oviewers(7, src))
-			if(!iskindred(L) && L.bloodpool && L.stat != DEAD)
-				targets += L
-				if(L == frenzy_target)
-					return L
-	else
-		for(var/mob/living/L in oviewers(7, src))
-			if(L.stat != DEAD)
-				targets += L
-				if(L == frenzy_target)
-					return L
+	for(var/mob/living/L in oviewers(7, src))
+		if(is_type_in_list(L, ignore_list))
+			continue
+		if(L.stat == DEAD || HAS_TRAIT(L, TRAIT_DEATHCOMA))
+			continue
+		targets += L
+
 	if(length(targets) > 0)
-		return pick(targets)
+		if(frenzy_target)
+			if(get_dist(src, frenzy_target) > 7)
+				targets -= frenzy_target
+				frenzy_target = null
+				return pick(targets)
+			else
+				return frenzy_target
+		else
+			return pick(targets)
 	else
 		return null
 
 /mob/living/carbon/proc/handle_automated_frenzy()
-	for(var/mob/living/carbon/human/npc/NPC in viewers(5, src))
+	for(var/mob/living/carbon/human/npc/NPC in oviewers(5, src))
 		NPC.Aggro(src)
-	if(isturf(loc))
+	if(frenzy_target)
+		var/datum/cb = CALLBACK(src, PROC_REF(frenzystep))
+		var/reqsteps = SSfrenzypool.wait/total_multiplicative_slowdown()
+		for(var/i in 1 to reqsteps)
+			addtimer(cb, (i - 1)*total_multiplicative_slowdown())
+	else
 		frenzy_target = get_frenzy_targets()
-		if(frenzy_target)
-			var/datum/cb = CALLBACK(src, PROC_REF(frenzystep))
-			var/reqsteps = SSfrenzypool.wait/total_multiplicative_slowdown()
-			for(var/i in 1 to reqsteps)
-				addtimer(cb, (i - 1)*total_multiplicative_slowdown())
-		else
-			if(!CheckFrenzyMove())
-				if(isturf(loc))
-					var/turf/T = get_step(loc, pick(NORTH, SOUTH, WEST, EAST))
-					face_atom(T)
-					Move(T)
+		if(!CheckFrenzyMove())
+			var/turf/T = get_step(loc, pick(NORTH, SOUTH, WEST, EAST))
+			face_atom(T)
+			Move(T)
 
 /datum/species/kindred/spec_life(mob/living/carbon/human/H)
 	. = ..()
@@ -201,29 +212,27 @@
 				H.adjust_fire_stacks(6)
 				H.IgniteMob()
 	//FIRE FEAR
-	if(!H.antifrenzy && !HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
-		var/fearstack = 0
-		for(var/obj/effect/fire/F in GLOB.fires_list)
-			if(F)
-				if(get_dist(F, H) < 8 && F.z == H.z)
-					fearstack += F.stage
-		for(var/mob/living/carbon/human/U in viewers(7, H))
-			if(U.on_fire)
-				fearstack += 1
+	if(H.antifrenzy || HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
+		return
+	var/fearstack = 0
+	for(var/obj/effect/fire/F in GLOB.fires_list)
+		if(get_dist(F, H) < 5 && F.z == H.z)
+			fearstack += F.stage
+	for(var/mob/living/carbon/human/U in viewers(7, H))
+		if(U.on_fire)
+			fearstack += 1
 
-		fearstack = min(fearstack, 10)
+	fearstack = min(fearstack, 20)
 
-		if(fearstack)
-			if(prob(fearstack*5))
-				H.do_jitter_animation(10)
-				if(fearstack > 20)
-					if(prob(fearstack))
-						if(!H.in_frenzy)
-							H.rollfrenzy()
-			if(!H.has_status_effect(STATUS_EFFECT_FEAR))
-				H.apply_status_effect(STATUS_EFFECT_FEAR)
-		else
-			H.remove_status_effect(STATUS_EFFECT_FEAR)
+	if(fearstack)
+		H.do_jitter_animation(10)
+		H.apply_status_effect(STATUS_EFFECT_FEAR)
+	if(fearstack > 10 && prob(5))
+		if(!H.in_frenzy)
+			H.rollfrenzy()
+
+	if(!fearstack && H.has_status_effect(STATUS_EFFECT_FEAR))
+		H.remove_status_effect(STATUS_EFFECT_FEAR)
 
 	//masquerade violations due to unnatural appearances
 	if(H.is_face_visible() && H.clane?.violating_appearance)

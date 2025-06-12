@@ -24,18 +24,32 @@
 	violates_masquerade = FALSE
 
 	toggled = TRUE
+	var/original_eye_color
 
 /datum/discipline_power/protean/eyes_of_the_beast/activate()
 	. = ..()
 	ADD_TRAIT(owner, TRAIT_PROTEAN_VISION, TRAIT_GENERIC)
-	owner.add_client_colour(/datum/client_colour/glass_colour/red)
 	owner.update_sight()
+	original_eye_color = owner.eye_color
+	owner.eye_color = "#ff0000"
+	var/obj/item/organ/eyes/organ_eyes = owner.getorganslot(ORGAN_SLOT_EYES)
+	if(!organ_eyes)
+		return
+	else
+		organ_eyes.eye_color = owner.eye_color
+	owner.update_body()
 
 /datum/discipline_power/protean/eyes_of_the_beast/deactivate()
 	. = ..()
 	REMOVE_TRAIT(owner, TRAIT_PROTEAN_VISION, TRAIT_GENERIC)
-	owner.remove_client_colour(/datum/client_colour/glass_colour/red)
 	owner.update_sight()
+	owner.eye_color = original_eye_color
+	var/obj/item/organ/eyes/organ_eyes = owner.getorganslot(ORGAN_SLOT_EYES)
+	if(!organ_eyes)
+		return
+	else
+		organ_eyes.eye_color = owner.eye_color
+	owner.update_body()
 
 //FERAL CLAWS
 /datum/movespeed_modifier/protean2
@@ -65,7 +79,6 @@
 	owner.drop_all_held_items()
 	owner.put_in_r_hand(new /obj/item/melee/vampirearms/knife/gangrel(owner))
 	owner.put_in_l_hand(new /obj/item/melee/vampirearms/knife/gangrel(owner))
-	owner.add_client_colour(/datum/client_colour/glass_colour/red)
 	owner.add_movespeed_modifier(/datum/movespeed_modifier/protean2)
 
 /datum/discipline_power/protean/feral_claws/deactivate()

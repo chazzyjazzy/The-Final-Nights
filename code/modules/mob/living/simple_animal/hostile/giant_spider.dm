@@ -9,7 +9,7 @@
 	///What reagent the mob injects targets with
 	var/poison_type = /datum/reagent/toxin
 
-/mob/living/simple_animal/hostile/poison/AttackingTarget()
+/mob/living/simple_animal/hostile/poison/AttackingTarget(atom/attacked_target)
 	. = ..()
 	if(.)
 		inject_poison(target)
@@ -152,7 +152,7 @@
 	var/datum/atom_hud/datahud = GLOB.huds[health_hud]
 	datahud.add_hud_to(src)
 
-/mob/living/simple_animal/hostile/poison/giant_spider/nurse/AttackingTarget()
+/mob/living/simple_animal/hostile/poison/giant_spider/nurse/AttackingTarget(atom/attacked_target)
 	if(is_busy)
 		return
 	if(!istype(target, /mob/living/simple_animal/hostile/poison/giant_spider))
@@ -392,9 +392,10 @@
 	. = ..()
 	action = new(src)
 
-/obj/effect/proc_holder/wrap/update_icon()
+/obj/effect/proc_holder/wrap/update_appearance()
 	action.button_icon_state = "wrap_[active]"
 	action.UpdateButtonIcon()
+	return ..()
 
 /obj/effect/proc_holder/wrap/Click()
 	if(!istype(usr, /mob/living/simple_animal/hostile/poison/giant_spider/midwife))
@@ -449,9 +450,10 @@
 	. = ..()
 	action = new(src)
 
-/obj/effect/proc_holder/tarantula_charge/update_icon()
+/obj/effect/proc_holder/tarantula_charge/update_appearance()
 	action.button_icon_state = "wrap_[active]"
 	action.UpdateButtonIcon()
+	return ..()
 
 /obj/effect/proc_holder/tarantula_charge/Click()
 	if(!istype(usr, /mob/living/simple_animal/hostile/poison/giant_spider/tarantula))
@@ -667,7 +669,7 @@
 	if(prob(5))
 		new /obj/effect/decal/cleanable/blood/bubblegum(loc)
 
-/mob/living/simple_animal/hostile/poison/giant_spider/hunter/flesh/AttackingTarget()
+/mob/living/simple_animal/hostile/poison/giant_spider/hunter/flesh/AttackingTarget(atom/attacked_target)
 	if(is_busy)
 		return
 	if(src == target)
