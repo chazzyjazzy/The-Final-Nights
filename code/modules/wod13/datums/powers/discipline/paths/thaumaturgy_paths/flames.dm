@@ -11,11 +11,41 @@
 	effect_sound = 'code/modules/wod13/sounds/fireball.ogg'
 
 // hand of flame
-
 // flame bolt
 // pillar of fire
 // engulf
 // firestorm
+
+// Hand of Flame lighter item
+/obj/item/lighter/hand_of_flame
+	name = "hand of flame"
+	desc = "Your hand burns with supernatural fire."
+	icon = 'icons/obj/cigarettes.dmi'
+	icon_state = "zippo"
+	inhand_icon_state = "zippo"
+	force = 20
+	damtype = BURN
+	lit = TRUE
+	light_system = MOVABLE_LIGHT
+	light_range = 3
+	light_power = 1
+	light_color = COLOR_ORANGE
+	light_on = TRUE
+
+/obj/item/lighter/hand_of_flame/Initialize(mapload)
+	. = ..()
+	set_light_on(TRUE)
+	playsound(src, 'code/modules/wod13/sounds/fireball.ogg', 50, TRUE)
+
+/obj/item/lighter/hand_of_flame/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
+	. = ..()
+	if(proximity_flag && isliving(target))
+		var/mob/living/L = target
+		// Chance to ignite target
+		if(prob(25))
+			L.adjust_fire_stacks(1)
+			L.IgniteMob()
+		playsound(src, 'code/modules/wod13/sounds/fireball.ogg', 25, TRUE)
 
 //HAND OF FLAME - Level 1
 /datum/discipline_power/flames/one
@@ -28,7 +58,7 @@
 	violates_masquerade = TRUE
 
 	toggled = TRUE
-	duration_length = 2 TURNS
+	duration_length = 6 TURNS
 
 	grouped_powers = list(
 		/datum/discipline_power/flames/two,
@@ -39,20 +69,16 @@
 
 /datum/discipline_power/flames/one/activate()
 	. = ..()
-	owner.dna.species.attack_sound = 'code/modules/wod13/sounds/fireball.ogg'
-	owner.dna.species.punchdamagelow += 3
-	owner.dna.species.punchdamagehigh += 3
-	// Add burn damage component to punches
-	owner.potential = 1
+	owner.drop_all_held_items()
+	owner.put_in_r_hand(new /obj/item/lighter/hand_of_flame(owner))
+	owner.put_in_l_hand(new /obj/item/lighter/hand_of_flame(owner))
 	ADD_TRAIT(owner, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
 
 /datum/discipline_power/flames/one/deactivate()
 	. = ..()
-	owner.dna.species.attack_sound = initial(owner.dna.species.attack_sound)
-	owner.remove_overlay(FLAMES_LAYER)
-	owner.dna.species.punchdamagelow -= 3
-	owner.dna.species.punchdamagehigh -= 3
-	owner.potential = 0
+	// Remove flame weapons
+	for(var/obj/item/lighter/hand_of_flame/flame in owner.held_items)
+		qdel(flame)
 	REMOVE_TRAIT(owner, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
 
 //FLAME BOLT - Level 2
@@ -63,6 +89,7 @@
 	level = 2
 	cooldown_length = 1 SECONDS
 	violates_masquerade = TRUE
+	range = 7
 
 	grouped_powers = list(
 		/datum/discipline_power/flames/one,
@@ -80,6 +107,7 @@
 	H.preparePixelProjectile(target, start)
 	H.level = 2
 	H.fire(direct_target = target)
+	H.cruelty_multiplier = 1.1
 	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
 //PILLAR OF FIRE - Level 3
@@ -104,8 +132,8 @@
 	if(!target_turf)
 		return
 
-	// Create visual effect
-	new /obj/effect/temp_visual/pillar_of_fire(target_turf)
+	// Create visual effect using standard temp visual instead of undefined type
+	new /obj/effect/temp_visual/dir_setting/firing_effect(target_turf)
 
 	// Deal damage
 	var/damage_amount = 25 + owner.thaum_damage_plus + owner.get_total_mentality()
@@ -148,11 +176,24 @@
 	target.adjust_fire_stacks(8)
 	target.IgniteMob()
 
-	// Add burning effect component for continuous damage
-	target.AddComponent(/datum/component/burning_engulf, duration = 15 SECONDS, tick_damage = 5)
+	// Add burning effect using timer instead of undefined component
+	addtimer(CALLBACK(src, PROC_REF(engulf_tick), target), 1 SECONDS)
 
 	to_chat(target, span_userdanger("You are engulfed in supernatural flames!"))
 	playsound(get_turf(target), effect_sound, 75, TRUE)
+
+/datum/discipline_power/flames/four/proc/engulf_tick(mob/living/target)
+	if(!target || target.stat == DEAD)
+		return
+
+	target.adjustFireLoss(5)
+	// Schedule next tick for 15 seconds total duration
+	var/static/tick_count = 0
+	tick_count++
+	if(tick_count < 15)
+		addtimer(CALLBACK(src, PROC_REF(engulf_tick), target), 1 SECONDS)
+	else
+		tick_count = 0
 
 //FIRESTORM - Level 5
 /datum/discipline_power/flames/five
@@ -185,7 +226,8 @@
 
 	// Create visual effects and deal damage
 	for(var/turf/T in affected_turfs)
-		new /obj/effect/temp_visual/firestorm(T)
+		// Use standard temp visual instead of undefined type
+		new /obj/effect/temp_visual/dir_setting/firing_effect(T)
 
 		// Damage all mobs on each turf
 		for(var/mob/living/L in T)
@@ -205,16 +247,42 @@
 	playsound(center, effect_sound, 100, TRUE)
 	owner.visible_message(span_danger("[owner] unleashes a devastating firestorm!"))
 
-// Projectile for Flame Bolt
+// Projectile for Flame Bolt - based on thaumaturgy projectile
 /obj/projectile/flames
 	name = "flame"
 	icon = 'icons/obj/projectiles.dmi'
 	icon_state = "fireball"
+	pass_flags = PASSTABLE | PASSGLASS | PASSGRILLE
+	damage = 20
 	damage_type = BURN
+	hitsound_wall = 'sound/weapons/effects/searwall.ogg'
+	flag = LASER
+	light_system = MOVABLE_LIGHT
+	light_range = 1
+	light_power = 1
+	light_color = COLOR_ORANGE
+	ricochets_max = 0
+	ricochet_chance = 0
+	var/level = 1
 
 /obj/projectile/flames/flamebolt
 	name = "flame bolt"
 	damage = 20
+
+/obj/projectile/flames/flamebolt/on_hit(atom/target, blocked = FALSE, pierce_hit)
+	. = ..()
+	if(isliving(target))
+		var/mob/living/L = target
+		// Chance to ignite target
+		if(prob(30))
+			L.adjust_fire_stacks(2)
+			L.IgniteMob()
+
+		// Visual effects
+		L.visible_message(span_danger("[target] is struck by supernatural flames!"), span_userdanger("You are burned by supernatural fire!"))
+
+		// Sound effect
+		playsound(get_turf(target), 'code/modules/wod13/sounds/fireball.ogg', 50, TRUE)
 
 /obj/projectile/flames/flamebolt/on_hit(atom/target, blocked = FALSE)
 	. = ..()

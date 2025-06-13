@@ -1,13 +1,14 @@
 /datum/discipline/path
+	// Paths use the standard discipline structure but different icon handling
+
+/datum/action/discipline/path
 	check_flags = NONE
-	button_icon = 'code/modules/wod13/UI/paths.dmi' //This is the file for the BACKGROUND icon
-	background_icon_state = "default" //And this is the state for the background icon
-	icon_icon = 'code/modules/wod13/UI/paths.dmi' //This is the file for the ACTION icon
-	button_icon_state = "default" //And this is the state for the action icon
+	button_icon = 'code/modules/wod13/UI/paths.dmi' //Paths use paths.dmi instead of actions.dmi
+	background_icon_state = "default" //Paths use 'default' background
+	icon_icon = 'code/modules/wod13/UI/paths.dmi' //Action icon also from paths.dmi
+	button_icon_state = "default" //Default button state for paths
 
-	vampiric = TRUE
-	var/level_icon_state = "1" //And this is the state for the action icon
-	var/datum/discipline/discipline
-	var/targeting = FALSE
-
-// this constructor is mainly for file seperation purposes so that we can keep all the path sprites in paths.dmi
+// Path discipline powers use the standard discipline_power structure
+/datum/discipline_power/path
+	name = "Path power name"
+	desc = "Path power description"
