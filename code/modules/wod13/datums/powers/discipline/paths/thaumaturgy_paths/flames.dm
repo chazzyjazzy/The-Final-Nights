@@ -2,9 +2,9 @@
 	name = "Lure of Flames"
 	desc = "A mystical path of Thaumaturgy that allows the summoning of fire and flame. Violates Masquerade."
 	icon_state = "flames"
-	power_type = /datum/discipline_power/flames
+	power_type = /datum/discipline_power/path/flames
 
-/datum/discipline_power/flames
+/datum/discipline_power/path/flames
 	name = "Lure of Flames Power Name"
 	desc = "Lure of Flames Power Description"
 
@@ -48,7 +48,7 @@
 		playsound(src, 'code/modules/wod13/sounds/fireball.ogg', 25, TRUE)
 
 //HAND OF FLAME - Level 1
-/datum/discipline_power/flames/one
+/datum/discipline_power/path/flames/one
 	name = "Hand of Flame"
 	desc = "Ignite your hands with supernatural fire, adding burn damage to your punches."
 
@@ -61,20 +61,20 @@
 	duration_length = 6 TURNS
 
 	grouped_powers = list(
-		/datum/discipline_power/flames/two,
-		/datum/discipline_power/flames/three,
-		/datum/discipline_power/flames/four,
-		/datum/discipline_power/flames/five
+		/datum/discipline_power/path/flames/two,
+		/datum/discipline_power/path/flames/three,
+		/datum/discipline_power/path/flames/four,
+		/datum/discipline_power/path/flames/five
 	)
 
-/datum/discipline_power/flames/one/activate()
+/datum/discipline_power/path/flames/one/activate()
 	. = ..()
 	owner.drop_all_held_items()
 	owner.put_in_r_hand(new /obj/item/lighter/hand_of_flame(owner))
 	owner.put_in_l_hand(new /obj/item/lighter/hand_of_flame(owner))
 	ADD_TRAIT(owner, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
 
-/datum/discipline_power/flames/one/deactivate()
+/datum/discipline_power/path/flames/one/deactivate()
 	. = ..()
 	// Remove flame weapons
 	for(var/obj/item/lighter/hand_of_flame/flame in owner.held_items)
@@ -82,7 +82,7 @@
 	REMOVE_TRAIT(owner, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
 
 //FLAME BOLT - Level 2
-/datum/discipline_power/flames/two
+/datum/discipline_power/path/flames/two
 	name = "Flame Bolt"
 	desc = "Hurl a bolt of supernatural fire at your target."
 
@@ -90,15 +90,16 @@
 	cooldown_length = 1 SECONDS
 	violates_masquerade = TRUE
 	range = 7
+	target_type = TARGET_LIVING
 
 	grouped_powers = list(
-		/datum/discipline_power/flames/one,
-		/datum/discipline_power/flames/three,
-		/datum/discipline_power/flames/four,
-		/datum/discipline_power/flames/five
+		/datum/discipline_power/path/flames/one,
+		/datum/discipline_power/path/flames/three,
+		/datum/discipline_power/path/flames/four,
+		/datum/discipline_power/path/flames/five
 	)
 
-/datum/discipline_power/flames/two/activate(mob/living/target)
+/datum/discipline_power/path/flames/two/activate(mob/living/target)
 	. = ..()
 	var/turf/start = get_turf(owner)
 	var/obj/projectile/flames/flamebolt/H = new(start)
@@ -110,23 +111,26 @@
 	H.cruelty_multiplier = 1.1
 	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
+
 //PILLAR OF FIRE - Level 3
-/datum/discipline_power/flames/three
+/datum/discipline_power/path/flames/three
 	name = "Pillar of Fire"
 	desc = "Summon a towering pillar of flame from the ground beneath your target."
 
 	level = 3
 	cooldown_length = 10 SECONDS
 	violates_masquerade = TRUE
+	target_type = TARGET_LIVING
+	range = 7
 
 	grouped_powers = list(
-		/datum/discipline_power/flames/one,
-		/datum/discipline_power/flames/two,
-		/datum/discipline_power/flames/four,
-		/datum/discipline_power/flames/five
+		/datum/discipline_power/path/flames/one,
+		/datum/discipline_power/path/flames/two,
+		/datum/discipline_power/path/flames/four,
+		/datum/discipline_power/path/flames/five
 	)
 
-/datum/discipline_power/flames/three/activate(mob/living/target)
+/datum/discipline_power/path/flames/three/activate(mob/living/target)
 	. = ..()
 	var/turf/target_turf = get_turf(target)
 	if(!target_turf)
@@ -148,22 +152,24 @@
 	playsound(target_turf, effect_sound, 50, TRUE)
 
 //ENGULF - Level 4
-/datum/discipline_power/flames/four
+/datum/discipline_power/path/flames/four
 	name = "Engulf"
 	desc = "Surround your target in a raging inferno, dealing continuous burn damage."
 
 	level = 4
-	cooldown_length = 30 SECONDS
+	cooldown_length = 10 SECONDS
 	violates_masquerade = TRUE
+	target_type = TARGET_LIVING
+	range = 7
 
 	grouped_powers = list(
-		/datum/discipline_power/flames/one,
-		/datum/discipline_power/flames/two,
-		/datum/discipline_power/flames/three,
-		/datum/discipline_power/flames/five
+		/datum/discipline_power/path/flames/one,
+		/datum/discipline_power/path/flames/two,
+		/datum/discipline_power/path/flames/three,
+		/datum/discipline_power/path/flames/five
 	)
 
-/datum/discipline_power/flames/four/activate(mob/living/target)
+/datum/discipline_power/path/flames/four/activate(mob/living/target)
 	. = ..()
 	if(!target)
 		return
@@ -182,7 +188,7 @@
 	to_chat(target, span_userdanger("You are engulfed in supernatural flames!"))
 	playsound(get_turf(target), effect_sound, 75, TRUE)
 
-/datum/discipline_power/flames/four/proc/engulf_tick(mob/living/target)
+/datum/discipline_power/path/flames/four/proc/engulf_tick(mob/living/target)
 	if(!target || target.stat == DEAD)
 		return
 
@@ -196,33 +202,36 @@
 		tick_count = 0
 
 //FIRESTORM - Level 5
-/datum/discipline_power/flames/five
+/datum/discipline_power/path/flames/five
 	name = "Firestorm"
 	desc = "Unleash a devastating storm of fire that affects multiple targets in an area."
 
 	level = 5
-	cooldown_length = 60 SECONDS
+	cooldown_length = 20 SECONDS
 	violates_masquerade = TRUE
+	target_type = TARGET_LIVING
+	range = 10
 
 	grouped_powers = list(
-		/datum/discipline_power/flames/one,
-		/datum/discipline_power/flames/two,
-		/datum/discipline_power/flames/three,
-		/datum/discipline_power/flames/four
+		/datum/discipline_power/path/flames/one,
+		/datum/discipline_power/path/flames/two,
+		/datum/discipline_power/path/flames/three,
+		/datum/discipline_power/path/flames/four
 	)
 
-/datum/discipline_power/flames/five/activate(atom/target)
+/datum/discipline_power/path/flames/five/activate(atom/target)
 	. = ..()
-	var/turf/center = get_turf(target)
-	if(!center)
+	// Add 4 second casting time
+	to_chat(owner, span_notice("You begin channeling a devastating firestorm..."))
+	if(!do_after(owner, 4 SECONDS))
+		to_chat(owner, span_warning("Your firestorm casting was interrupted!"))
 		return
-
+	var/turf/center = get_turf(target)
 	var/list/affected_turfs = list()
-	var/range = 3
-
-	// Get all turfs in range
-	for(var/turf/T in range(range, center))
+	// Get 4x4 area around target (2 tiles in each direction from center)
+	for(var/turf/T in range(2, center))
 		affected_turfs += T
+		new /obj/effect/fire(T)
 
 	// Create visual effects and deal damage
 	for(var/turf/T in affected_turfs)
@@ -280,7 +289,7 @@
 
 		// Visual effects
 		L.visible_message(span_danger("[target] is struck by supernatural flames!"), span_userdanger("You are burned by supernatural fire!"))
-
+		new /obj/effect/fire(get_turf(target))
 		// Sound effect
 		playsound(get_turf(target), 'code/modules/wod13/sounds/fireball.ogg', 50, TRUE)
 

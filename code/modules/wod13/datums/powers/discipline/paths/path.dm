@@ -1,5 +1,5 @@
 /datum/discipline/path
-	// Paths use the standard discipline structure but different icon handling
+	var/action_type = /datum/action/discipline/path
 
 /datum/action/discipline/path
 	check_flags = NONE
@@ -8,7 +8,25 @@
 	icon_icon = 'code/modules/wod13/UI/paths.dmi' //Action icon also from paths.dmi
 	button_icon_state = "default" //Default button state for paths
 
-// Path discipline powers use the standard discipline_power structure
-/datum/discipline_power/path
-	name = "Path power name"
-	desc = "Path power description"
+/datum/action/discipline/ApplyIcon(atom/movable/screen/movable/action_button/current_button, force = FALSE)
+	// Check if this is a path discipline and use different icons
+	if(istype(discipline, /datum/discipline/path))
+		button_icon = 'code/modules/wod13/UI/paths.dmi'
+		icon_icon = 'code/modules/wod13/UI/paths.dmi'
+		background_icon_state = "default"
+	else
+		button_icon = 'code/modules/wod13/UI/actions.dmi'
+		icon_icon = 'code/modules/wod13/UI/actions.dmi'
+		background_icon_state = "discipline"
+
+	if(icon_icon && button_icon_state && ((current_button.button_icon_state != button_icon_state) || force))
+		current_button.cut_overlays(TRUE)
+		if(discipline)
+			current_button.name = discipline.current_power.name
+			current_button.desc = discipline.current_power.desc
+			current_button.add_overlay(mutable_appearance(icon_icon, "[discipline.icon_state]"))
+			current_button.button_icon_state = "[discipline.icon_state]"
+			current_button.add_overlay(mutable_appearance(icon_icon, "[discipline.level_casting]"))
+		else
+			current_button.add_overlay(mutable_appearance(icon_icon, button_icon_state))
+			current_button.button_icon_state = button_icon_state
