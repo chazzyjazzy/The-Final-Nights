@@ -10,10 +10,11 @@
 	icon_screen = "stock_computer"
 	icon_keyboard = "no_keyboard"
 
-	var/logged_in_ckey = ""
+	var/logged_in_name = ""
 	var/datum/vtm_bank_account/current_account = null
 	var/datum/browser/current_popup = null
 	var/is_active = FALSE
+	var/mob/active_user = null
 
 	interaction_flags_atom = INTERACT_ATOM_REQUIRES_DEXTERITY | INTERACT_ATOM_UI_INTERACT | INTERACT_ATOM_ATTACK_HAND | INTERACT_ATOM_REQUIRES_ANCHORED
 	light_color = "#FFD700"
@@ -37,10 +38,11 @@
 	// Auto-login system
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
-		logged_in_ckey = H.real_name
-		current_account = get_bank_account(logged_in_ckey)
+		logged_in_name = H.real_name
+		current_account = get_bank_account(logged_in_name)
 
 	is_active = TRUE
+	active_user = user
 	display_stock_interface(user)
 
 /obj/machinery/computer/stockexchange/proc/display_stock_interface(mob/user)
@@ -195,7 +197,7 @@
 	dat += "<div class='auto-refresh'>Market updates automatically every 10 seconds</div>"
 	dat += "</body></html>"
 
-	current_popup = new(user, "enhanced_stock_terminal", "Stock Trading Terminal", 900, 650)
+	current_popup = new(user, "stock_terminal", "Stock Trading Terminal", 900, 650)
 	current_popup.set_content(dat)
 	current_popup.open()
 
@@ -205,7 +207,7 @@
 
 	// Group stocks by sector
 	var/list/sectors_used = list()
-	for(var/datum/enhanced_stock/stock in GLOB.stock_market.stocks)
+	for(var/datum/stock/stock in GLOB.stock_market.stocks)
 		if(!(stock.sector in sectors_used))
 			sectors_used += stock.sector
 
@@ -214,17 +216,17 @@
 		dat += "<tr class='sector-header'><td colspan='7'>[sector]</td></tr>"
 
 		// Stocks in this sector
-		for(var/datum/enhanced_stock/stock in GLOB.stock_market.stocks)
+		for(var/datum/stock/stock in GLOB.stock_market.stocks)
 			if(stock.sector != sector)
 				continue
 
 			var/price_change = stock.get_price_change_percent()
-			var/owned_shares = stock.get_shares_owned(logged_in_ckey)
+			var/owned_shares = stock.get_shares_owned(logged_in_name)
 			var/holdings_change = "N/A"
 
 			// Calculate holdings P&L based on purchase price vs current price
 			if(owned_shares > 0)
-				var/pnl_percent = stock.get_holdings_pnl_percent(logged_in_ckey)
+				var/pnl_percent = stock.get_holdings_pnl_percent(logged_in_name)
 				if(pnl_percent != 0)
 					holdings_change = "[pnl_percent >= 0 ? "+" : ""][pnl_percent]%"
 				else
@@ -249,18 +251,25 @@
 
 
 /obj/machinery/computer/stockexchange/proc/refresh_display()
-	if(!is_active || !current_popup)
+	if(!is_active || !active_user || !active_user.client)
+		is_active = FALSE
+		active_user = null
+		current_popup = null
 		return
 
-	// Find the user who has this terminal open
-	var/mob/user = null
-	for(var/mob/M in range(2, src))
-		if(M.client)
-			user = M
-			break
+	// Check if user is still in range
+	if(!(active_user in range(2, src)))
+		is_active = FALSE
+		active_user = null
+		current_popup = null
+		return
 
-	if(user)
-		display_stock_interface(user)
+	display_stock_interface(active_user)
+
+// Add this to handle popup closing
+/obj/machinery/computer/stockexchange/proc/on_popup_close()
+	is_active = FALSE
+	current_popup = null
 
 /obj/machinery/computer/stockexchange/Topic(href, href_list)
 	if(..())
@@ -286,7 +295,7 @@
 		to_chat(user, "<span class='danger'>No bank account detected!</span>")
 		return
 
-	var/datum/enhanced_stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
+	var/datum/stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
 	if(!stock)
 		to_chat(user, "<span class='danger'>Stock not found!</span>")
 		return
@@ -306,7 +315,7 @@
 	amount = round(amount)
 	amount = min(amount, max_available)
 
-	if(stock.buy_shares(logged_in_ckey, amount))
+	if(stock.buy_shares(logged_in_name, amount))
 		var/total_cost = amount * stock.current_price
 		to_chat(user, "<span class='notice'>Successfully purchased [(amount)] shares of [stock.name] for $[(total_cost)]!</span>")
 		display_stock_interface(user) // Refresh display after transaction
@@ -318,12 +327,12 @@
 		to_chat(user, "<span class='danger'>No bank account detected!</span>")
 		return
 
-	var/datum/enhanced_stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
+	var/datum/stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
 	if(!stock)
 		to_chat(user, "<span class='danger'>Stock not found!</span>")
 		return
 
-	var/owned_shares = stock.get_shares_owned(logged_in_ckey)
+	var/owned_shares = stock.get_shares_owned(logged_in_name)
 	if(owned_shares <= 0)
 		to_chat(user, "<span class='danger'>You don't own any shares of this stock!</span>")
 		return
@@ -336,7 +345,7 @@
 	amount = round(amount)
 	amount = min(amount, owned_shares)
 
-	if(stock.sell_shares(logged_in_ckey, amount))
+	if(stock.sell_shares(logged_in_name, amount))
 		var/total_value = amount * stock.current_price
 		to_chat(user, "<span class='notice'>Successfully sold [(amount)] shares of [stock.name] for $[(total_value)]!</span>")
 		display_stock_interface(user) // Refresh display after transaction
@@ -344,7 +353,7 @@
 		to_chat(user, "<span class='danger'>Transaction failed!</span>")
 
 /obj/machinery/computer/stockexchange/proc/show_stock_chart(ticker, mob/user)
-	var/datum/enhanced_stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
+	var/datum/stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
 	if(!stock)
 		to_chat(user, "<span class='danger'>Stock not found!</span>")
 		return
@@ -354,7 +363,7 @@
 	chart_popup.set_content(chart_html)
 	chart_popup.open()
 
-/obj/machinery/computer/stockexchange/proc/generate_price_chart(datum/enhanced_stock/stock)
+/obj/machinery/computer/stockexchange/proc/generate_price_chart(datum/stock/stock)
 	var/css = {"<style>
 		body {
 			font-family: 'Segoe UI', 'Arial', sans-serif;
@@ -413,7 +422,7 @@
 	dat += "</body></html>"
 	return dat
 
-/obj/machinery/computer/stockexchange/proc/generate_simple_line_chart(datum/enhanced_stock/stock)
+/obj/machinery/computer/stockexchange/proc/generate_simple_line_chart(datum/stock/stock)
 	var/chart_html = "<div class='chart-line'>"
 
 	if(stock.price_history.len < 2)

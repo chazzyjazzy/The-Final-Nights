@@ -195,7 +195,7 @@
 	dat += "<div class='auto-refresh'>Market updates automatically every 10 seconds</div>"
 	dat += "</body></html>"
 
-	current_popup = new(user, "enhanced_stock_terminal", "Stock Trading Terminal", 900, 650)
+	current_popup = new(user, "stock_terminal", "Stock Trading Terminal", 900, 650)
 	current_popup.set_content(dat)
 	current_popup.open()
 
@@ -205,7 +205,7 @@
 
 	// Group stocks by sector
 	var/list/sectors_used = list()
-	for(var/datum/enhanced_stock/stock in GLOB.stock_market.stocks)
+	for(var/datum/stock/stock in GLOB.stock_market.stocks)
 		if(!(stock.sector in sectors_used))
 			sectors_used += stock.sector
 
@@ -214,7 +214,7 @@
 		dat += "<tr class='sector-header'><td colspan='7'>[sector]</td></tr>"
 
 		// Stocks in this sector
-		for(var/datum/enhanced_stock/stock in GLOB.stock_market.stocks)
+		for(var/datum/stock/stock in GLOB.stock_market.stocks)
 			if(stock.sector != sector)
 				continue
 
@@ -286,7 +286,7 @@
 		to_chat(user, "<span class='danger'>No bank account detected!</span>")
 		return
 
-	var/datum/enhanced_stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
+	var/datum/stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
 	if(!stock)
 		to_chat(user, "<span class='danger'>Stock not found!</span>")
 		return
@@ -318,7 +318,7 @@
 		to_chat(user, "<span class='danger'>No bank account detected!</span>")
 		return
 
-	var/datum/enhanced_stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
+	var/datum/stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
 	if(!stock)
 		to_chat(user, "<span class='danger'>Stock not found!</span>")
 		return
@@ -344,7 +344,7 @@
 		to_chat(user, "<span class='danger'>Transaction failed!</span>")
 
 /obj/machinery/computer/stockexchange/proc/show_stock_chart(ticker, mob/user)
-	var/datum/enhanced_stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
+	var/datum/stock/stock = GLOB.stock_market.get_stock_by_ticker(ticker)
 	if(!stock)
 		to_chat(user, "<span class='danger'>Stock not found!</span>")
 		return
@@ -354,7 +354,7 @@
 	chart_popup.set_content(chart_html)
 	chart_popup.open()
 
-/obj/machinery/computer/stockexchange/proc/generate_price_chart(datum/enhanced_stock/stock)
+/obj/machinery/computer/stockexchange/proc/generate_price_chart(datum/stock/stock)
 	var/css = {"<style>
 		body {
 			font-family: 'Segoe UI', 'Arial', sans-serif;
@@ -413,7 +413,7 @@
 	dat += "</body></html>"
 	return dat
 
-/obj/machinery/computer/stockexchange/proc/generate_simple_line_chart(datum/enhanced_stock/stock)
+/obj/machinery/computer/stockexchange/proc/generate_simple_line_chart(datum/stock/stock)
 	var/chart_html = "<div class='chart-line'>"
 
 	if(stock.price_history.len < 2)

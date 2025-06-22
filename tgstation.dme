@@ -3266,8 +3266,6 @@
 #include "code\modules\spells\spell_types\pointed\mind_transfer.dm"
 #include "code\modules\spells\spell_types\pointed\pointed.dm"
 #include "code\modules\station_goals\station_goal.dm"
-#include "code\modules\stock_market\articles.dm"
-#include "code\modules\stock_market\logs.dm"
 #include "code\modules\stock_market\stockmarket.dm"
 #include "code\modules\stock_market\stocks.dm"
 #include "code\modules\surgery\amputation.dm"
