@@ -10,11 +10,15 @@
 
 	effect_sound = 'modular_tfn/modules/paths/sounds/fireball.ogg'
 
+
+
 // hand of flame
 // flame bolt
 // pillar of fire
 // engulf
 // firestorm
+
+// pretty certain these are not lore accurate particularly flame bolt
 
 // Hand of Flame lighter item
 /obj/item/lighter/hand_of_flame
