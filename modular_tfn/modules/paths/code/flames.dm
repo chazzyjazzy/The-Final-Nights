@@ -8,7 +8,7 @@
 	name = "Lure of Flames Power Name"
 	desc = "Lure of Flames Power Description"
 
-	effect_sound = 'code/modules/wod13/sounds/fireball.ogg'
+	effect_sound = 'modular_tfn/modules/paths/sounds/fireball.ogg'
 
 // hand of flame
 // flame bolt
@@ -20,9 +20,9 @@
 /obj/item/lighter/hand_of_flame
 	name = "hand of flame"
 	desc = "Your hand burns with supernatural fire."
-	icon = 'icons/obj/cigarettes.dmi'
-	icon_state = "zippo"
-	inhand_icon_state = "zippo"
+	icon = 'code/modules/wod13/32x48.dmi'
+	icon_state = "fire"
+	inhand_icon_state = "fire"
 	force = 20
 	damtype = BURN
 	lit = TRUE
@@ -35,7 +35,7 @@
 /obj/item/lighter/hand_of_flame/Initialize(mapload)
 	. = ..()
 	set_light_on(TRUE)
-	playsound(src, 'code/modules/wod13/sounds/fireball.ogg', 50, TRUE)
+	playsound(src, 'modular_tfn/modules/paths/sounds/fireball.ogg', 50, TRUE)
 
 /obj/item/lighter/hand_of_flame/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
 	. = ..()
@@ -45,7 +45,7 @@
 		if(prob(25))
 			L.adjust_fire_stacks(1)
 			L.IgniteMob()
-		playsound(src, 'code/modules/wod13/sounds/fireball.ogg', 25, TRUE)
+		playsound(src, 'modular_tfn/modules/paths/sounds/fireball.ogg', 25, TRUE)
 
 //HAND OF FLAME - Level 1
 /datum/discipline_power/path/flames/one
@@ -291,7 +291,7 @@
 		L.visible_message(span_danger("[target] is struck by supernatural flames!"), span_userdanger("You are burned by supernatural fire!"))
 		new /obj/effect/fire(get_turf(target))
 		// Sound effect
-		playsound(get_turf(target), 'code/modules/wod13/sounds/fireball.ogg', 50, TRUE)
+		playsound(get_turf(target), 'modular_tfn/modules/paths/sounds/fireball.ogg', 50, TRUE)
 
 /obj/projectile/flames/flamebolt/on_hit(atom/target, blocked = FALSE)
 	. = ..()

@@ -3,20 +3,20 @@
 
 /datum/action/discipline/path
 	check_flags = NONE
-	button_icon = 'code/modules/wod13/UI/paths.dmi' //Paths use paths.dmi instead of actions.dmi
+	button_icon = 'modular_tfn/modules/paths/icons/paths.dmi' //Paths use paths.dmi instead of actions.dmi
 	background_icon_state = "default" //Paths use 'default' background
-	icon_icon = 'code/modules/wod13/UI/paths.dmi' //Action icon also from paths.dmi
+	icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi' //Action icon also from paths.dmi
 	button_icon_state = "default" //Default button state for paths
 
 /datum/action/discipline/ApplyIcon(atom/movable/screen/movable/action_button/current_button, force = FALSE)
 	// Check if this is a path discipline and use different icons
 	if(istype(discipline, /datum/discipline/path))
-		button_icon = 'code/modules/wod13/UI/paths.dmi'
-		icon_icon = 'code/modules/wod13/UI/paths.dmi'
+		button_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+		icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
 		background_icon_state = "default"
 	else
-		button_icon = 'code/modules/wod13/UI/actions.dmi'
-		icon_icon = 'code/modules/wod13/UI/actions.dmi'
+		button_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+		icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
 		background_icon_state = "discipline"
 
 	if(icon_icon && button_icon_state && ((current_button.button_icon_state != button_icon_state) || force))
