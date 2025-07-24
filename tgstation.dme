@@ -3799,6 +3799,7 @@
 #include "modular_tfn\modules\morality\morality_component.dm"
 #include "modular_tfn\modules\panicbunker\code\panicbunker.dm"
 #include "modular_tfn\modules\paths\code\flames.dm"
+#include "modular_tfn\modules\paths\code\levinbolt.dm"
 #include "modular_tfn\modules\paths\code\path.dm"
 #include "modular_tfn\modules\subtle\subtle.dm"
 #include "modular_tfn\modules\taser_tfn13\taser_tfn13.dm"
