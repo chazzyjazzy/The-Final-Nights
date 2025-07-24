@@ -8,7 +8,7 @@
 	icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi' //Action icon also from paths.dmi
 	button_icon_state = "default" //Default button state for paths
 
-/datum/action/discipline/ApplyIcon(atom/movable/screen/movable/action_button/current_button, force = FALSE)
+/datum/action/discipline/path/ApplyIcon(atom/movable/screen/movable/action_button/current_button, force = FALSE)
 	// Check if this is a path discipline and use different icons
 	if(istype(discipline, /datum/discipline/path))
 		button_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
