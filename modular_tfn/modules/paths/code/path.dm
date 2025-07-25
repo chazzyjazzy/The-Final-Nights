@@ -6,7 +6,7 @@
 // ALERT : the discipline icons were interrupting with this alot, the parent type was overriding the subtype's icons, so below is a rather hammy method to replace it
 // TODO : figure out the issue with these icons so that we don't have this monster of a solution to get correct icons from modular_tfn/whatever/paths.dmi instead of code/whateverwod13/actions.dmi
 // TODO : The adminverb 'Remove Discipline' doesnt appear to properly remove the discipline. Removing a path then adding it again causes duplicates, and the previous one never goes away.
-
+// TODO : lol looks like remove discipline adminverb just doesnt remove disciplines
 // Override post_gain to replace the action after the base system is done
 /datum/discipline/path/post_gain()
 	. = ..()

@@ -6,6 +6,7 @@
 	var/path_type = null
 	var/path_level = 1
 	var/do_after_time = 300 // 30 seconds
+// TODO : find the original creators of the sprites and acknowledge them in the PR - its held under creative commons 3.0
 
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
 
@@ -24,7 +25,7 @@
 	to_chat(user, span_notice("You begin studying the ancient texts..."))
 
 	if(do_after(user, do_after_time, target = src))
-		// TODO: the assigning of the appropriate path and its level deosnt appear to be working -- check adminverb 'Grant Discipline' for better handling, or perhaps discipline.assign
+		// TODO: the assigning of the appropriate path and its level deosnt appear to be working -- check adminverb 'Grant Discipline' for better handling, or perhaps discipline.assign also path.dm
 		var/datum/discipline/discipline_instance = new path_type() //perhaps these need to be subtyped as the paths?
 		discipline_instance.level_casting = path_level
 		discipline_instance.assign(user)
