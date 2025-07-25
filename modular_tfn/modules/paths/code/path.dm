@@ -2,9 +2,12 @@
 	var/action_type = /datum/action/discipline/path
 	var/action_replaced = FALSE // Track if we've already done the replacement
 
+
+// ALERT : the discipline icons were interrupting with this alot, the parent type was overriding the subtype's icons, so below is a rather hammy method to replace it
+// TODO : figure out the issue with these icons so that we don't have this monster of a solution to get correct icons from modular_tfn/whatever/paths.dmi instead of code/whateverwod13/actions.dmi
+
 // Override post_gain to replace the action after the base system is done
 /datum/discipline/path/post_gain()
-	// Call parent first
 	. = ..()
 
 	// Only do this once per discipline

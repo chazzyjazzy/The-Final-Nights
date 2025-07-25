@@ -25,8 +25,8 @@
 	name = "hand of flame"
 	desc = "Your hand burns with supernatural fire."
 	icon = 'code/modules/wod13/32x48.dmi'
-	icon_state = "fire"
-	inhand_icon_state = "fire"
+	icon_state = "fire" // TODO SPRITES
+	inhand_icon_state = "fire" // TODO SPRITES
 	force = 20
 	damtype = BURN
 	lit = TRUE
@@ -46,7 +46,7 @@
 	if(proximity_flag && isliving(target))
 		var/mob/living/L = target
 		// Chance to ignite target
-		if(prob(25))
+		if(prob(25)) // TODO make this a thaumaturgy / mentality roll, unless base probs are ok
 			L.adjust_fire_stacks(1)
 			L.IgniteMob()
 		playsound(src, 'modular_tfn/modules/paths/sounds/fireball.ogg', 25, TRUE)
@@ -62,7 +62,7 @@
 	violates_masquerade = TRUE
 
 	toggled = TRUE
-	duration_length = 6 TURNS
+	duration_length = 6 TURNS // how long is a turn again? 5 seconds maybe?
 
 	grouped_powers = list(
 		/datum/discipline_power/path/flames/two,
@@ -76,16 +76,15 @@
 	owner.drop_all_held_items()
 	owner.put_in_r_hand(new /obj/item/lighter/hand_of_flame(owner))
 	owner.put_in_l_hand(new /obj/item/lighter/hand_of_flame(owner))
-	ADD_TRAIT(owner, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
 
 /datum/discipline_power/path/flames/one/deactivate()
 	. = ..()
 	// Remove flame weapons
 	for(var/obj/item/lighter/hand_of_flame/flame in owner.held_items)
 		qdel(flame)
-	REMOVE_TRAIT(owner, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
 
 //FLAME BOLT - Level 2
+// TODO : ok now this is just a 'fireball' spell - not sure if thats canon/wanted, perhaps we make it like one, but add the ability for the user to 'throw' the fire.
 /datum/discipline_power/path/flames/two
 	name = "Flame Bolt"
 	desc = "Hurl a bolt of supernatural fire at your target."
@@ -103,6 +102,7 @@
 		/datum/discipline_power/path/flames/five
 	)
 
+// TODO : add a botch where the user gets set on fire instead. these abilities should be strong - as they're acquired mid-round through 'jobby' activities, but they need 'magical accident' drawbacks
 /datum/discipline_power/path/flames/two/activate(mob/living/target)
 	. = ..()
 	var/turf/start = get_turf(owner)
@@ -111,7 +111,8 @@
 	H.damage = 20 + owner.thaum_damage_plus + owner.get_total_mentality()
 	H.preparePixelProjectile(target, start)
 	H.level = 2
-	H.fire(direct_target = target)
+	if(prob(25))
+		H.fire(direct_target = target)
 	H.cruelty_multiplier = 1.1
 	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
@@ -134,14 +135,12 @@
 		/datum/discipline_power/path/flames/five
 	)
 
+// TODO : Right now this ability is a placeholder, just does damage and adds a fire stack, very boring
 /datum/discipline_power/path/flames/three/activate(mob/living/target)
 	. = ..()
 	var/turf/target_turf = get_turf(target)
 	if(!target_turf)
 		return
-
-	// Create visual effect using standard temp visual instead of undefined type
-	new /obj/effect/temp_visual/dir_setting/firing_effect(target_turf)
 
 	// Deal damage
 	var/damage_amount = 25 + owner.thaum_damage_plus + owner.get_total_mentality()
@@ -173,6 +172,7 @@
 		/datum/discipline_power/path/flames/five
 	)
 
+// TODO : Right now this ability is a placeholder just like three, just does damage and adds a flamestack, very boring, it can be better
 /datum/discipline_power/path/flames/four/activate(mob/living/target)
 	. = ..()
 	if(!target)
@@ -186,24 +186,9 @@
 	target.adjust_fire_stacks(8)
 	target.IgniteMob()
 
-	// Add burning effect using timer instead of undefined component
-	addtimer(CALLBACK(src, PROC_REF(engulf_tick), target), 1 SECONDS)
-
 	to_chat(target, span_userdanger("You are engulfed in supernatural flames!"))
 	playsound(get_turf(target), effect_sound, 75, TRUE)
 
-/datum/discipline_power/path/flames/four/proc/engulf_tick(mob/living/target)
-	if(!target || target.stat == DEAD)
-		return
-
-	target.adjustFireLoss(5)
-	// Schedule next tick for 15 seconds total duration
-	var/static/tick_count = 0
-	tick_count++
-	if(tick_count < 15)
-		addtimer(CALLBACK(src, PROC_REF(engulf_tick), target), 1 SECONDS)
-	else
-		tick_count = 0
 
 //FIRESTORM - Level 5
 /datum/discipline_power/path/flames/five
@@ -223,9 +208,11 @@
 		/datum/discipline_power/path/flames/four
 	)
 
+// TODO : needs some kind of animation or sound - perhaps with rolls we can make this into an 'explosion' too, rather than a summoned molotov? also, we need to ensure it can target
+// turfs, not just players. With the subsystem to unlock these abilities, we should ensure that there is no possible way a player can get flames 5 unless the round is 2 hours in at the very least.
+
 /datum/discipline_power/path/flames/five/activate(atom/target)
 	. = ..()
-	// Add 4 second casting time
 	to_chat(owner, span_notice("You begin channeling a devastating firestorm..."))
 	if(!do_after(owner, 4 SECONDS))
 		to_chat(owner, span_warning("Your firestorm casting was interrupted!"))
@@ -239,12 +226,10 @@
 
 	// Create visual effects and deal damage
 	for(var/turf/T in affected_turfs)
-		// Use standard temp visual instead of undefined type
-		new /obj/effect/temp_visual/dir_setting/firing_effect(T)
 
-		// Damage all mobs on each turf
+		// Damage all mobs on each tile
 		for(var/mob/living/L in T)
-			if(L == owner) // Don't damage self
+			if(L == owner) // Don't damage self - but caster still gets set on fire
 				continue
 
 			var/damage_amount = 35 + owner.thaum_damage_plus + owner.get_total_mentality()
@@ -290,18 +275,6 @@
 		if(prob(30))
 			L.adjust_fire_stacks(2)
 			L.IgniteMob()
-
-		// Visual effects
 		L.visible_message(span_danger("[target] is struck by supernatural flames!"), span_userdanger("You are burned by supernatural fire!"))
 		new /obj/effect/fire(get_turf(target))
-		// Sound effect
 		playsound(get_turf(target), 'modular_tfn/modules/paths/sounds/fireball.ogg', 50, TRUE)
-
-/obj/projectile/flames/flamebolt/on_hit(atom/target, blocked = FALSE)
-	. = ..()
-	if(isliving(target))
-		var/mob/living/L = target
-		// Chance to ignite target
-		if(prob(30))
-			L.adjust_fire_stacks(2)
-			L.IgniteMob()

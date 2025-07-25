@@ -34,6 +34,9 @@
 		/datum/discipline_power/path/levinbolt/three
 	)
 
+//when the owner is attacked by mob/living, mob/living has a 30% chance (or maybe a roll, or maybe more) to suffer a small stun. probably need to use signals, but there doesnt seem to be an appropriate one.
+// todo : check /tg/ for appropriate signals, implement them
+
 /datum/discipline_power/path/levinbolt/one/activate()
 	. = ..()
 	if(.)
