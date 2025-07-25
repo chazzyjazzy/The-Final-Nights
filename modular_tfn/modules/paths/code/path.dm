@@ -1,32 +1,78 @@
 /datum/discipline/path
 	var/action_type = /datum/action/discipline/path
+	var/action_replaced = FALSE // Track if we've already done the replacement
+
+// Override post_gain to replace the action after the base system is done
+/datum/discipline/path/post_gain()
+	// Call parent first
+	. = ..()
+
+	// Only do this once per discipline
+	if(action_replaced || !owner)
+		return
+
+	// Give the base system a moment to create the action, then replace it
+	spawn(1)
+		replace_base_action()
+
+/datum/discipline/path/proc/replace_base_action()
+	if(!owner)
+		return
+
+	// Find the base discipline action that was created for this discipline
+	var/datum/action/discipline/base_action = null
+	for(var/datum/action/discipline/action in owner.actions)
+		if(action.discipline == src && action.type == /datum/action/discipline)
+			base_action = action
+			break
+
+	if(base_action)
+		// Create our path action
+		var/datum/action/discipline/path/path_action = new /datum/action/discipline/path(src)
+
+		// Grant the path action
+		path_action.Grant(owner)
+
+		// Remove the base action
+		base_action.Remove(owner)
+		qdel(base_action)
+
+		action_replaced = TRUE
 
 /datum/action/discipline/path
 	check_flags = NONE
-	button_icon = 'modular_tfn/modules/paths/icons/paths.dmi' //Paths use paths.dmi instead of actions.dmi
-	background_icon_state = "default" //Paths use 'default' background
-	icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi' //Action icon also from paths.dmi
-	button_icon_state = "default" //Default button state for paths
+	button_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+	background_icon_state = "default"
+	icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+	button_icon_state = "default"
+
+/datum/action/discipline/path/New(datum/discipline/discipline)
+	. = ..()
 
 /datum/action/discipline/path/ApplyIcon(atom/movable/screen/movable/action_button/current_button, force = FALSE)
-	// Check if this is a path discipline and use different icons
-	if(istype(discipline, /datum/discipline/path))
-		button_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
-		icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
-		background_icon_state = "default"
-	else
-		button_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
-		icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
-		background_icon_state = "discipline"
+	button_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+	icon_icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+	background_icon_state = "default"
+	button_icon_state = "default"
+
+	current_button.icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+	current_button.icon_state = "default"
 
 	if(icon_icon && button_icon_state && ((current_button.button_icon_state != button_icon_state) || force))
 		current_button.cut_overlays(TRUE)
+
 		if(discipline)
 			current_button.name = discipline.current_power.name
 			current_button.desc = discipline.current_power.desc
-			current_button.add_overlay(mutable_appearance(icon_icon, "[discipline.icon_state]"))
-			current_button.button_icon_state = "[discipline.icon_state]"
-			current_button.add_overlay(mutable_appearance(icon_icon, "[discipline.level_casting]"))
+
+			// Add discipline icon overlay using path icons
+			var/discipline_icon_state = discipline.icon_state || "default"
+			current_button.add_overlay(mutable_appearance('modular_tfn/modules/paths/icons/paths.dmi', discipline_icon_state))
+			current_button.button_icon_state = discipline_icon_state
+
+			// Add level indicator overlay using path icons
+			if(discipline.level_casting)
+				current_button.add_overlay(mutable_appearance('modular_tfn/modules/paths/icons/paths.dmi', "[discipline.level_casting]"))
 		else
-			current_button.add_overlay(mutable_appearance(icon_icon, button_icon_state))
-			current_button.button_icon_state = button_icon_state
+			current_button.add_overlay(mutable_appearance('modular_tfn/modules/paths/icons/paths.dmi', "default"))
+			current_button.button_icon_state = "default"

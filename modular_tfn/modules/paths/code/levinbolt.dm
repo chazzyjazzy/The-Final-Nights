@@ -36,9 +36,17 @@
 
 /datum/discipline_power/path/levinbolt/one/activate()
 	. = ..()
+	if(.)
+		RegisterSignal(owner, COMSIG_MOB_ATTACKED_BY_MELEE, PROC_REF(spark_counter))
 
 /datum/discipline_power/path/levinbolt/one/deactivate()
 	. = ..()
+	UnregisterSignal(owner, COMSIG_MOB_ATTACKED_BY_MELEE)
+
+/datum/discipline_power/path/levinbolt/one/proc/spark_counter(mob/source, obj/item/weapon, mob/living/attacker)
+	if(prob(30))
+		to_chat(world, "attacker is stunned")
+		attacker.Stun(3 SECONDS)
 
 //ILLUMINATE - Level 2
 /datum/discipline_power/path/levinbolt/two
