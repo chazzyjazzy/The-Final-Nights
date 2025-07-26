@@ -11,13 +11,22 @@
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
 
 	// TODO : add a conditional where players cant just use the flames 5 spellbook and instantly learn all the previous dots
-	if(!user.thaumaturgy_knowledge)
-		to_chat(user, span_notice("You must have knowledge of Thaumaturgy to use this book!"))
-		return
 
 	if(!path_type)
 		to_chat(user, span_warning("This spellbook appears to be incomplete!"))
 		return
+
+	if(istype(user.dna.species, /datum/species/kindred))
+		if(!user.thaumaturgy_knowledge)
+			to_chat(user, span_notice("You must have knowledge of Thaumaturgy to use this book!"))
+			return
+		else
+			// TODO : use get_discipline() to check if the user already has this path, then check the level
+			return
+	else
+		to_chat(user, span_warning("You must be a Kindred to use this spellbook!"))
+		return
+
 	var/original_icon_state = icon_state
 	icon_state = "[original_icon_state]-opened"
 	update_appearance()
