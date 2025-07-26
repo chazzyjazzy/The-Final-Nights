@@ -6,6 +6,7 @@
 	var/path_type = null
 	var/path_level = 1
 	var/do_after_time = 300 // 30 seconds
+	var/activate_sound = 'modular_tfn/modules/paths/sounds/open_book.wav' // sound played when the spellbook is used
 // TODO : find the original creators of the sprites and acknowledge them in the PR - its held under creative commons 3.0
 
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
@@ -22,7 +23,7 @@
 			return
 		else
 			// TODO : use get_discipline() to check if the user already has this path, then check the level
-			return
+			user.playsound_local(user, activate_sound, 50, FALSE)
 	else
 		to_chat(user, span_warning("You must be a Kindred to use this spellbook!"))
 		return
