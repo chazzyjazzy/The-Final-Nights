@@ -23,3 +23,28 @@
 		new /datum/data/mining_equipment("Weekapaug Thistle", /obj/item/vtm_artifact/weekapaug_thistle, 10),
 	)
 
+// the world initializes vending products much earlier in the compilation order. have to add these items to GLOB.vending_products after GLOB.vending_products is initialized.
+// perhaps this problem is solved if we just place the vendor in strongdmm. need to test this
+/world/New()
+	. = ..()
+	// Add occult vendor items to vending products before sprite sheet generation
+	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level1] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level2] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level3] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level4] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level5] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/levinbolt/level1] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/levinbolt/level2] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/levinbolt/level3] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/levinbolt/level4] = 1
+	GLOB.vending_products[/obj/item/path_spellbook/levinbolt/level5] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/rand] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/odious_chalice] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/key_of_alamut] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/daimonori] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/bloodstar] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/heart_of_eliza] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/fae_charm] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/galdjum] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/mummywrap_fetish] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/weekapaug_thistle] = 1
