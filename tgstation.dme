@@ -3801,6 +3801,7 @@
 #include "modular_tfn\modules\paths\code\flames.dm"
 #include "modular_tfn\modules\paths\code\levinbolt.dm"
 #include "modular_tfn\modules\paths\code\path.dm"
+#include "modular_tfn\modules\paths\code\spellbook_shop.dm"
 #include "modular_tfn\modules\paths\code\spellbooks.dm"
 #include "modular_tfn\modules\subtle\subtle.dm"
 #include "modular_tfn\modules\taser_tfn13\taser_tfn13.dm"
