@@ -111,8 +111,7 @@
 	H.damage = 20 + owner.thaum_damage_plus + owner.get_total_mentality()
 	H.preparePixelProjectile(target, start)
 	H.level = 2
-	if(prob(25))
-		H.fire(direct_target = target)
+	H.fire(direct_target = target)
 	H.cruelty_multiplier = 1.1
 	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
