@@ -22,7 +22,13 @@
 			to_chat(user, span_notice("You must have knowledge of Thaumaturgy to use this book!"))
 			return
 		else
-			// TODO : use get_discipline() to check if the user already has this path, then check the level
+			for(var/datum/discipline/D in user.actions)
+				if(D)
+					if(D.discipline)
+						if(D.discipline == path_type)
+							// TODO : Doesn't seem to be working as intended and isn't sending the message
+							to_chat(user, span_notice("Debug - You know this path!"))
+							return
 			user.playsound_local(user, activate_sound, 50, FALSE)
 	else
 		to_chat(user, span_warning("You must be a Kindred to use this spellbook!"))
