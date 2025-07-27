@@ -7,6 +7,7 @@
 	var/path_level = 1
 	var/do_after_time = 300 // 30 seconds
 	var/activate_sound = 'modular_tfn/modules/paths/sounds/open_book.wav' // sound played when the spellbook is used
+	var/deactivate_sound = 'modular_tfn/modules/paths/sounds/close_book.wav' // sound played when the spellbook is finished using
 // TODO : find the original creators of the sprites and acknowledge them in the PR - its held under creative commons 3.0
 
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
@@ -45,6 +46,8 @@
 		var/datum/discipline/discipline_instance = new path_type() //perhaps these need to be subtyped as the paths?
 		discipline_instance.level_casting = path_level
 		discipline_instance.assign(user)
+
+		user.playsound_local(user, deactivate_sound, 50, FALSE)
 
 		to_chat(user, span_notice("The knowledge of [name] flows into your mind!"))
 		qdel(src)
