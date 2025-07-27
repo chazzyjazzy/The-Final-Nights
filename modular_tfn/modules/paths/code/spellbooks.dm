@@ -23,11 +23,10 @@
 			to_chat(user, span_notice("You must have knowledge of Thaumaturgy to use this book!"))
 			return
 		else
-			for(var/datum/discipline/D in user.actions)
+			for(var/datum/action/discipline/D in user.actions)
 				if(D)
 					if(D.discipline)
-						if(D.discipline == path_type)
-							// TODO : Doesn't seem to be working as intended and isn't sending the message
+						if(D.discipline.type == path_type)
 							to_chat(user, span_notice("Debug - You know this path!"))
 							return
 			user.playsound_local(user, activate_sound, 50, FALSE)
