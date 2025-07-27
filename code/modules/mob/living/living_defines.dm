@@ -231,6 +231,8 @@
 
 	var/necromancy_knowledge = FALSE
 
+	var/research_points = 0 // TFN ADDITION - Paths
+
 	var/elysium_checks = 0
 	var/bloodhunted = FALSE
 	var/hearing_ghosts = FALSE
