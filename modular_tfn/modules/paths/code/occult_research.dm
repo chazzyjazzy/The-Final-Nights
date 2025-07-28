@@ -12,7 +12,7 @@ SUBSYSTEM_DEF(occult_research)
 			continue
 		if(H.stat >= HARD_CRIT) // Skip dead/critically injured players
 			continue
-		if(!H.thaumaturgy_knowledge & !H.necromancy_knowledge) // Skip players without occult knowledge
+		if(!H.thaumaturgy_knowledge && !H.necromancy_knowledge) // Skip players without occult knowledge
 			continue
 
 		process_research_points(H)

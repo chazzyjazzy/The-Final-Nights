@@ -1,6 +1,7 @@
 /obj/machinery/mineral/equipment_vendor/fastfood/occult
 	owner_needed = FALSE
 	desc = "Use your occult research to reap the benefits of safeguarded knowledge and artifacts."
+	dispenses_dollars = FALSE
 	prize_list = list(new /datum/data/mining_equipment("Lure of Flames Spellbook (Level I)",	/obj/item/path_spellbook/lure_of_flames/level1,	10),
 		new /datum/data/mining_equipment("Lure of Flames Spellbook (Level II)",	/obj/item/path_spellbook/lure_of_flames/level2,	10),
 		new /datum/data/mining_equipment("Lure of Flames Spellbook (Level III)",	/obj/item/path_spellbook/lure_of_flames/level3,	10),
@@ -48,3 +49,60 @@
 	GLOB.vending_products[/obj/item/vtm_artifact/galdjum] = 1
 	GLOB.vending_products[/obj/item/vtm_artifact/mummywrap_fetish] = 1
 	GLOB.vending_products[/obj/item/vtm_artifact/weekapaug_thistle] = 1
+
+// SpellbookVendor.jsx in tgui/interfaces
+/obj/machinery/mineral/equipment_vendor/fastfood/occult/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "SpellbookVendor", name)
+		ui.open()
+
+// Override ui_data to show user's research_points and knowledge data
+/obj/machinery/mineral/equipment_vendor/fastfood/occult/ui_data(mob/user)
+	. = list()
+	.["user"] = list()
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		.["user"]["points"] = H.research_points
+		.["user"]["name"] = "[H.name]"
+		.["user"]["job"] = "[H.mind?.assigned_role]"
+		.["user"]["has_thaumaturgy"] = H.thaumaturgy_knowledge
+		.["user"]["has_necromancy"] = H.necromancy_knowledge
+	else
+		.["user"]["points"] = 0
+		.["user"]["name"] = "Unknown"
+		.["user"]["job"] = "Unknown"
+		.["user"]["has_thaumaturgy"] = FALSE
+		.["user"]["has_necromancy"] = FALSE
+
+// Override ui_act to use research_points instead of vendor points (dollars)
+/obj/machinery/mineral/equipment_vendor/fastfood/occult/ui_act(action, params)
+	if(action != "purchase")
+		return ..()
+
+	if(!ishuman(usr))
+		return
+
+	var/mob/living/carbon/human/H = usr
+
+	var/datum/data/mining_equipment/prize = locate(params["ref"]) in prize_list
+	if(!prize || !(prize in prize_list))
+		to_chat(usr, span_alert("Error: Invalid choice!"))
+		flick(icon_deny, src)
+		return
+
+	if(prize.cost > H.research_points)
+		to_chat(usr, span_alert("Error: Insufficient research points for [prize.equipment_name]! You need [prize.cost] research points."))
+		flick(icon_deny, src)
+		return
+
+	// Deduct research points from user
+	H.research_points -= prize.cost
+	to_chat(usr, span_notice("emanates dark energy as it dispenses [prize.equipment_name]!"))
+	new prize.equipment_path(loc)
+	SSblackbox.record_feedback("nested tally", "mining_equipment_bought", 1, list("[type]", "[prize.equipment_path]"))
+	return TRUE
+
+// Remove the AltClick dollar dispensing for this vendor
+/obj/machinery/mineral/equipment_vendor/fastfood/occult/AltClick(mob/user)
+	return  // Do nothing
