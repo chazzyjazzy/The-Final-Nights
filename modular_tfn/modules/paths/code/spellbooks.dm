@@ -48,7 +48,7 @@
 								to_chat(user, span_notice("You already know a higher level of this path!"))
 								return
 			// If we reach here, the user does not know this path at all
-			if(!path_level == 1 && !is_knowing)
+			if(path_level > 1 && !is_knowing)
 				to_chat(user, span_notice("You must know the first level of this path before you can learn higher levels!"))
 				return
 			else if(path_level == 1 && !is_knowing)
