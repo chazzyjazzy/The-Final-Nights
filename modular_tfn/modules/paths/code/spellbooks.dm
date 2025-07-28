@@ -21,7 +21,7 @@
 	if(istype(user.dna.species, /datum/species/kindred))
 		var/is_knowing = FALSE
 		if(!user.thaumaturgy_knowledge)
-			to_chat(user, span_notice("You must have knowledge of Thaumaturgy to use this book!"))
+			to_chat(user, span_warning("You must have knowledge of Thaumaturgy to use this book!"))
 			return
 		else
 			for(var/datum/action/discipline/D in user.actions)
@@ -33,7 +33,7 @@
 							//Then we check if the level can be learned
 							if(path_level == D.discipline.level)
 								// User already knows this level
-								to_chat(user, span_notice("You already know this book!"))
+								to_chat(user, span_warning("You already know this book!"))
 								return
 							else if(path_level == D.discipline.level + 1)
 								// The book's level is one higher than the user's current level
@@ -41,15 +41,15 @@
 								user.playsound_local(user, activate_sound, 50, FALSE)
 							else if (path_level > D.discipline.level + 1)
 								// The book's level is too high for the user to learn
-								to_chat(user, span_notice("You must learn the previous book(s) first!"))
+								to_chat(user, span_warning("You must learn the previous book(s) first!"))
 								return
 							else if (path_level < D.discipline.level)
 								// The book's level is lower than the user's current level
-								to_chat(user, span_notice("You already know a higher level of this path!"))
+								to_chat(user, span_warning("You already know a higher level of this path!"))
 								return
 			// If we reach here, the user does not know this path at all
 			if(path_level > 1 && !is_knowing)
-				to_chat(user, span_notice("You must know the first level of this path before you can learn higher levels!"))
+				to_chat(user, span_warning("You must know the first level of this path before you can learn higher levels!"))
 				return
 			else if(path_level == 1 && !is_knowing)
 				to_chat(user, span_notice("Debug - You do not know the path and can learn it!"))
