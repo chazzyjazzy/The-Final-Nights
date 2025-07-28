@@ -12,13 +12,14 @@
 
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
 
-	// TODO : add a conditional where players cant just use the flames 5 spellbook and instantly learn all the previous dots
+	// TODO : make the conditional give the discipline type and level to the user
 
 	if(!path_type)
 		to_chat(user, span_warning("This spellbook appears to be incomplete!"))
 		return
 
 	if(istype(user.dna.species, /datum/species/kindred))
+		var/is_knowing = FALSE
 		if(!user.thaumaturgy_knowledge)
 			to_chat(user, span_notice("You must have knowledge of Thaumaturgy to use this book!"))
 			return
@@ -26,10 +27,33 @@
 			for(var/datum/action/discipline/D in user.actions)
 				if(D)
 					if(D.discipline)
+						//Checking if the discipline is the same as the path_type
 						if(D.discipline.type == path_type)
-							to_chat(user, span_notice("Debug - You know this path!"))
-							return
-			user.playsound_local(user, activate_sound, 50, FALSE)
+							is_knowing = TRUE
+							//Then we check if the level can be learned
+							if(path_level == D.discipline.level)
+								// User already knows this level
+								to_chat(user, span_notice("You already know this book!"))
+								return
+							else if(path_level == D.discipline.level + 1)
+								// The book's level is one higher than the user's current level
+								to_chat(user, span_notice("Debug - You can learn this book!"))
+								user.playsound_local(user, activate_sound, 50, FALSE)
+							else if (path_level > D.discipline.level + 1)
+								// The book's level is too high for the user to learn
+								to_chat(user, span_notice("You must learn the previous book(s) first!"))
+								return
+							else if (path_level < D.discipline.level)
+								// The book's level is lower than the user's current level
+								to_chat(user, span_notice("You already know a higher level of this path!"))
+								return
+			// If we reach here, the user does not know this path at all
+			if(!path.level == 1 && !is_knowing)
+				to_chat(user, span_notice("You must know the first level of this path before you can learn higher levels!"))
+				return
+			else if(path_level == 1 && !is_knowing)
+				to_chat(user, span_notice("Debug - You do not know the path and can learn it!"))
+				user.playsound_local(user, activate_sound, 50, FALSE)
 	else
 		to_chat(user, span_warning("You must be a Kindred to use this spellbook!"))
 		return
