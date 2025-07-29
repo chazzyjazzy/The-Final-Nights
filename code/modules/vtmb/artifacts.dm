@@ -50,6 +50,8 @@
 	if(!identified)
 		return
 
+
+// ---------------------------------------------WEEKAPAUG THISTLE-----------------------------------------------------------
 /obj/item/vtm_artifact/weekapaug_thistle
 	true_name = "Weekapaug Thistle"
 	true_desc = "Increases combat defense."
@@ -67,11 +69,12 @@
 	H.physiology.armor.melee = H.physiology.armor.melee-10
 	H.physiology.armor.bullet = H.physiology.armor.bullet-10
 
+/*
 /obj/item/vtm_artifact/tarulfang
 	true_name = "Tarulfang"
 	true_desc = "Decreases chance of frenzy."
 	icon_state = "tarulfang"
-
+*/
 /obj/item/vtm_artifact/weekapaug_thistle/get_powers()
 	..()
 	owner.frenzy_chance_boost = 5
@@ -80,6 +83,7 @@
 	..()
 	owner.frenzy_chance_boost = 10
 
+// ---------------------------------------------MUMMYWRAP FETISH-----------------------------------------------------------
 /obj/item/vtm_artifact/mummywrap_fetish
 	true_name = "Mummywrap Fetish"
 	true_desc = "Passive health regeneration."
@@ -94,6 +98,7 @@
 			owner.adjustBruteLoss(-5)
 			owner.adjustFireLoss(-5)
 
+/*
 /obj/item/vtm_artifact/saulocept
 	true_name = "Saulocept"
 	true_desc = "More experience points."
@@ -106,7 +111,9 @@
 /obj/item/vtm_artifact/saulocept/remove_powers()
 	..()
 	owner.experience_plus = 0
+*/
 
+// ---------------------------------------------GALDJUM-----------------------------------------------------------
 /obj/item/vtm_artifact/galdjum
 	true_name = "Galdjum"
 	true_desc = "Increases disciplines duration."
@@ -120,6 +127,8 @@
 	..()
 	owner.discipline_time_plus = 0
 
+
+// ---------------------------------------------FAE CHARM-----------------------------------------------------------
 /datum/movespeed_modifier/fae_charm
 	multiplicative_slowdown = -0.20
 
@@ -136,6 +145,8 @@
 	..()
 	owner.remove_movespeed_modifier(/datum/movespeed_modifier/fae_charm)
 
+
+// ---------------------------------------------HEART OF ELIZA-----------------------------------------------------------
 /obj/item/vtm_artifact/heart_of_eliza
 	true_name = "Heart of Eliza"
 	true_desc = "Melee damage boost."
@@ -153,6 +164,8 @@
 	if(H.dna)
 		H.dna.species.meleemod = H.dna.species.meleemod-0.5
 
+
+//// ---------------------------------------------BLOODSTAR-----------------------------------------------------------
 /obj/item/vtm_artifact/bloodstar
 	true_name = "Bloodstar"
 	true_desc = "Increases Bloodpower duration."
@@ -166,6 +179,8 @@
 	..()
 	owner.bloodpower_time_plus = 0
 
+
+// ---------------------------------------------DAIMONORI-----------------------------------------------------------
 /obj/item/vtm_artifact/daimonori
 	true_name = "Daimonori"
 	true_desc = "Increases thaumaturgy damage."
@@ -179,6 +194,8 @@
 	..()
 	owner.thaum_damage_plus = 0
 
+
+// ---------------------------------------------KEY OF ALAMUT-----------------------------------------------------------
 /obj/item/vtm_artifact/key_of_alamut
 	true_name = "Key of Alamut"
 	true_desc = "Decreases incoming damage."
@@ -202,6 +219,7 @@
 		H.dna.species.brutemod = H.dna.species.brutemod+0.2
 		H.dna.species.burnmod = H.dna.species.burnmod+0.2
 
+// ---------------------------------------------ODIOUS CHALICE-----------------------------------------------------------
 /obj/item/vtm_artifact/odious_chalice
 	true_name = "Odious Chalice"
 	true_desc = "Stores blood from every attack."
@@ -228,6 +246,69 @@
 	playsound(M.loc,'sound/items/drink.ogg', 50, TRUE)
 	return
 
+// ---------------------------------------------BLOODSTONE-----------------------------------------------------------
+/datum/action/bloodstone_track
+	name = "Track Bloodstone"
+	desc = "Sense the location of your bound bloodstone."
+	button_icon = 'modular_tfn/modules/paths/icons/bloodstone_artifact.dmi'
+	button_icon_state = "bloodstone_track"
+	check_flags = AB_CHECK_CONSCIOUS
+	var/obj/item/vtm_artifact/bloodstone/tracked_stone
+
+/datum/action/bloodstone_track/New(Target, obj/item/vtm_artifact/bloodstone/stone)
+	..()
+	tracked_stone = stone
+
+/datum/action/bloodstone_track/Trigger(trigger_flags)
+	if(!tracked_stone)
+		to_chat(owner, span_warning("The bloodstone bond has been severed."))
+		Remove(owner)
+		return FALSE
+
+	var/turf/stone_turf = get_turf(tracked_stone)
+	if(!stone_turf)
+		to_chat(owner, span_warning("You cannot sense the bloodstone's location."))
+		return FALSE
+
+	var/area/stone_area = get_area(tracked_stone)
+	to_chat(owner, span_notice("The bloodstone whispers its location: [stone_area.name] ([stone_turf.x], [stone_turf.y])"))
+	return TRUE
+
+/datum/action/bloodstone_track/IsAvailable(feedback = FALSE)
+	if(!tracked_stone)
+		return FALSE
+	return ..()
+
+/obj/item/vtm_artifact/bloodstone
+	true_name = "Bloodstone"
+	true_desc = "A pulsing crimson stone that creates a mystical bond with its identifier."
+	icon = 'modular_tfn/modules/paths/icons/bloodstone_artifact.dmi'
+	onflooricon = 'modular_tfn/modules/paths/icons/bloodstone_artifact.dmi'
+	icon_state = "bloodstone"
+	var/mob/living/carbon/human/bound_identifier // Who identified it first
+	var/datum/action/bloodstone_track/tracking_action
+
+
+/obj/item/vtm_artifact/bloodstone/identificate()
+	..()
+	if(identified && !bound_identifier)
+		var/mob/living/carbon/human/user = usr
+		if(ishuman(user))
+			bound_identifier = user
+			to_chat(user, span_warning("The bloodstone pulses with dark energy as it bonds to your essence. You will always know its location."))
+
+			// Grant the tracking action
+			tracking_action = new /datum/action/bloodstone_track(user, src)
+			tracking_action.Grant(user)
+
+/obj/item/vtm_artifact/bloodstone/Destroy()
+	// Clean up the action when bloodstone is destroyed
+	if(tracking_action)
+		tracking_action.Remove(bound_identifier)
+		QDEL_NULL(tracking_action)
+	return ..()
+
+
 /obj/item/vtm_artifact/rand
 	icon_state = "art_rand"
 
@@ -238,6 +319,6 @@
 									/obj/item/vtm_artifact/daimonori, /obj/item/vtm_artifact/bloodstar,
 									/obj/item/vtm_artifact/heart_of_eliza, /obj/item/vtm_artifact/fae_charm,
 									/obj/item/vtm_artifact/galdjum, /obj/item/vtm_artifact/mummywrap_fetish,
-									/obj/item/vtm_artifact/weekapaug_thistle)
+									/obj/item/vtm_artifact/weekapaug_thistle, /obj/item/vtm_artifact/bloodstone)
 		new spawn_artifact(loc)
 	qdel(src)

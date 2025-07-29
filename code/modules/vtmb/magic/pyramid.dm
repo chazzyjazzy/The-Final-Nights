@@ -259,8 +259,14 @@
 /obj/ritualrune/identification/complete()
 	for(var/obj/item/vtm_artifact/VA in loc)
 		if(VA)
+			var/mob/living/carbon/human/identifier = usr // TFN ADDITION - Paths
 			VA.identificate()
 			playsound(loc, 'code/modules/wod13/sounds/thaum.ogg', 50, FALSE)
+			// TFN ADDITION - Paths
+			if(ishuman(identifier) && identifier.mind)
+				identifier.research_points += 50
+				to_chat(identifier, span_notice("You gain 50 research points for identifying the [VA.name]!"))
+			// TFN ADDITION - Paths
 			qdel(src)
 			return
 

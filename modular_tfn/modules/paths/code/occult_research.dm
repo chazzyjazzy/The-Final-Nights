@@ -48,3 +48,15 @@ SUBSYSTEM_DEF(occult_research)
 		// Optional: Notify player occasionally (every 5 minutes)
 		if(world.time % (5 MINUTES) == 0)
 			to_chat(user, span_notice("Your occult studies have yielded [research_gain] research points. Total: [user.research_points]"))
+
+/mob/living/carbon/human/verb/check_research_points()
+	set name = "Check Research Points"
+	set category = "IC"
+	set desc = "Check your current research point balance."
+
+	if(!thaumaturgy_knowledge && !necromancy_knowledge)
+		to_chat(src, span_alert("You lack occult knowledge."))
+		return
+
+	to_chat(src, span_notice("You currently have [research_points] research points."))
+

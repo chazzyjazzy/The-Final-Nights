@@ -10,11 +10,11 @@ export const SpellbookVendor = (props) => {
   // Determine greeting based on knowledge
   const getGreeting = () => {
     if (data.user && data.user.has_thaumaturgy) {
-      return "Greetings, student of the blood";
+      return "Greetings, student of the blood...";
     } else if (data.user && data.user.has_necromancy) {
-      return "Greetings, student of the shroud";
+      return "Greetings, student of the shroud...";
     } else {
-      return "Greetings, seeker";
+      return "Greetings, seeker...";
     }
   };
 

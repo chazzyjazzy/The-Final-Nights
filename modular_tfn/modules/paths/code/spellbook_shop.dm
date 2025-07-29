@@ -22,6 +22,7 @@
 		new /datum/data/mining_equipment("Galdjum", /obj/item/vtm_artifact/galdjum, 10),
 		new /datum/data/mining_equipment("Mummywrap Fetish", /obj/item/vtm_artifact/mummywrap_fetish, 10),
 		new /datum/data/mining_equipment("Weekapaug Thistle", /obj/item/vtm_artifact/weekapaug_thistle, 10),
+		new /datum/data/mining_equipment("Bloodstone", /obj/item/vtm_artifact/bloodstone, 10)
 	)
 
 // the world initializes vending products much earlier in the compilation order. have to add these items to GLOB.vending_products after GLOB.vending_products is initialized.
@@ -49,6 +50,7 @@
 	GLOB.vending_products[/obj/item/vtm_artifact/galdjum] = 1
 	GLOB.vending_products[/obj/item/vtm_artifact/mummywrap_fetish] = 1
 	GLOB.vending_products[/obj/item/vtm_artifact/weekapaug_thistle] = 1
+	GLOB.vending_products[/obj/item/vtm_artifact/bloodstone] = 1
 
 // SpellbookVendor.jsx in tgui/interfaces
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/ui_interact(mob/user, datum/tgui/ui)
@@ -98,7 +100,7 @@
 
 	// Deduct research points from user
 	H.research_points -= prize.cost
-	to_chat(usr, span_notice("emanates dark energy as it dispenses [prize.equipment_name]!"))
+	to_chat(usr, span_notice("The Archives emanate dark energy as it dispenses [prize.equipment_name]!"))
 	new prize.equipment_path(loc)
 	SSblackbox.record_feedback("nested tally", "mining_equipment_bought", 1, list("[type]", "[prize.equipment_path]"))
 	return TRUE
