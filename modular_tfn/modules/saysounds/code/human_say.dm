@@ -1,3 +1,6 @@
+// Define a custom sound channel for vocal sounds
+#define CHANNEL_VOCAL_SOUNDS 1024
+
 /mob/living/carbon/human/proc/send_voice(message, skip_thingy)
 	if(!message || !length(message))
 		return
@@ -14,10 +17,8 @@
 	if(!L.ckey)
 		return
 
-	// Get the client's vocal sound preference
 	var/vocal_sound_pref = L.client?.prefs?.vocal_sound || "Talk"
 
-	// Determine the sound file based on preference
 	var/sound_file
 	switch(vocal_sound_pref)
 		if("Talk")
@@ -25,19 +26,19 @@
 		if("Pencil")
 			sound_file = 'modular_tfn/modules/saysounds/sounds/pencil.ogg'
 		if("None")
-			return // Don't play any sound
+			return
 		else
 			sound_file = 'modular_tfn/modules/saysounds/sounds/talk.ogg' // Default fallback
 
-	// Build a list of clients who want to hear vocal sounds
-	var/list/clients_to_play_to = list()
+	var/vocal_frequency = rand(95, 105) / 100 // 0.95 to 1.05 (5% variation)
+	playsound(L, sound_file, 100, TRUE, 0, SOUND_FALLOFF_EXPONENT, vocal_frequency, CHANNEL_VOCAL_SOUNDS, FALSE)
 
-	// Use viewers() to include the speaker and everyone who can see them
-	for(var/mob/M in hearers(world.view, get_turf(L)))
-		if(M.client && !M.client.prefs?.disable_vocal_sounds)
-			clients_to_play_to += M.client
+// playsound_local override to check for CHANNEL_VOCAL_SOUNDS
+/mob/playsound_local(turf/turf_source, soundin, vol as num, vary, frequency, falloff_exponent = SOUND_FALLOFF_EXPONENT, channel = 0, sound/S, max_distance, falloff_distance = SOUND_DEFAULT_FALLOFF_DISTANCE, distance_multiplier = 1, use_reverb = TRUE)
 
-	// Play the sound only to those clients who want to hear it
-	if(length(clients_to_play_to))
-		for(var/client/C in clients_to_play_to)
-			C << sound(sound_file)
+	// before running original playsound_local, check if the playsound is channel_vocal_sounds, and if they have the pref turned on, if they do, dont play that channel
+	if(channel == CHANNEL_VOCAL_SOUNDS && client?.prefs?.disable_vocal_sounds)
+		return
+
+	// run original playsound_local
+	return ..()
