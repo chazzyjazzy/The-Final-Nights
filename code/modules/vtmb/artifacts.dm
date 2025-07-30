@@ -2,6 +2,7 @@
 	..()
 	if(identified)
 		owner = user
+		update_owned_amount(1)
 		START_PROCESSING(SSobj, src)
 		get_powers()
 
@@ -9,6 +10,7 @@
 	..()
 	if(identified)
 		if(isturf(loc))
+			update_owned_amount(-1)
 			STOP_PROCESSING(SSobj, src)
 			if(owner)
 				remove_powers()
@@ -17,6 +19,7 @@
 /obj/item/vtm_artifact/process(delta_time)
 	if(owner != loc && owner != loc.loc)
 		forceMove(get_turf(src))
+		update_owned_amount(-1)
 		STOP_PROCESSING(SSobj, src)
 		if(owner)
 			remove_powers()
@@ -30,11 +33,47 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	w_class = WEIGHT_CLASS_SMALL
 	is_magic = TRUE
+	var/research_value = 0
 	var/mob/living/owner
 	var/true_name = "artifact"
 	var/true_desc = "Debug"
 	var/identified = FALSE
 	var/gained_boosts = FALSE
+
+/obj/item/vtm_artifact/proc/update_owned_amount(change)
+	if(!owner || !identified)
+		return
+
+	// Initialize the list if it doesn't exist
+	if(!istype(owner.artifact_owned_amounts, /list))
+		owner.artifact_owned_amounts = list()
+
+	var/list/owned_amounts = owner.artifact_owned_amounts
+	var/artifact_type = type
+
+	// Get current amount or initialize to 0
+	var/current_amount = owned_amounts[artifact_type] || 0
+
+	// Update the amount
+	current_amount += change
+	current_amount = max(0, current_amount) // Don't let it go below 0
+
+	// Store the new amount
+	owned_amounts[artifact_type] = current_amount
+
+	// Clean up if amount reaches 0
+	if(current_amount <= 0)
+		owned_amounts -= artifact_type
+
+/obj/item/vtm_artifact/proc/get_owned_amount()
+	if(!owner || !identified)
+		return 0
+
+	if(!istype(owner.artifact_owned_amounts, /list))
+		return 0
+
+	var/list/owned_amounts = owner.artifact_owned_amounts
+	return owned_amounts[type] || 0
 
 /obj/item/vtm_artifact/proc/identificate()
 	if(!identified)
@@ -56,6 +95,7 @@
 	true_name = "Weekapaug Thistle"
 	true_desc = "Increases combat defense."
 	icon_state = "w_thistle"
+	research_value = 20
 
 /obj/item/vtm_artifact/weekapaug_thistle/get_powers()
 	..()
@@ -89,6 +129,7 @@
 	true_desc = "Passive health regeneration."
 	icon_state = "m_fetish"
 	var/last_regen = 0
+	research_value = 15
 
 /obj/item/vtm_artifact/mummywrap_fetish/process(delta_time)
 	. = ..()
@@ -118,6 +159,7 @@
 	true_name = "Galdjum"
 	true_desc = "Increases disciplines duration."
 	icon_state = "galdjum"
+	research_value = 15
 
 /obj/item/vtm_artifact/galdjum/get_powers()
 	..()
@@ -136,6 +178,7 @@
 	true_name = "Fae Charm"
 	true_desc = "Faster movement speed."
 	icon_state = "fae_charm"
+	research_value = 50
 
 /obj/item/vtm_artifact/fae_charm/get_powers()
 	..()
@@ -151,6 +194,7 @@
 	true_name = "Heart of Eliza"
 	true_desc = "Melee damage boost."
 	icon_state = "h_eliza"
+	research_value = 70
 
 /obj/item/vtm_artifact/heart_of_eliza/get_powers()
 	..()
@@ -170,6 +214,7 @@
 	true_name = "Bloodstar"
 	true_desc = "Increases Bloodpower duration."
 	icon_state = "bloodstar"
+	research_value = 15
 
 /obj/item/vtm_artifact/bloodstar/get_powers()
 	..()
@@ -185,6 +230,7 @@
 	true_name = "Daimonori"
 	true_desc = "Increases thaumaturgy damage."
 	icon_state = "daimonori"
+	research_value = 50
 
 /obj/item/vtm_artifact/daimonori/get_powers()
 	..()
@@ -200,6 +246,7 @@
 	true_name = "Key of Alamut"
 	true_desc = "Decreases incoming damage."
 	icon_state = "k_alamut"
+	research_value = 60
 
 /obj/item/vtm_artifact/key_of_alamut/get_powers()
 	..()
@@ -225,6 +272,7 @@
 	true_desc = "Stores blood from every attack."
 	icon_state = "o_chalice"
 	var/stored_blood = 0
+	research_value = 100
 
 /obj/item/vtm_artifact/odious_chalice/examine(mob/user)
 	. = ..()
@@ -243,6 +291,7 @@
 	M.update_damage_overlays()
 	M.update_health_hud()
 	M.update_blood_hud()
+	stored_blood -= floor(stored_blood * 0.10)
 	playsound(M.loc,'sound/items/drink.ogg', 50, TRUE)
 	return
 
@@ -287,6 +336,7 @@
 	icon_state = "bloodstone"
 	var/mob/living/carbon/human/bound_identifier // Who identified it first
 	var/datum/action/bloodstone_track/tracking_action
+	research_value = 70
 
 
 /obj/item/vtm_artifact/bloodstone/identificate()
