@@ -1,5 +1,5 @@
 // vocal sound channel define
-#define CHANNEL_VOCAL_SOUNDS 1024
+#define CHANNEL_VOCAL_SOUNDS 909
 
 /mob/living/carbon/human/proc/send_voice(message, skip_thingy)
 	if(!message || !length(message))
