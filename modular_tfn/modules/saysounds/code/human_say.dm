@@ -1,4 +1,4 @@
-// Define a custom sound channel for vocal sounds
+// vocal sound channel define
 #define CHANNEL_VOCAL_SOUNDS 1024
 
 /mob/living/carbon/human/proc/send_voice(message, skip_thingy)
