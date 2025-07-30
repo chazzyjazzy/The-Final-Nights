@@ -263,7 +263,7 @@
 			VA.identificate()
 			playsound(loc, 'code/modules/wod13/sounds/thaum.ogg', 50, FALSE)
 			// TFN ADDITION - Paths
-			if(ishuman(identifier) && identifier.mind)
+			if(ishuman(identifier))
 				identifier.research_points += 50
 				to_chat(identifier, span_notice("You gain 50 research points for identifying the [VA.name]!"))
 			// TFN ADDITION - Paths
@@ -772,6 +772,14 @@
 				var/clan = blood_data["clan"]
 				var/message = generate_message(generation, clan)
 				to_chat(user, "[message]")
+				/*
+				//TFN ADDITION - Paths
+				var/mob/living/carbon/human/identifier = usr
+				if(ishuman(identifier))
+					identifier.research_points += 50
+					to_chat(identifier, span_notice("You gain 50 research points for identifying the [VA.name]!"))
+				//TFN ADDITION - Paths
+				*/
 			else
 				to_chat(user, "The blood speaks not; it is empty of power!")
 		playsound(loc, 'code/modules/wod13/sounds/thaum.ogg', 50, FALSE)
