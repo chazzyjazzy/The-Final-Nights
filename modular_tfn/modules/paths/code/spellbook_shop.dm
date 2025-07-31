@@ -87,6 +87,9 @@
 
 	var/mob/living/carbon/human/H = usr
 
+	if(istype(H.dna.species, /datum/species/human))
+		return
+
 	var/datum/data/mining_equipment/prize = locate(params["ref"]) in prize_list
 	if(!prize || !(prize in prize_list))
 		to_chat(usr, span_alert("Error: Invalid choice!"))
@@ -108,3 +111,40 @@
 // Remove the AltClick dollar dispensing for this vendor
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/AltClick(mob/user)
 	return  // Do nothing
+
+//offer artifacts to the shop for research points
+/obj/machinery/mineral/equipment_vendor/fastfood/occult/attackby(obj/item/W, mob/user, params)
+	if(istype(W, /obj/item/vtm_artifact))
+		var/obj/item/vtm_artifact/artifact = W
+
+		if(!ishuman(user))
+			to_chat(user, span_warning("The Archives reject your offering."))
+			return
+
+		var/mob/living/carbon/human/H = user
+
+		if(artifact.research_value <= 0)
+			to_chat(user, span_warning("The Archives find no value in this artifact."))
+			return
+
+		H.research_points += artifact.research_value
+
+		// Flavor text based on research value
+		if(artifact.research_value >= 20)
+			to_chat(user, span_nicegreen("The Archives hungrily consume the powerful artifact, granting you [artifact.research_value] research points!"))
+			playsound(src, 'sound/magic/teleport_app.ogg', 50, FALSE)
+		else if(artifact.research_value >= 10)
+			to_chat(user, span_notice("The Archives absorb the artifact's essence, granting you [artifact.research_value] research points."))
+			playsound(src, 'sound/magic/blind.ogg', 30, FALSE)
+		else
+			to_chat(user, span_notice("The Archives reluctantly accept the minor artifact, granting you [artifact.research_value] research points."))
+			playsound(src, 'sound/machines/beep.ogg', 25, FALSE)
+
+
+		// Remove the artifact
+		qdel(artifact)
+
+		return TRUE
+
+	// Fall back to default behavior for non-artifacts
+	return ..()
