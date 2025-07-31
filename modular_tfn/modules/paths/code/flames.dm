@@ -24,9 +24,11 @@
 /obj/item/lighter/hand_of_flame
 	name = "hand of flame"
 	desc = "Your hand burns with supernatural fire."
-	icon = 'code/modules/wod13/32x48.dmi'
-	icon_state = "fire" // TODO SPRITES
-	inhand_icon_state = "fire" // TODO SPRITES
+	icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+	icon_state = "flame" // TODO SPRITES
+	inhand_icon_state = "flame" // TODO SPRITES
+	lefthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_lefthand.dmi'
+	righthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_righthand.dmi'
 	force = 20
 	damtype = BURN
 	lit = TRUE

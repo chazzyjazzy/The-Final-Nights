@@ -1,6 +1,7 @@
 /datum/discipline/path
 	var/action_type = /datum/action/discipline/path
 	var/action_replaced = FALSE // Track if we've already done the replacement
+	selectable = FALSE
 
 
 // ALERT : the discipline icons were interrupting with this alot, the parent type was overriding the subtype's icons, so below is a rather hammy method to replace it

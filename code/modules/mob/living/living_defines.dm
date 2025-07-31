@@ -232,6 +232,8 @@
 	var/necromancy_knowledge = FALSE
 
 	var/research_points = 0 // TFN ADDITION - Paths
+	var/list/artifact_owned_amounts // TFN ADDITION - Paths - since artifacts are a big part of paths we need to tune them up a bit for balance purposes - this list will allow us to nerf 'stacking' artifacts
+
 
 	var/elysium_checks = 0
 	var/bloodhunted = FALSE
