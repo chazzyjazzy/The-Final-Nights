@@ -51,6 +51,7 @@
 		to_chat(world, "attacker is stunned")
 		attacker.Stun(3 SECONDS)
 
+// TODO: Illuminate should be a toggle to cause lightning to surge through the arm and glow, allowing them to deal moderate burn damage.
 //ILLUMINATE - Level 2
 /datum/discipline_power/path/levinbolt/two
 	name = "Illuminate"
@@ -63,7 +64,7 @@
 /datum/discipline_power/path/levinbolt/two/activate(mob/living/target)
 	. = ..()
 
-
+// TODO: More powerful than spark, this should discharge a greater amount of energy around the user, stunning and also damaging attackers. (Visible to all)
 //POWER ARRAY - Level 3
 /datum/discipline_power/path/levinbolt/three
 	name = "Power Array"
@@ -82,6 +83,7 @@
 /datum/discipline_power/path/levinbolt/three/activate(mob/living/target)
 	. = ..()
 
+// TODO: This should be a powerful attack that channels a large amount of energy into three consecutive bolts, dealing burn damage.
 //ZEUS' FURY - Level 4
 /datum/discipline_power/path/levinbolt/four
 	name = "Zeus' Fury"
@@ -96,6 +98,7 @@
 /datum/discipline_power/path/levinbolt/four/activate(mob/living/target)
 	. = ..()
 
+// TODO: Combination of some disciplines. It should flashbang everyone upon being activated, and allow them to shock others dramatically with their hand for a short duration.
 //EYE OF THE STORM - Level 5
 /datum/discipline_power/path/levinbolt/five
 	name = "Eye of the Storm"

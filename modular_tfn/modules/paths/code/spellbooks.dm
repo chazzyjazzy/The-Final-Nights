@@ -70,7 +70,6 @@
 			species.disciplines += new_discipline
 			var/datum/action/discipline/path/path_action = new /datum/action/discipline/path(new_discipline)
 			path_action.Grant(user)
-
 			to_chat(user, span_notice("The knowledge of [name] flows into your mind!"))
 		else
 			// If the user already knows the path, update the level
