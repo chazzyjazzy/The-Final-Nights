@@ -11,15 +11,13 @@
 // TODO : find the original creators of the sprites and acknowledge them in the PR - its held under creative commons 3.0
 
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
-
-	// TODO : make the conditional give the discipline type and level to the user
+	var/is_knowing = FALSE
 
 	if(!path_type)
 		to_chat(user, span_warning("This spellbook appears to be incomplete!"))
 		return
 
 	if(istype(user.dna.species, /datum/species/kindred))
-		var/is_knowing = FALSE
 		if(!user.thaumaturgy_knowledge)
 			to_chat(user, span_warning("You must have knowledge of Thaumaturgy to use this book!"))
 			return
@@ -65,14 +63,25 @@
 	to_chat(user, span_notice("You begin studying the ancient texts..."))
 
 	if(do_after(user, do_after_time, target = src))
-		// TODO: the assigning of the appropriate path and its level deosnt appear to be working -- check adminverb 'Grant Discipline' for better handling, or perhaps discipline.assign also path.dm
-		var/datum/discipline/discipline_instance = new path_type() //perhaps these need to be subtyped as the paths?
-		discipline_instance.level_casting = path_level
-		discipline_instance.assign(user)
+		// Now checking the level again to assign the correct path level
+		if(!is_knowing)
+			var/datum/discipline/new_discipline = new path_type(path_level)
+			var/datum/species/kindred/species = user.dna.species
+			species.disciplines += new_discipline
+			var/datum/action/discipline/path/path_action = new /datum/action/discipline/path(new_discipline)
+			path_action.Grant(user)
+
+			to_chat(user, span_notice("The knowledge of [name] flows into your mind!"))
+		else
+			// If the user already knows the path, update the level
+			// TODO: Updating the level of the path causes it to become unusable, despite learning it being just fine
+			for(var/datum/action/discipline/D in user.actions)
+				if(D && D.discipline && D.discipline.type == path_type)
+					D.discipline.set_level(path_level)
+					to_chat(user, span_notice("You have increased your knowledge of [name]!"))
+					break
 
 		user.playsound_local(user, deactivate_sound, 50, FALSE)
-
-		to_chat(user, span_notice("The knowledge of [name] flows into your mind!"))
 		qdel(src)
 	else
 		icon_state = original_icon_state
