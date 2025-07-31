@@ -41,7 +41,6 @@
 /obj/item/lighter/hand_of_flame/Initialize(mapload)
 	. = ..()
 	set_light_on(TRUE)
-	playsound(src, 'modular_tfn/modules/paths/sounds/fireball.ogg', 50, TRUE)
 
 /obj/item/lighter/hand_of_flame/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
 	. = ..()

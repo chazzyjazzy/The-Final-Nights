@@ -60,9 +60,40 @@
 	level = 2
 	cooldown_length = 1 SECONDS
 	violates_masquerade = TRUE
+	toggled = TRUE
+
+/obj/item/lighter/levinbolt_arm
+	name = "Illuminate"
+	desc = "Your arm surges with electricity!"
+	icon = 'modular_tfn/modules/paths/icons/paths.dmi'
+	icon_state = "illuminate" // TODO SPRITES
+	inhand_icon_state = "illuminate" // TODO SPRITES
+	lefthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_lefthand.dmi'
+	righthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_righthand.dmi'
+	force = 20
+	damtype = BURN
+	lit = TRUE
+	light_system = MOVABLE_LIGHT
+	light_range = 2
+	light_power = 1
+	light_color = COLOR_WHITE
+	light_on = TRUE
+
+/obj/item/lighter/levinbolt_arm/Initialize(mapload)
+	. = ..()
+	set_light_on(TRUE)
 
 /datum/discipline_power/path/levinbolt/two/activate(mob/living/target)
 	. = ..()
+	owner.drop_all_held_items()
+	owner.put_in_r_hand(new /obj/item/lighter/levinbolt_arm(owner))
+	owner.put_in_l_hand(new /obj/item/lighter/levinbolt_arm(owner))
+
+/datum/discipline_power/path/levinbolt/two/deactivate()
+	. = ..()
+	// Remove levinbolt arm weapons
+	for(var/obj/item/lighter/levinbolt_arm/illuminate in owner.held_items)
+		qdel(illuminate)
 
 // TODO: More powerful than spark, this should discharge a greater amount of energy around the user, stunning and also damaging attackers. (Visible to all)
 //POWER ARRAY - Level 3
