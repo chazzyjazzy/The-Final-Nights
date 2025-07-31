@@ -8,16 +8,20 @@
 	var/do_after_time = 300 // 30 seconds
 	var/activate_sound = 'modular_tfn/modules/paths/sounds/open_book.wav' // sound played when the spellbook is used
 	var/deactivate_sound = 'modular_tfn/modules/paths/sounds/close_book.wav' // sound played when the spellbook is finished using
+	drop_sound = 'sound/items/handling/book_drop.ogg'
+	pickup_sound = 'sound/items/handling/book_pickup.ogg'
 // TODO : find the original creators of the sprites and acknowledge them in the PR - its held under creative commons 3.0
 
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
 	var/is_knowing = FALSE
+	var/datum/species/kindred/species = user.dna.species
+	var/datum/discipline/existing_path_discipline = null
 
 	if(!path_type)
 		to_chat(user, span_warning("This spellbook appears to be incomplete!"))
 		return
 
-	if(istype(user.dna.species, /datum/species/kindred))
+	if(istype(species, /datum/species/kindred))
 		if(!user.thaumaturgy_knowledge)
 			to_chat(user, span_warning("You must have knowledge of Thaumaturgy to use this book!"))
 			return
@@ -27,21 +31,22 @@
 					if(D.discipline)
 						//Checking if the discipline is the same as the path_type
 						if(D.discipline.type == path_type)
+							existing_path_discipline = D.discipline
 							is_knowing = TRUE
 							//Then we check if the level can be learned
-							if(path_level == D.discipline.level)
+							if(path_level == existing_path_discipline.level)
 								// User already knows this level
 								to_chat(user, span_warning("You already know this book!"))
 								return
-							else if(path_level == D.discipline.level + 1)
+							else if(path_level == existing_path_discipline.level + 1)
 								// The book's level is one higher than the user's current level
 								to_chat(user, span_notice("Debug - You can learn this book!"))
 								user.playsound_local(user, activate_sound, 50, FALSE)
-							else if (path_level > D.discipline.level + 1)
+							else if (path_level > existing_path_discipline.level + 1)
 								// The book's level is too high for the user to learn
 								to_chat(user, span_warning("You must learn the previous book(s) first!"))
 								return
-							else if (path_level < D.discipline.level)
+							else if (path_level < existing_path_discipline.level)
 								// The book's level is lower than the user's current level
 								to_chat(user, span_warning("You already know a higher level of this path!"))
 								return
@@ -66,7 +71,6 @@
 		// Now checking the level again to assign the correct path level
 		if(!is_knowing)
 			var/datum/discipline/new_discipline = new path_type(path_level)
-			var/datum/species/kindred/species = user.dna.species
 			species.disciplines += new_discipline
 			var/datum/action/discipline/path/path_action = new /datum/action/discipline/path(new_discipline)
 			path_action.Grant(user)
@@ -74,11 +78,30 @@
 		else
 			// If the user already knows the path, update the level
 			// TODO: Updating the level of the path causes it to become unusable, despite learning it being just fine
-			for(var/datum/action/discipline/D in user.actions)
-				if(D && D.discipline && D.discipline.type == path_type)
-					D.discipline.set_level(path_level)
-					to_chat(user, span_notice("You have increased your knowledge of [name]!"))
-					break
+
+			//existing_path_discipline.set_level(path_level) -- this didnt work
+			to_chat(user, span_notice("You have increased your knowledge of [name]!"))
+
+			// Remove the old discipline entirely
+			species.disciplines -= existing_path_discipline
+
+			// create list of old actions associated w/ existing_path_discipline
+			var/list/actions_to_remove = list()
+			for(var/datum/action/discipline/path/action in user.actions)
+				if(action.discipline == existing_path_discipline)
+					actions_to_remove += action
+
+			// remove old actions
+			for(var/datum/action/discipline/path/old_action in actions_to_remove)
+				old_action.Remove(user)
+
+			// create just a completely new discipline at the new path level
+			var/datum/discipline/new_discipline = new path_type(path_level)
+			species.disciplines += new_discipline
+
+			// create a new action associated with the new discipline
+			var/datum/action/discipline/path/new_action = new /datum/action/discipline/path(new_discipline)
+			new_action.Grant(user)
 
 		user.playsound_local(user, deactivate_sound, 50, FALSE)
 		qdel(src)
