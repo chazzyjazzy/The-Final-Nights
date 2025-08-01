@@ -272,9 +272,9 @@
 	if(isliving(target))
 		var/mob/living/L = target
 		// Chance to ignite target
-		if(prob(30))
-			L.adjust_fire_stacks(2)
-			L.IgniteMob()
+		//if(prob(30))
+		//	L.adjust_fire_stacks(2)
+		//	L.IgniteMob()
 		L.visible_message(span_danger("[target] is struck by supernatural flames!"), span_userdanger("You are burned by supernatural fire!"))
 		new /obj/effect/fire(get_turf(target))
 		playsound(get_turf(target), 'modular_tfn/modules/paths/sounds/fireball.ogg', 50, TRUE)

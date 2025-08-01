@@ -51,16 +51,14 @@
 		to_chat(world, "attacker is stunned")
 		attacker.Stun(3 SECONDS)
 
-// TODO: Illuminate should be a toggle to cause lightning to surge through the arm and glow, allowing them to deal moderate burn damage.
 //ILLUMINATE - Level 2
 /datum/discipline_power/path/levinbolt/two
 	name = "Illuminate"
 	desc = "Surge a moderate amount of energy into your hand."
-
 	level = 2
-	cooldown_length = 1 SECONDS
 	violates_masquerade = TRUE
 	toggled = TRUE
+	duration_length = 2 TURNS
 
 /obj/item/lighter/levinbolt_arm
 	name = "Illuminate"

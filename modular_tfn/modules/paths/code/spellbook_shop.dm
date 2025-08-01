@@ -29,7 +29,6 @@
 // perhaps this problem is solved if we just place the vendor in strongdmm. need to test this
 /world/New()
 	. = ..()
-	// Add occult vendor items to vending products before sprite sheet generation
 	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level1] = 1
 	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level2] = 1
 	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level3] = 1
@@ -132,13 +131,10 @@
 		// Flavor text based on research value
 		if(artifact.research_value >= 20)
 			to_chat(user, span_nicegreen("The Archives hungrily consume the powerful artifact, granting you [artifact.research_value] research points!"))
-			playsound(src, 'sound/magic/teleport_app.ogg', 50, FALSE)
 		else if(artifact.research_value >= 10)
 			to_chat(user, span_notice("The Archives absorb the artifact's essence, granting you [artifact.research_value] research points."))
-			playsound(src, 'sound/magic/blind.ogg', 30, FALSE)
 		else
 			to_chat(user, span_notice("The Archives reluctantly accept the minor artifact, granting you [artifact.research_value] research points."))
-			playsound(src, 'sound/machines/beep.ogg', 25, FALSE)
 
 
 		// Remove the artifact
