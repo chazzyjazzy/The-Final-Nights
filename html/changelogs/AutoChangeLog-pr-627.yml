@@ -1,0 +1,8 @@
+author: "TheCarnalest"
+delete-after: True
+changes:
+  - code_imp: "Retyped werewolf mobs from /mob/living/simple_animal to /mob/living/carbon"
+  - rscadd: "Organs and organ damage now carries over between shifting forms"
+  - rscadd: "Corax now have their own breed selector"
+  - bugfix: "Werewolf armor has been fixed, so it will actually reduce incoming brute damage"
+  - bugfix: "The warrior archetype works for non-Homid forms again"
