@@ -54,6 +54,8 @@
 	active = TRUE
 	ADD_TRAIT(living_owner, TRAIT_IMMOBILIZED, "GARGOYLE_STATUE")
 	ADD_TRAIT(living_owner, TRAIT_MUTE, "GARGOYLE_STATUE")
+	REMOVE_TRAIT(living_owner, TRAIT_MASQUERADE_VIOLATING_FACE, "clan")
+	REMOVE_TRAIT(living_owner, TRAIT_MASQUERADE_VIOLATING_FACE, "Gargoyle")
 	living_owner.name_override = "Statue of [living_owner.real_name]"
 	var/newcolor = list(rgb(77,77,77), rgb(150,150,150), rgb(28,28,28), rgb(0,0,0))
 	living_owner.add_atom_colour(newcolor, FIXED_COLOUR_PRIORITY)
@@ -73,6 +75,8 @@
 
 	REMOVE_TRAIT(living_owner, TRAIT_IMMOBILIZED, "GARGOYLE_STATUE")
 	REMOVE_TRAIT(living_owner, TRAIT_MUTE, "GARGOYLE_STATUE")
+	ADD_TRAIT(living_owner, TRAIT_MASQUERADE_VIOLATING_FACE, "clan")
+	ADD_TRAIT(living_owner, TRAIT_MASQUERADE_VIOLATING_FACE, "Gargoyle")
 	living_owner.name_override = null
 	living_owner.remove_atom_colour(FIXED_COLOUR_PRIORITY)
 
