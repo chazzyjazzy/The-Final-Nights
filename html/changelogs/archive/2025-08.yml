@@ -30,3 +30,6 @@
   - bugfix: changed stupid stupid idiotic op damage
   XeonMations:
   - bugfix: TGUI chat now auto-focuses on creation.
+2025-08-08:
+  AlmostLikeClockwork:
+  - bugfix: fixed Garou Crinos form hp, going back to 450
