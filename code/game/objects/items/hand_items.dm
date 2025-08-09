@@ -265,13 +265,14 @@
 	playsound(slapped, 'sound/weapons/slap.ogg', slap_volume, TRUE, -1)
 	return
 
+//TFN EDIT START - Fixes Slamming Tables
 /obj/item/hand_item/slapper/afterattack(atom/target, mob/living/user, proximity_flag, click_parameters)
     if(proximity_flag && istype(target, /obj/structure/table))
         slap_table(target, user)
         return
 
     return ..()
-
+//TFN EDIT END - Fixes Slamming Tables
 
 /// Slap the table, get some attention
 /obj/item/hand_item/slapper/proc/slap_table(obj/structure/table/table, mob/living/user)
