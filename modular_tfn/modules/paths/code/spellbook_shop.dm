@@ -67,7 +67,7 @@
 		.["user"]["points"] = H.research_points
 		.["user"]["name"] = "[H.name]"
 		.["user"]["job"] = "[H.mind?.assigned_role]"
-		.["user"]["has_thaumaturgy"] = H.thaumaturgy_knowledge
+		.["user"]["has_thaumaturgy"] = HAS_TRAIT(H, TRAIT_THAUMATURGY_KNOWLEDGE)
 		.["user"]["has_necromancy"] = H.necromancy_knowledge
 	else
 		.["user"]["points"] = 0
@@ -109,7 +109,7 @@
 
 // Remove the AltClick dollar dispensing for this vendor
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/AltClick(mob/user)
-	return  // Do nothing
+	return
 
 //offer artifacts to the shop for research points
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/attackby(obj/item/W, mob/user, params)
@@ -128,7 +128,6 @@
 
 		H.research_points += artifact.research_value
 
-		// Flavor text based on research value
 		if(artifact.research_value >= 20)
 			to_chat(user, span_nicegreen("The Archives hungrily consume the powerful artifact, granting you [artifact.research_value] research points!"))
 		else if(artifact.research_value >= 10)
@@ -136,8 +135,6 @@
 		else
 			to_chat(user, span_notice("The Archives reluctantly accept the minor artifact, granting you [artifact.research_value] research points."))
 
-
-		// Remove the artifact
 		qdel(artifact)
 
 		return TRUE

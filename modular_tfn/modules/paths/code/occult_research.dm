@@ -8,11 +8,11 @@ SUBSYSTEM_DEF(occult_research)
 
 /datum/controller/subsystem/occult_research/fire(resumed = FALSE)
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
-		if(!H.client) // Skip NPCs and disconnected players
+		if(!H.client)
 			continue
-		if(H.stat >= HARD_CRIT) // Skip dead/critically injured players
+		if(H.stat >= HARD_CRIT)
 			continue
-		if(!H.thaumaturgy_knowledge && !H.necromancy_knowledge) // Skip players without occult knowledge
+		if(!HAS_TRAIT(H, TRAIT_THAUMATURGY_KNOWLEDGE) && !H.necromancy_knowledge)
 			continue
 
 		process_research_points(H)
@@ -33,7 +33,7 @@ SUBSYSTEM_DEF(occult_research)
 			if("Thaumaturgy")
 				has_thaumaturgy = TRUE
 
-	// Calculate research gain based on disciplines
+	// Calculate research gain
 	if(has_necromancy || has_thaumaturgy)
 		research_gain = base_research_rate
 
@@ -53,7 +53,7 @@ SUBSYSTEM_DEF(occult_research)
 	set category = "IC"
 	set desc = "Check your current research point balance."
 
-	if(!thaumaturgy_knowledge && !necromancy_knowledge)
+	if(!HAS_TRAIT(src, TRAIT_THAUMATURGY_KNOWLEDGE) && !necromancy_knowledge)
 		to_chat(src, span_alert("You lack occult knowledge."))
 		return
 
