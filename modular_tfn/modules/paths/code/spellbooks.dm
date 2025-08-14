@@ -179,20 +179,90 @@
 	icon = 'modular_tfn/modules/paths/icons/paths.dmi'
 	icon_state = "spellbook"
 	var/do_after_time = 300 // 30 seconds
-	var/activate_sound = 'modular_tfn/modules/paths/sounds/open_book.wav' // sound played when the spellbook is used
-	var/deactivate_sound = 'modular_tfn/modules/paths/sounds/close_book.wav' // sound played when the spellbook is finished using
+	var/activate_sound = 'modular_tfn/modules/paths/sounds/open_book.wav'
+	var/deactivate_sound = 'modular_tfn/modules/paths/sounds/close_book.wav'
 	drop_sound = 'sound/items/handling/book_drop.ogg'
 	pickup_sound = 'sound/items/handling/book_pickup.ogg'
+
+	// research vars overriden by subtypes
+	var/research_value = 10
+	var/last_study_time = 0
+	var/study_cooldown = 30 MINUTES
+	var/study_research_value = 50
+	var/required_trait = TRAIT_THAUMATURGY_KNOWLEDGE
+	var/no_trait_message = "The text is incomprehensible to you without the proper knowledge."
+	var/cooldown_message = "You have recently studied this tome extensively. You need %TIME% more minutes before you can gain further insight from it."
+	var/study_start_message = "You begin studying the occult text..."
+	var/study_interrupted_message = "Your concentration was broken. You failed to absorb any meaningful knowledge from the text."
+	var/research_gain_message = "You gain %POINTS% research points from studying this tome!"
+
+	// Flavor texts, must be overriden by subtypes
+	var/list/study_flavor_texts = list(
+		"You study the arcane text, gaining insight into occult mysteries.",
+		"Ancient knowledge flows from the pages into your mind.",
+		"The text reveals secrets of supernatural power and ritual."
+	)
+
+/obj/item/occult_book/attack_self(mob/living/carbon/human/user)
+	if(!can_study(user))
+		return ..()
+
+	if(!check_cooldown(user))
+		return
+
+	begin_study(user)
+	return ..()
+
+/obj/item/occult_book/proc/can_study(mob/living/carbon/human/user)
+	if(!HAS_TRAIT(user, required_trait))
+		to_chat(user, span_warning(no_trait_message))
+		return FALSE
+	return TRUE
+
+/obj/item/occult_book/proc/check_cooldown(mob/living/carbon/human/user)
+	if(last_study_time && world.time < last_study_time + study_cooldown)
+		var/time_remaining = ((last_study_time + study_cooldown) - world.time) / 10 / 60
+		var/formatted_message = replacetext(cooldown_message, "%TIME%", "[round(time_remaining, 0.1)]")
+		to_chat(user, span_warning(formatted_message))
+		return FALSE
+	return TRUE
+
+/obj/item/occult_book/proc/begin_study(mob/living/carbon/human/user)
+	var/original_icon_state = icon_state
+	icon_state = "[original_icon_state]-opened"
+	update_appearance()
+
+	to_chat(user, span_notice(study_start_message))
+	user.playsound_local(user, activate_sound, 50, FALSE)
+
+	if(do_after(user, do_after_time, target = src))
+		complete_study(user)
+	else
+		to_chat(user, span_warning(study_interrupted_message))
+
+	icon_state = original_icon_state
+	update_appearance()
+
+/obj/item/occult_book/proc/complete_study(mob/living/carbon/human/user)
+	user.research_points += study_research_value
+	var/flavor_text = pick(study_flavor_texts)
+	to_chat(user, span_cult(flavor_text))
+
+	var/formatted_message = replacetext(research_gain_message, "%POINTS%", "[study_research_value]")
+	to_chat(user, span_green(formatted_message))
+
+	last_study_time = world.time
+	user.playsound_local(user, deactivate_sound, 50, FALSE)
 
 /obj/item/occult_book/veneficorum_artum_sanguis
 	name = "Veneficorum Artum Sanguis"
 	desc = "To the untrained eyes of Mortals and unknowing Kindred, this book appears to be some manner of Latin text, but those Kindred who truly know the history of the Tremere recognize the author - Inner Councilman Etrius of the Tremere. The Veneficorum - as it is called by most Magi of the Tremere, is the oldest and most foundational work of Thaumaturgical inquiry known to the Tremere, and chronicles the early experiments and exploits in the developments of Thaumaturgy. The work is thorough and explicit in its explanation of many procedures, rituals, and concepts of how to use Blood Magic. The Tremere guard all copies of this work extremely jealously - as they fear that any Kindred in posession of this work may use it to learn Thaumaturgy. This book is EXTREMELY RARE, with only a dozen or so copies ever being made of the original tome from Vienna."
-	var/research_value = 50
-	var/last_study_time = 0
-	var/study_cooldown = 30 MINUTES
-	var/study_research_value = 200
+	research_value = 50
+	last_study_time = 0
+	study_cooldown = 30 MINUTES
+	study_research_value = 200
 	icon_state = "veneficorum"
-	var/list/study_flavor_texts = list(
+	study_flavor_texts = list(
 		"You delve into Etrius's detailed explanations of blood manipulation, gaining deeper insight into the fundamental principles of Thaumaturgy.",
 		"The ancient text reveals secrets of ritual preparation and the proper channeling of vitae through arcane and Hermetic formulae.",
 		"You study the meticulously documented experiments on blood manipulation, understanding the precise movements and incantations required.",
@@ -207,51 +277,17 @@
 		"'Go forth, young student, master the blood, master the will, study under your senior Magi, and bend reality to your will. Transcend. Evolve. Ensure the survival of our kind. Innovate. Expand. Conquer.' - A final note from Etrius at the end of this work"
 	)
 
-/obj/item/occult_book/veneficorum_artum_sanguis/attack_self(mob/living/carbon/human/user)
-	if(!HAS_TRAIT(user, TRAIT_THAUMATURGY_KNOWLEDGE))
-		to_chat(user, span_warning("The Latin text is incomprehensible to you. Without knowledge of Thaumaturgy, this appears to be nothing more than an ancient scholarly work."))
-		return ..()
 
-	//cooldown
-	if (last_study_time && world.time < last_study_time + study_cooldown)
-		var/time_remaining = ((last_study_time + study_cooldown) - world.time) / 10 / 60 // Convert to minutes
-		to_chat(user, span_warning("You have recently studied this tome extensively. You need [round(time_remaining, 0.1)] more minutes before you can gain further insight from it."))
-		return
-
-	var/original_icon_state = icon_state
-	icon_state = "[original_icon_state]-opened"
-	update_appearance()
-
-	//studying
-	to_chat(user, span_notice("You begin studying the ancient Thaumaturgical text..."))
-	user.playsound_local(user, activate_sound, 50, FALSE)
-
-	if(do_after(user, 30 SECONDS, target = src))
-		// give research points and update cooldown
-		user.research_points += study_research_value
-		var/flavor_text = pick(study_flavor_texts)
-		to_chat(user, span_cult("[flavor_text]"))
-		to_chat(user, span_green("You gain [study_research_value] research points from studying the Veneficorum!"))
-		last_study_time = world.time
-		user.playsound_local(user, deactivate_sound, 50, FALSE)
-
-	else
-		to_chat(user, span_warning("Your concentration was broken. You failed to absorb any meaningful knowledge from the text."))
-
-	icon_state = original_icon_state
-	update_appearance()
-
-	return ..()
 
 /obj/item/occult_book/das_tiefe_geheimnis
 	name = "Das Tiefe Geheimnis"
 	desc = "Das Tiefe Geheimnis - this copy is an English translation, titled 'The Dark Secret'. The most common musings on blood magic Hermeticism, this book was written by Johann Kloepfer, a member of the Cologne Chantry, in the 15th century. Found in nearly every major Chantry, and studied at least once by virtually every Tremere, this book lays the foundation for the most common Paths (Blood and Lure of Flames), Rituals, and Principles of Thaumaturgy. Unfortunately, this work is known to have several glaring errors in its descriptions of some of the most common rituals, making the work useful only in a supplemental capacity. Many Tremere believe Kloepfer placed these ommissions intentionally to safeguard the art of Thaumaturgy from non-Tremere. Most copies, including this one, are littered with copious hand-written notes and corrections added by members over the centuries."
-	var/research_value = 20
-	var/last_study_time = 0
-	var/study_cooldown = 15 MINUTES
-	var/study_research_value = 50
+	research_value = 20
+	last_study_time = 0
+	study_cooldown = 15 MINUTES
+	study_research_value = 50
 	icon_state = "tiefe"
-	var/list/study_flavor_texts = list(
+	study_flavor_texts = list(
 		"You study Kloepfer's foundational explanations of the Path of Blood, cross-referencing the handwritten corrections in the margins.",
 		"The text details the basic principles of the Lure of Flames, though you notice several deliberate omissions that have been filled in by later scholars.",
 		"You examine the fundamental rituals described by Kloepfer, noting where centuries of Tremere have added their own insights and corrections.",
@@ -265,37 +301,3 @@
 		"Annotations reveal the true nature of several 'errors' in Kloepfer's work, showing how the author protected Tremere secrets from outsiders.",
 		"You study the relationship between will, blood, and incantation as described in this cornerstone work of Thaumaturgical literature."
 	)
-
-/obj/item/occult_book/das_tiefe_geheimnis/attack_self(mob/living/carbon/human/user)
-	if(!HAS_TRAIT(user, TRAIT_THAUMATURGY_KNOWLEDGE))
-		to_chat(user, span_warning("The English translation makes this more readable than most occult texts, but without knowledge of Thaumaturgy, the concepts remain meaningless to you, as some of it is safely encrypted using Thaumaturgy."))
-		return ..()
-
-	// cooldown
-	if (last_study_time && world.time < last_study_time + study_cooldown)
-		var/time_remaining = ((last_study_time + study_cooldown) - world.time) / 10 / 60 // Convert to minutes
-		to_chat(user, span_warning("You have recently studied this foundational text. You need [round(time_remaining, 0.1)] more minutes before you can absorb more knowledge from it."))
-		return
-
-	var/original_icon_state = icon_state
-	icon_state = "[original_icon_state]-opened"
-	update_appearance()
-
-	// begin studying
-	to_chat(user, span_notice("You begin studying the foundational Thaumaturgical text, noting the corrections and annotations..."))
-	user.playsound_local(user, activate_sound, 50, FALSE)
-
-	if(do_after(user, 30 SECONDS, target = src))
-		user.research_points += study_research_value
-		var/flavor_text = pick(study_flavor_texts)
-		to_chat(user, span_cult("[flavor_text]"))
-		to_chat(user, span_green("You gain [study_research_value] research points from studying Das Tiefe Geheimnis!"))
-		last_study_time = world.time
-		user.playsound_local(user, deactivate_sound, 50, FALSE)
-	else
-		to_chat(user, span_warning("Your concentration was broken. You failed to absorb any meaningful knowledge from the annotated text."))
-
-	icon_state = original_icon_state
-	update_appearance()
-
-	return ..()
