@@ -58,7 +58,7 @@
 		ui = new(user, src, "SpellbookVendor", name)
 		ui.open()
 
-// Override ui_data to show user's research_points and knowledge data
+// Override ui_data to show user's research_points and knowledge data + tremere members
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/ui_data(mob/user)
 	. = list()
 	.["user"] = list()
@@ -69,15 +69,33 @@
 		.["user"]["job"] = "[H.mind?.assigned_role]"
 		.["user"]["has_thaumaturgy"] = HAS_TRAIT(H, TRAIT_THAUMATURGY_KNOWLEDGE)
 		.["user"]["has_necromancy"] = H.necromancy_knowledge
+		.["user"]["is_regent"] = (H.mind?.assigned_role == "Chantry Regent")
 	else
 		.["user"]["points"] = 0
 		.["user"]["name"] = "Unknown"
 		.["user"]["job"] = "Unknown"
 		.["user"]["has_thaumaturgy"] = FALSE
 		.["user"]["has_necromancy"] = FALSE
+		.["user"]["is_regent"] = FALSE
 
-// Override ui_act to use research_points instead of vendor points (dollars)
+	.["tremere_members"] = list()
+	for(var/mob/living/carbon/human/tremere_member in GLOB.human_list)
+		if(!tremere_member.mind)
+			continue
+		var/role = tremere_member.mind.assigned_role
+		if(role in list("Chantry Archivist", "Chantry Gargoyle", "Chantry Regent"))
+			.["tremere_members"] += list(list(
+				"name" = tremere_member.name,
+				"role" = role,
+				"points" = tremere_member.research_points,
+				"ref" = "\ref[tremere_member]"
+			))
+
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/ui_act(action, params)
+	if(action == "transfer_points")
+		return handle_point_transfer(action, params)
+	if(action == "seize_points")
+		return handle_point_seizure(action, params)
 	if(action != "purchase")
 		return ..()
 
@@ -100,14 +118,94 @@
 		flick(icon_deny, src)
 		return
 
-	// Deduct research points from user
+	// deduct research points from purchase
 	H.research_points -= prize.cost
 	to_chat(usr, span_notice("The Archives emanate dark energy as it dispenses [prize.equipment_name]!"))
 	new prize.equipment_path(loc)
 	SSblackbox.record_feedback("nested tally", "mining_equipment_bought", 1, list("[type]", "[prize.equipment_path]"))
 	return TRUE
 
-// Remove the AltClick dollar dispensing for this vendor
+//transfer research points
+/obj/machinery/mineral/equipment_vendor/fastfood/occult/proc/handle_point_transfer(action, params)
+	if(!ishuman(usr))
+		return FALSE
+
+	var/mob/living/carbon/human/sender = usr
+	var/target_ref = params["target_ref"]
+	var/amount = text2num(params["amount"])
+
+	if(!target_ref || !amount || amount <= 0)
+		to_chat(sender, span_alert("Error: Invalid transfer parameters!"))
+		return FALSE
+
+	if(amount > sender.research_points)
+		to_chat(sender, span_alert("Error: You don't have enough research points!"))
+		return FALSE
+
+	var/mob/living/carbon/human/target = locate(target_ref)
+	if(!target || !ishuman(target))
+		to_chat(sender, span_alert("Error: Target not found!"))
+		return FALSE
+
+	// Verify target is still a valid Tremere member
+	if(!(target.mind?.assigned_role in list("Chantry Archivist", "Chantry Gargoyle", "Tremere Regent")))
+		to_chat(sender, span_alert("Error: Target is no longer a valid recipient!"))
+		return FALSE
+
+	// Perform the transfer
+	sender.research_points -= amount
+	target.research_points += amount
+
+	to_chat(sender, span_notice("You transfer [amount] research points to [target.name] through the Archives' dark conduits."))
+	to_chat(target, span_notice("The Archives whisper to you... [sender.name] has sent you [amount] research points."))
+
+	return TRUE
+
+//research point seizure
+/obj/machinery/mineral/equipment_vendor/fastfood/occult/proc/handle_point_seizure(action, params)
+	if(!ishuman(usr))
+		return FALSE
+
+	var/mob/living/carbon/human/regent = usr
+
+	if(regent.mind?.assigned_role != "Tremere Regent")
+		to_chat(regent, span_alert("Error: Only the Regent may exercise such authority!"))
+		return FALSE
+
+	var/target_ref = params["target_ref"]
+	var/amount = text2num(params["amount"])
+
+	if(!target_ref || !amount || amount <= 0)
+		to_chat(regent, span_alert("Error: Invalid seizure parameters!"))
+		return FALSE
+
+	var/mob/living/carbon/human/target = locate(target_ref)
+	if(!target || !ishuman(target))
+		to_chat(regent, span_alert("Error: Target not found!"))
+		return FALSE
+
+	// verify target is a valid Tremere member
+	if(!(target.mind?.assigned_role in list("Chantry Archivist", "Chantry Gargoyle", "Tremere Regent")))
+		to_chat(regent, span_alert("Error: Target is not a Tremere clan member!"))
+		return FALSE
+
+	// can't seize more than they have
+	var/actual_amount = min(amount, target.research_points)
+
+	if(actual_amount <= 0)
+		to_chat(regent, span_alert("Error: Target has no research points to seize!"))
+		return FALSE
+
+	// Perform the seizure
+	target.research_points -= actual_amount
+	regent.research_points += actual_amount
+
+	to_chat(regent, span_notice("By your authority as Regent, you seize [actual_amount] research points from [target.name] through the Archives."))
+	to_chat(target, span_warning("The Archives grow cold... Regent [regent.name] has seized [actual_amount] of your research points by right of authority."))
+
+	return TRUE
+
+// Remove the AltClick dollar dispensing
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/AltClick(mob/user)
 	return
 
@@ -141,3 +239,5 @@
 
 	// Fall back to default behavior for non-artifacts
 	return ..()
+
+// TODO : special shop for necromancers

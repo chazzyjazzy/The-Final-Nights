@@ -1,11 +1,15 @@
 import { classes } from 'tgui-core/react';
 import { useBackend } from '../backend';
-import { Box, Button, Section, Table } from 'tgui-core/components';
+import { Box, Button, Section, Table, Dropdown, Input, Collapsible } from 'tgui-core/components';
 import { Window } from '../layouts';
+import { useState } from 'react';
 
 export const SpellbookVendor = (props) => {
   const { act, data } = useBackend();
-  let inventory = [...data.product_records];
+  const [selectedTarget, setSelectedTarget] = useState(null);
+  const [transferAmount, setTransferAmount] = useState('');
+
+  const inventory = data.product_records || [];
 
   // Determine greeting based on knowledge
   const getGreeting = () => {
@@ -18,8 +22,45 @@ export const SpellbookVendor = (props) => {
     }
   };
 
+  // Handle point transfer
+  const handleTransfer = () => {
+    if (!selectedTarget || !transferAmount) {
+      return;
+    }
+
+    const amount = parseInt(transferAmount);
+    if (isNaN(amount) || amount <= 0) {
+      return;
+    }
+
+    act('transfer_points', {
+      target_ref: selectedTarget.ref,
+      amount: amount
+    });
+
+    setTransferAmount('');
+  };
+
+  const handleSeize = () => {
+    if (!selectedTarget || !transferAmount) {
+      return;
+    }
+
+    const amount = parseInt(transferAmount);
+    if (isNaN(amount) || amount <= 0) {
+      return;
+    }
+
+    act('seize_points', {
+      target_ref: selectedTarget.ref,
+      amount: amount
+    });
+
+    setTransferAmount('');
+  };
+
   return (
-    <Window width={465} height={600} resizable theme="blood_cult">
+    <Window width={465} height={700} resizable theme="blood_cult">
       <Window.Content scrollable>
         <Section
           title="Practitioner"
@@ -39,6 +80,7 @@ export const SpellbookVendor = (props) => {
             </Box>
           )}
         </Section>
+
         <Section
           title="The Archives"
           style={{
@@ -49,6 +91,8 @@ export const SpellbookVendor = (props) => {
         >
           <Table style={{ 'background-color': '#0d0000' }}>
             {inventory.map((product) => {
+              const canAfford = data.user && product.price <= data.user.points;
+
               return (
                 <Table.Row
                   key={product.name}
@@ -72,11 +116,29 @@ export const SpellbookVendor = (props) => {
                       style={{
                         'min-width': '105px',
                         'text-align': 'center',
-                        'background-color': product.price > (data.user?.points || 0) ? '#4d1a1a' : '#660000',
+                        'background-color': canAfford ? '#660000' : '#4d1a1a',
                         'border-color': '#990000',
-                        'color': product.price > (data.user?.points || 0) ? '#996666' : '#ffcccc'
+                        'color': canAfford ? '#ffcccc' : '#996666',
+                        'transition': 'all 0.2s ease',
+                        'cursor': canAfford ? 'pointer' : 'not-allowed'
                       }}
-                      disabled={!data.user || product.price > data.user.points}
+                      onMouseEnter={(e) => {
+                        if (canAfford) {
+                          e.target.style.backgroundColor = '#990000';
+                          e.target.style.color = '#ffffff';
+                          e.target.style.borderColor = '#cc0000';
+                          e.target.style.boxShadow = '0 0 8px rgba(204, 51, 51, 0.5)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (canAfford) {
+                          e.target.style.backgroundColor = '#660000';
+                          e.target.style.color = '#ffcccc';
+                          e.target.style.borderColor = '#990000';
+                          e.target.style.boxShadow = 'none';
+                        }
+                      }}
+                      disabled={!canAfford}
                       content={product.price + ' research points'}
                       onClick={() =>
                         act('purchase', {
@@ -90,6 +152,154 @@ export const SpellbookVendor = (props) => {
             })}
           </Table>
         </Section>
+
+        {/* Tremere Network Section */}
+        {data.tremere_members && data.tremere_members.length > 0 && (
+          <Collapsible
+            title="Tremere Network"
+            style={{
+              'background-color': '#1a0000',
+              'border-color': '#4d0000',
+              'color': '#cc3333'
+            }}
+          >
+            <Section
+              style={{
+                'background-color': '#0d0000',
+                'border-color': '#4d0000',
+                'color': '#cc3333'
+              }}
+            >
+              <Box style={{ 'margin-bottom': '10px', 'color': '#cc3333' }}>
+                <b style={{ 'color': '#ff4444' }}>Clan Members:</b>
+              </Box>
+
+              <Table style={{ 'background-color': '#0d0000', 'margin-bottom': '15px' }}>
+                {data.tremere_members.map((member) => (
+                  <Table.Row
+                    key={member.ref}
+                    style={{
+                      'background-color': '#1a0000',
+                      'border-color': '#4d0000'
+                    }}
+                  >
+                    <Table.Cell style={{ 'color': '#cc3333' }}>
+                      <b style={{ 'color': '#ff4444' }}>{member.name}</b>
+                      <br />
+                      <span style={{ 'font-size': '0.9em', 'color': '#996666' }}>
+                        {member.role}
+                      </span>
+                    </Table.Cell>
+                    <Table.Cell style={{ 'color': '#cc3333', 'text-align': 'right' }}>
+                      <b style={{ 'color': '#ff6666' }}>{member.points} points</b>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table>
+
+              <Box style={{ 'margin-bottom': '10px' }}>
+                <Box style={{ 'margin-bottom': '5px', 'color': '#cc3333' }}>
+                  <b style={{ 'color': '#ff4444' }}>Select Target:</b>
+                </Box>
+                <Dropdown
+                  width="100%"
+                  options={data.tremere_members.map((member) => ({
+                    text: `${member.name} (${member.role}) - ${member.points} pts`,
+                    value: member
+                  }))}
+                  selected={selectedTarget ? `${selectedTarget.name} (${selectedTarget.role}) - ${selectedTarget.points} pts` : 'Select a clan member...'}
+                  onSelected={(value) => setSelectedTarget(value)}
+                  style={{
+                    'background-color': '#330000',
+                    'border-color': '#660000',
+                    'color': '#ffcccc'
+                  }}
+                />
+              </Box>
+
+              <Box style={{ 'margin-bottom': '10px' }}>
+                <Box style={{ 'margin-bottom': '5px', 'color': '#cc3333' }}>
+                  <b style={{ 'color': '#ff4444' }}>Amount:</b>
+                </Box>
+                <Input
+                  width="100%"
+                  placeholder="Enter amount..."
+                  value={transferAmount}
+                  onInput={(e, value) => setTransferAmount(value)}
+                  style={{
+                    'background-color': '#330000',
+                    'border-color': '#660000',
+                    'color': '#ffcccc'
+                  }}
+                />
+              </Box>
+
+              <Box style={{ 'display': 'flex', 'gap': '10px' }}>
+                <Button
+                  content="Transfer Points"
+                  disabled={!selectedTarget || !transferAmount || parseInt(transferAmount) <= 0 || parseInt(transferAmount) > (data.user?.points || 0)}
+                  onClick={handleTransfer}
+                  style={{
+                    'background-color': '#004d00',
+                    'border-color': '#006600',
+                    'color': '#ccffcc',
+                    'flex': '1',
+                    'transition': 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!e.target.disabled) {
+                      e.target.style.backgroundColor = '#006600';
+                      e.target.style.borderColor = '#009900';
+                      e.target.style.boxShadow = '0 0 8px rgba(51, 204, 51, 0.5)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.target.disabled) {
+                      e.target.style.backgroundColor = '#004d00';
+                      e.target.style.borderColor = '#006600';
+                      e.target.style.boxShadow = 'none';
+                    }
+                  }}
+                />
+
+                {data.user && data.user.is_regent && (
+                  <Button
+                    content="Seize Points"
+                    disabled={!selectedTarget || !transferAmount || parseInt(transferAmount) <= 0}
+                    onClick={handleSeize}
+                    style={{
+                      'background-color': '#4d0000',
+                      'border-color': '#660000',
+                      'color': '#ffcccc',
+                      'flex': '1',
+                      'transition': 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!e.target.disabled) {
+                        e.target.style.backgroundColor = '#660000';
+                        e.target.style.borderColor = '#990000';
+                        e.target.style.boxShadow = '0 0 8px rgba(204, 51, 51, 0.5)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!e.target.disabled) {
+                        e.target.style.backgroundColor = '#4d0000';
+                        e.target.style.borderColor = '#660000';
+                        e.target.style.boxShadow = 'none';
+                      }
+                    }}
+                  />
+                )}
+              </Box>
+
+              {data.user && data.user.is_regent && (
+                <Box style={{ 'margin-top': '10px', 'font-size': '0.9em', 'color': '#996666' }}>
+                  <i>As Regent, you may seize research points from any clan member.</i>
+                </Box>
+              )}
+            </Section>
+          </Collapsible>
+        )}
       </Window.Content>
     </Window>
   );

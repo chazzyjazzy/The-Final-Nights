@@ -89,6 +89,11 @@
 	if(!identified)
 		return
 
+/obj/item/vtm_artifact/examine(mob/user)
+	.=..()
+	if(HAS_TRAIT(user,TRAIT_THAUMATURGY_KNOWLEDGE))
+		. += "You estimate that this Artifact can be given to the archives to retrieve [research_value] research points."
+
 
 // ---------------------------------------------WEEKAPAUG THISTLE-----------------------------------------------------------
 /obj/item/vtm_artifact/weekapaug_thistle
