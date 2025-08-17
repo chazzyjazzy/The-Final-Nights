@@ -129,9 +129,7 @@ export class VaultDoor extends Component {
                 }
               </Box>
 
-              {/* Number Keypad */}
               <Box>
-                {/* Row 1 */}
                 <Box style={buttonRowStyle}>
                   <Button
                     style={numberButtonStyle}
@@ -150,7 +148,6 @@ export class VaultDoor extends Component {
                   />
                 </Box>
 
-                {/* Row 2 */}
                 <Box style={buttonRowStyle}>
                   <Button
                     style={numberButtonStyle}
@@ -169,7 +166,6 @@ export class VaultDoor extends Component {
                   />
                 </Box>
 
-                {/* Row 3 */}
                 <Box style={buttonRowStyle}>
                   <Button
                     style={numberButtonStyle}
@@ -188,7 +184,6 @@ export class VaultDoor extends Component {
                   />
                 </Box>
 
-                {/* Row 4 */}
                 <Box style={buttonRowStyle}>
                   <Button
                     style={{...numberButtonStyle, backgroundColor: '#333'}}
@@ -209,7 +204,6 @@ export class VaultDoor extends Component {
                 </Box>
               </Box>
 
-              {/* Status Bar */}
               <Box style={{
                 marginTop: '15px',
                 padding: '8px',
