@@ -116,6 +116,7 @@
 		new /datum/data/mining_equipment("black turtleneck", /obj/item/clothing/under/vampire/turtleneck_black,	15),
 		new /datum/data/mining_equipment("red turtleneck",	/obj/item/clothing/under/vampire/turtleneck_red,	15),
 		new /datum/data/mining_equipment("navy turtleneck",	/obj/item/clothing/under/vampire/turtleneck_navy,	15),
+		new /datum/data/mining_equipment("tacticool turtleneck",	/obj/item/clothing/under/syndicate/tacticool, 15),
 		new /datum/data/mining_equipment("biker outfit",	/obj/item/clothing/under/vampire/biker,	15),
 		new /datum/data/mining_equipment("burlesque outfit", /obj/item/clothing/under/vampire/burlesque,	15),
 		new /datum/data/mining_equipment("daisy dukes", /obj/item/clothing/under/vampire/burlesque/daisyd,	10),
