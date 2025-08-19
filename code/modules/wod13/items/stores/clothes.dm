@@ -217,6 +217,7 @@
 		new /datum/data/mining_equipment("large dark red scarf",	/obj/item/clothing/neck/large_scarf/syndie, 10),
 		new /datum/data/mining_equipment("cross",	/obj/item/card/id/hunter,  25),
 		new /datum/data/mining_equipment("dope chain", /obj/item/clothing/neck/necklace/dope, 7000),
+		new /datum/data/mining_equipment("swag outfit", /obj/item/clothing/under/costume/swagoutfit, 2000),
 		new /datum/data/mining_equipment("kasaya",	/obj/item/clothing/suit/vampire/kasaya,  15),
 		new /datum/data/mining_equipment("imam's robe",	/obj/item/clothing/suit/vampire/imam,  15),
 		new /datum/data/mining_equipment("orthodox robe",	/obj/item/clothing/suit/vampire/orthodox,  15),
