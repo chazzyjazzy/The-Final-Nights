@@ -156,6 +156,7 @@
 		new /datum/data/mining_equipment("prescription glasses",	/obj/item/clothing/glasses/vampire/perception,	20),
 		new /datum/data/mining_equipment("eyepatch", /obj/item/clothing/glasses/eyepatch, 50),
 		new /datum/data/mining_equipment("welding goggles", /obj/item/clothing/glasses/welding, 50),
+		new /datum/data/mining_equipment("monocle", /obj/item/clothing/glasses/monocle, 50),
 		new /datum/data/mining_equipment("leather gloves", /obj/item/clothing/gloves/vampire/leather,	25),
 		new /datum/data/mining_equipment("rubber gloves", /obj/item/clothing/gloves/vampire/cleaning,	15),
 		new /datum/data/mining_equipment("latex gloves", /obj/item/clothing/gloves/vampire/latex,	5),
