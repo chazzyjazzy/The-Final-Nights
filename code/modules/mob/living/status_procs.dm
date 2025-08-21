@@ -532,7 +532,7 @@
 			COOLDOWN_START(dharma, torpor_timer, torpor_length)
 
 /**
- * Deactivates toggleable disciplines when entering torpor - was a problem where the 'concious' flags on the discs made it so you couldnt untoggle when entering torpor
+ * Deactivates all toggleable disciplines via try_deactivate
  */
 /mob/living/proc/deactivate_toggled_disciplines()
 	if (!ishuman(src))
