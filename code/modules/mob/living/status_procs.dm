@@ -496,6 +496,7 @@
 	if (fakedeath(source))
 		to_chat(src, "<span class='danger'>You have fallen into Torpor. Use the button in the top right to learn more, or attempt to wake up.</span>")
 		ADD_TRAIT(src, TRAIT_TORPOR, source)
+		deactivate_toggled_disciplines()
 		if (iskindred(src))
 			var/mob/living/carbon/human/vampire = src
 			var/datum/species/kindred/vampire_species = vampire.dna.species
@@ -529,6 +530,28 @@
 			var/datum/dharma/dharma = cathayan.mind.dharma
 			var/torpor_length = 1 MINUTES * max_yin_chi
 			COOLDOWN_START(dharma, torpor_timer, torpor_length)
+
+/**
+ * Deactivates toggleable disciplines when entering torpor - was a problem where the 'concious' flags on the discs made it so you couldnt untoggle when entering torpor
+ */
+/mob/living/proc/deactivate_toggled_disciplines()
+	if (!ishuman(src))
+		return
+
+	var/mob/living/carbon/human/human = src
+
+	if (iskindred(human))
+		var/datum/species/kindred/vampire_species = human.dna.species
+		if (!vampire_species.disciplines)
+			return
+
+		for (var/datum/discipline/discipline in vampire_species.disciplines)
+			if (!discipline.known_powers)
+				continue
+			for (var/datum/discipline_power/power in discipline.known_powers)
+				if (power.toggled && power.active)
+					power.try_deactivate(direct = TRUE)
+					to_chat(src, span_warning("[power.name] deactivates as you fall into torpor."))
 
 ///Unignores all slowdowns that lack the IGNORE_NOSLOW flag.
 /mob/living/proc/unignore_slowdown(source)
