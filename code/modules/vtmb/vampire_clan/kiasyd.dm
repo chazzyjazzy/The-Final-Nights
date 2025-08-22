@@ -24,10 +24,6 @@
 
 	// checks if the kiasyd has a location - basically asking 'are you on the setup screen' - this is gonna have to be changed when preferences menu is fixed
 	if(!H.loc)
-		// add visual components that dont affect the scaling
-		var/obj/item/organ/eyes/night_vision/kiasyd/NV = new()
-		NV.Insert(H, TRUE, FALSE)
-		H.AddComponent(/datum/component/kiasyd_iron_weakness)
 		return
 
 	// if the above doesnt pass then run the on_gain as usual - this is gonna have to be changed when preferences menu is fixed
