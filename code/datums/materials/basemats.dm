@@ -67,7 +67,6 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 //TFN EDIT ADDITION - Making Heist Loot Sellable -- note : the items are initialized onto the map as stacks, and so this logic handles for that, this needs to be changed if these unique items change / disappear from map edits
 /obj/item/stack/sheet/mineral/gold/Initialize()
 	. = ..()
-	// Always add selling component for gold sheets if they don't have one
 	if(!GetComponent(/datum/component/selling))
 		AddComponent(/datum/component/selling, 100, "precious_metals", FALSE)
 //TFN EDIT END - Making Heist loot Sellable -- note : the items are initialized onto the map as stacks, and so this logic handles for that, this needs to be changed if these unique items change / disappear from map edits
