@@ -540,10 +540,11 @@
 
 	var/mob/living/carbon/human/human = src
 
-	if (iskindred(human))
-		var/datum/species/kindred/vampire_species = human.dna.species
-		if (!vampire_species.disciplines)
-			return
+	if (!iskindred(human))
+		return
+	var/datum/species/kindred/vampire_species = human.dna.species
+	if (!vampire_species.disciplines)
+		return
 
 		for (var/datum/discipline/discipline in vampire_species.disciplines)
 			if (!discipline.known_powers)
