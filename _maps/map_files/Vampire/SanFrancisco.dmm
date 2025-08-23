@@ -17481,6 +17481,11 @@
 	},
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/baali)
+"eGt" = (
+/obj/effect/turf_decal/siding/wideplating/dark/corner,
+/obj/structure/closet/boxinggloves,
+/turf/open/floor/plating/parquetry/old,
+/area/vtm/anarch)
 "eGu" = (
 /obj/effect/decal/bordur{
 	dir = 6
@@ -20450,6 +20455,7 @@
 	pixel_x = -7
 	},
 /obj/item/megaphone,
+/obj/item/masquerade_contract,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/anarch/basement)
 "frE" = (
@@ -20532,6 +20538,11 @@
 	pixel_y = 15;
 	pixel_x = 7
 	},
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
 /obj/item/vamp/keys/sabbat,
 /obj/item/vamp/keys/sabbat,
 /turf/open/floor/plating/parquetry/old,
@@ -40260,6 +40271,10 @@
 	},
 /turf/open/floor/plating/asphalt,
 /area/vtm/clinic)
+"kwk" = (
+/obj/effect/landmark/start/sabbatist,
+/turf/open/floor/plating/parquetry/old,
+/area/vtm/sabbat_lair)
 "kwn" = (
 /obj/effect/turf_decal/siding/wood/corner{
 	color = "#574d46";
@@ -45981,6 +45996,7 @@
 	pixel_y = 15;
 	pixel_x = 7
 	},
+/obj/effect/landmark/start/sabbatist,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/sabbat_lair)
 "lVk" = (
@@ -102043,7 +102059,7 @@ xfw
 rCB
 hYX
 idX
-wGV
+kwk
 wGV
 reI
 hYX
@@ -102447,7 +102463,7 @@ bef
 rCB
 hYX
 reI
-wGV
+kwk
 wGV
 frZ
 hYX
@@ -102649,8 +102665,8 @@ bef
 rCB
 hYX
 mac
-wGV
-wGV
+kwk
+kwk
 hYX
 hYX
 hYX
@@ -171361,7 +171377,7 @@ hZi
 hZi
 hZi
 ivd
-hEB
+eGt
 jOc
 jOc
 jOc
