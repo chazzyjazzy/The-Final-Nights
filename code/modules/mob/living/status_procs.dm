@@ -497,6 +497,7 @@
 		to_chat(src, "<span class='danger'>You have fallen into Torpor. Use the button in the top right to learn more, or attempt to wake up.</span>")
 		ADD_TRAIT(src, TRAIT_TORPOR, source)
 		deactivate_toggled_disciplines()
+		src.toggle_resting()
 		if (iskindred(src))
 			var/mob/living/carbon/human/vampire = src
 			var/datum/species/kindred/vampire_species = vampire.dna.species
