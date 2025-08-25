@@ -92,11 +92,7 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 /obj/item/stack/sheet/mineral/diamond/Initialize()
 	. = ..()
 	// check if it's a named unique diamond
-	if(name == "The Heart Diamond" || name == "The Crown Diamond")
-		if(cost) // the unique items have been varedited to have their unique value as a var called 'cost'
-			AddComponent(/datum/component/selling, cost, "precious_gems", FALSE)
-	else
-		AddComponent(/datum/component/selling, 1000, "precious_gems", FALSE)
+	AddComponent(/datum/component/selling, 1000, "precious_gems", FALSE)
 //TFN EDIT END - Making Heist loot Sellable
 
 /datum/material/diamond/on_accidental_mat_consumption(mob/living/carbon/victim, obj/item/source_item)
