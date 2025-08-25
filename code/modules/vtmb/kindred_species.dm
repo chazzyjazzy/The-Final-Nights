@@ -362,6 +362,8 @@
 	childe.adjustFireLoss(-25, TRUE)
 	childe.bloodpool = min(childe.maxbloodpool, childe.bloodpool+2)
 	childe.drunked_of |= "[sire.dna.real_name]"
+	if(childe.mind)
+		childe.mind.ingested_blood = sire
 
 	// Sabbatist Embrace Logic
 	if(sire.mind && is_sabbatist(sire))
