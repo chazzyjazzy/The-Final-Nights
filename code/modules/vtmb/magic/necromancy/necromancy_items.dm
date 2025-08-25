@@ -30,3 +30,13 @@
 			for(var/item_name in required_items)
 				required_list += (required_list == "" ? item_name : ", [item_name]")
 		to_chat(user, "[R.necrolevel] [R.name] - [R.desc] Requirements: [length(required_list) ? required_list : "None"].")
+
+	// Then open the necromancy vendor UI using ui_interact
+	ui_interact(user)
+
+// UI interaction for the tome
+/obj/item/necromancy_tome/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "NecromancyVendor", name)
+		ui.open()
