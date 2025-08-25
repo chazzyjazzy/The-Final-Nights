@@ -17,11 +17,7 @@
 
 /obj/item/cockclock/Initialize()
 	. = ..()
-	if(name == "\improper dolex wrist watch")
-		if(cost) // Use the cost value from the map
-			AddComponent(/datum/component/selling, cost, "luxury_goods", FALSE)
-	else
-		AddComponent(/datum/component/selling, 50, "watch", FALSE)
+	AddComponent(/datum/component/selling, 50, "watch", FALSE)
 
 /obj/item/cockclock/examine(mob/user)
 	. = ..()
