@@ -1,4 +1,4 @@
 author: "SoreYew"
 delete-after: True
 changes:
-  - bugfix: "fixed runtimes on map"
+  - qol: "Updates the DA to an ADA"
