@@ -44897,7 +44897,6 @@
 /obj/structure/table/wood/fancy/blue,
 /obj/item/stack/sheet/mineral/diamond{
 	pixel_y = 6;
-	cost = 5000;
 	name = "The Crown Diamond"
 	},
 /turf/open/floor/carpet/blue,
@@ -82359,7 +82358,6 @@
 "vhn" = (
 /obj/structure/table/wood/fancy/red,
 /obj/item/stack/sheet/mineral/diamond{
-	cost = 10000;
 	name = "The Heart Diamond"
 	},
 /obj/structure/window/reinforced/spawner/directional/north,
@@ -88091,8 +88089,7 @@
 /obj/item/stack/sheet/mineral/gold{
 	amount = 50;
 	icon_state = "sheet-gold_3";
-	pixel_y = 9;
-	cost = 100
+	pixel_y = 9
 	},
 /turf/open/floor/plating/vampplating/mono,
 /area/vtm/interior/bianchiBank)
