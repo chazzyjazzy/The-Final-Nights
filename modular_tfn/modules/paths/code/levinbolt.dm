@@ -109,8 +109,20 @@
 		/datum/discipline_power/path/levinbolt/one
 	)
 
-/datum/discipline_power/path/levinbolt/three/activate(mob/living/target)
+/datum/discipline_power/path/levinbolt/three/activate()
 	. = ..()
+	if(.)
+		RegisterSignal(owner, COMSIG_LIVING_UNARMED_ATTACK, PROC_REF(power_array_counter))
+
+/datum/discipline_power/path/levinbolt/three/deactivate()
+	. = ..()
+	UnregisterSignal(owner, COMSIG_LIVING_UNARMED_ATTACK)
+
+/datum/discipline_power/path/levinbolt/three/proc/power_array_counter(mob/source, obj/item/weapon, mob/living/attacker)
+	if(prob(30))
+		to_chat(world, "attacker is stunned")
+		attacker.Stun(3 SECONDS)
+		attacker.adjustFireLoss(30)
 
 // TODO: This should be a powerful attack that channels a large amount of energy into three consecutive bolts, dealing burn damage.
 //ZEUS' FURY - Level 4
@@ -121,11 +133,16 @@
 	level = 4
 	cooldown_length = 10 SECONDS
 	violates_masquerade = TRUE
-	target_type = TARGET_LIVING
 	range = 7
 
 /datum/discipline_power/path/levinbolt/four/activate(mob/living/target)
 	. = ..()
+	owner.visible_message(span_danger("[owner.name] crackles with static electricity!"), span_danger("You crackle with static electricity, charging up your Gift!"))
+	if(do_after(owner, 3 SECONDS))
+		playsound(owner, 'sound/magic/lightningshock.ogg', 100, TRUE, extrarange = 5)
+		for(var/mob/living/L in orange(6, owner))
+			if(L)
+				L.electrocute_act(30, owner, siemens_coeff = 1, flags = NONE)
 
 // TODO: Combination of some disciplines. It should flashbang everyone upon being activated, and allow them to shock others dramatically with their hand for a short duration.
 //EYE OF THE STORM - Level 5
