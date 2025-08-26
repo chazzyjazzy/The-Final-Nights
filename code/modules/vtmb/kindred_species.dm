@@ -567,7 +567,15 @@
 		return
 
 	var/possible_disciplines = teacher_prefs.discipline_types - student_prefs.discipline_types
-	var/teaching_discipline = input(teacher, "What Discipline do you want to teach [student.name]?", "Discipline Selection") as null|anything in possible_disciplines
+
+	// remove path and its subtypes
+	var/list/filtered_disciplines = list()
+	for (var/D in possible_disciplines)
+		if (!ispath(D, /datum/discipline/path))
+			filtered_disciplines += D
+
+
+	var/teaching_discipline = input(teacher, "What Discipline do you want to teach [student.name]?", "Discipline Selection") as null|anything in filtered_disciplines
 
 	if (teaching_discipline)
 		var/datum/discipline/teacher_discipline = teacher_species.get_discipline(teaching_discipline)

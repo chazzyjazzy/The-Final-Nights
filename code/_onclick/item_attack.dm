@@ -150,6 +150,7 @@
 /mob/living/attackby(obj/item/attacking_item, mob/living/user, params)
 	if(..())
 		return TRUE
+	SEND_SIGNAL(src, COMSIG_ATOM_ATTACKBY, attacking_item, user, params2list(params)) // TFN ADDITION - Paths - this signal should be useful in the future
 	user.changeNext_move(attacking_item.attack_speed)
 	return attacking_item.attack(src, user, params)
 

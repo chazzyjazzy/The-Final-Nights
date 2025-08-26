@@ -33,6 +33,11 @@
 	grouped_powers = list(
 		/datum/discipline_power/path/levinbolt/three
 	)
+	// storing original light values to control mobs lighting when theyre charged by electricity (dots one, three and five)
+	var/original_light_range = 0
+	var/original_light_power = 0
+	var/original_light_color = null
+	var/original_light_on = FALSE
 
 //when the owner is attacked by mob/living, mob/living has a 30% chance (or maybe a roll, or maybe more) to suffer a small stun. probably need to use signals, but there doesnt seem to be an appropriate one.
 // todo : check /tg/ for appropriate signals, implement them
@@ -40,15 +45,37 @@
 /datum/discipline_power/path/levinbolt/one/activate()
 	. = ..()
 	if(.)
-		RegisterSignal(owner, COMSIG_LIVING_UNARMED_ATTACK, PROC_REF(spark_counter))
+		RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(spark_counter))
+
+		// Store original light values
+		original_light_range = owner.light_range
+		original_light_power = owner.light_power
+		original_light_color = owner.light_color
+		original_light_on = owner.light_on
+
+		// Apply electric lighting effect
+		owner.set_light_range(2)
+		owner.set_light_power(1)
+		owner.set_light_color(COLOR_WHITE) // Electric blue color
+		owner.set_light_on(TRUE)
+
 
 /datum/discipline_power/path/levinbolt/one/deactivate()
 	. = ..()
-	UnregisterSignal(owner, COMSIG_LIVING_UNARMED_ATTACK)
+	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+	// Restore original lighting
+	owner.set_light_range(original_light_range)
+	owner.set_light_power(original_light_power)
+	owner.set_light_color(original_light_color)
+	owner.set_light_on(original_light_on)
 
 /datum/discipline_power/path/levinbolt/one/proc/spark_counter(mob/source, obj/item/weapon, mob/living/attacker)
 	if(prob(30))
-		to_chat(world, "attacker is stunned")
+		attacker.Jitter(2)
+		if(ishuman(attacker))
+			var/mob/living/carbon/human/H = attacker
+			H.electrocution_animation(40)
+		attacker.emote("me", EMOTE_VISIBLE, "is electrocuted!")
 		attacker.Stun(3 SECONDS)
 
 //ILLUMINATE - Level 2
@@ -108,19 +135,48 @@
 	grouped_powers = list(
 		/datum/discipline_power/path/levinbolt/one
 	)
+	// storing original light values to control mobs lighting when theyre charged by electricity (dots one, three and five)
+	var/original_light_range = 0
+	var/original_light_power = 0
+	var/original_light_color = null
+	var/original_light_on = FALSE
 
 /datum/discipline_power/path/levinbolt/three/activate()
 	. = ..()
 	if(.)
-		RegisterSignal(owner, COMSIG_LIVING_UNARMED_ATTACK, PROC_REF(power_array_counter))
+		RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(power_array_counter))
+
+		// Store original light values
+		original_light_range = owner.light_range
+		original_light_power = owner.light_power
+		original_light_color = owner.light_color
+		original_light_on = owner.light_on
+
+		// Apply electric lighting effect
+		owner.set_light_range(2)
+		owner.set_light_power(1)
+		owner.set_light_color(COLOR_WHITE) // Electric blue color
+		owner.set_light_on(TRUE)
+		//owner.set_light_range_power_color(2, 1, COLOR_WHITE) -- ??
+
 
 /datum/discipline_power/path/levinbolt/three/deactivate()
 	. = ..()
-	UnregisterSignal(owner, COMSIG_LIVING_UNARMED_ATTACK)
+	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+	// Restore original lighting
+	owner.set_light_range(original_light_range)
+	owner.set_light_power(original_light_power)
+	owner.set_light_color(original_light_color)
+	owner.set_light_on(original_light_on)
 
 /datum/discipline_power/path/levinbolt/three/proc/power_array_counter(mob/source, obj/item/weapon, mob/living/attacker)
 	if(prob(30))
-		to_chat(world, "attacker is stunned")
+		attacker.emote("scream")
+		attacker.emote("me", null, "is electrocuted!")
+		if(ishuman(attacker))
+			var/mob/living/carbon/human/H = attacker
+			H.electrocution_animation(40)
+		attacker.Jitter(2)
 		attacker.Stun(3 SECONDS)
 		attacker.adjustFireLoss(30)
 
