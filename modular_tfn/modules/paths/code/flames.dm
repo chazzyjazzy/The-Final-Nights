@@ -2,9 +2,9 @@
 	name = "Lure of Flames"
 	desc = "A mystical path of Thaumaturgy that allows the summoning of fire and flame. Violates Masquerade."
 	icon_state = "flames"
-	power_type = /datum/discipline_power/path/flames
+	power_type = /datum/discipline_power/thaumaturgy/path/flames
 
-/datum/discipline_power/path/flames
+/datum/discipline_power/thaumaturgy/path/flames
 	name = "Lure of Flames Power Name"
 	desc = "Lure of Flames Power Description"
 
@@ -53,7 +53,7 @@
 		playsound(src, 'modular_tfn/modules/paths/sounds/fireball.ogg', 25, TRUE)
 
 //HAND OF FLAME - Level 1
-/datum/discipline_power/path/flames/one
+/datum/discipline_power/thaumaturgy/path/flames/one
 	name = "Hand of Flame"
 	desc = "Ignite your hands with supernatural fire, adding burn damage to your punches."
 
@@ -66,19 +66,19 @@
 	duration_length = 6 TURNS // how long is a turn again? 5 seconds maybe?
 
 	grouped_powers = list(
-		/datum/discipline_power/path/flames/two,
-		/datum/discipline_power/path/flames/three,
-		/datum/discipline_power/path/flames/four,
-		/datum/discipline_power/path/flames/five
+		/datum/discipline_power/thaumaturgy/path/flames/two,
+		/datum/discipline_power/thaumaturgy/path/flames/three,
+		/datum/discipline_power/thaumaturgy/path/flames/four,
+		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
-/datum/discipline_power/path/flames/one/activate()
+/datum/discipline_power/thaumaturgy/path/flames/one/activate()
 	. = ..()
 	owner.drop_all_held_items()
 	owner.put_in_r_hand(new /obj/item/lighter/hand_of_flame(owner))
 	owner.put_in_l_hand(new /obj/item/lighter/hand_of_flame(owner))
 
-/datum/discipline_power/path/flames/one/deactivate()
+/datum/discipline_power/thaumaturgy/path/flames/one/deactivate()
 	. = ..()
 	// Remove flame weapons
 	for(var/obj/item/lighter/hand_of_flame/flame in owner.held_items)
@@ -86,7 +86,7 @@
 
 //FLAME BOLT - Level 2
 // TODO : ok now this is just a 'fireball' spell - not sure if thats canon/wanted, perhaps we make it like one, but add the ability for the user to 'throw' the fire.
-/datum/discipline_power/path/flames/two
+/datum/discipline_power/thaumaturgy/path/flames/two
 	name = "Flame Bolt"
 	desc = "Hurl a bolt of supernatural fire at your target."
 
@@ -97,14 +97,14 @@
 	target_type = TARGET_LIVING
 
 	grouped_powers = list(
-		/datum/discipline_power/path/flames/one,
-		/datum/discipline_power/path/flames/three,
-		/datum/discipline_power/path/flames/four,
-		/datum/discipline_power/path/flames/five
+		/datum/discipline_power/thaumaturgy/path/flames/one,
+		/datum/discipline_power/thaumaturgy/path/flames/three,
+		/datum/discipline_power/thaumaturgy/path/flames/four,
+		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
 // TODO : add a botch where the user gets set on fire instead. these abilities should be strong - as they're acquired mid-round through 'jobby' activities, but they need 'magical accident' drawbacks
-/datum/discipline_power/path/flames/two/activate(mob/living/target)
+/datum/discipline_power/thaumaturgy/path/flames/two/activate(mob/living/target)
 	. = ..()
 	var/turf/start = get_turf(owner)
 	var/obj/projectile/flames/flamebolt/H = new(start)
@@ -118,7 +118,7 @@
 
 
 //PILLAR OF FIRE - Level 3
-/datum/discipline_power/path/flames/three
+/datum/discipline_power/thaumaturgy/path/flames/three
 	name = "Pillar of Fire"
 	desc = "Summon a towering pillar of flame from the ground beneath your target."
 
@@ -129,14 +129,14 @@
 	range = 7
 
 	grouped_powers = list(
-		/datum/discipline_power/path/flames/one,
-		/datum/discipline_power/path/flames/two,
-		/datum/discipline_power/path/flames/four,
-		/datum/discipline_power/path/flames/five
+		/datum/discipline_power/thaumaturgy/path/flames/one,
+		/datum/discipline_power/thaumaturgy/path/flames/two,
+		/datum/discipline_power/thaumaturgy/path/flames/four,
+		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
 // TODO : Right now this ability is a placeholder, just does damage and adds a fire stack, very boring
-/datum/discipline_power/path/flames/three/activate(mob/living/target)
+/datum/discipline_power/thaumaturgy/path/flames/three/activate(mob/living/target)
 	. = ..()
 	var/turf/target_turf = get_turf(target)
 	if(!target_turf)
@@ -155,7 +155,7 @@
 	playsound(target_turf, effect_sound, 50, TRUE)
 
 //ENGULF - Level 4
-/datum/discipline_power/path/flames/four
+/datum/discipline_power/thaumaturgy/path/flames/four
 	name = "Engulf"
 	desc = "Surround your target in a raging inferno, dealing continuous burn damage."
 
@@ -166,14 +166,14 @@
 	range = 7
 
 	grouped_powers = list(
-		/datum/discipline_power/path/flames/one,
-		/datum/discipline_power/path/flames/two,
-		/datum/discipline_power/path/flames/three,
-		/datum/discipline_power/path/flames/five
+		/datum/discipline_power/thaumaturgy/path/flames/one,
+		/datum/discipline_power/thaumaturgy/path/flames/two,
+		/datum/discipline_power/thaumaturgy/path/flames/three,
+		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
 // TODO : Right now this ability is a placeholder just like three, just does damage and adds a flamestack, very boring, it can be better
-/datum/discipline_power/path/flames/four/activate(mob/living/target)
+/datum/discipline_power/thaumaturgy/path/flames/four/activate(mob/living/target)
 	. = ..()
 	if(!target)
 		return
@@ -189,61 +189,117 @@
 	to_chat(target, span_userdanger("You are engulfed in supernatural flames!"))
 	playsound(get_turf(target), effect_sound, 75, TRUE)
 
-
-//FIRESTORM - Level 5
-/datum/discipline_power/path/flames/five
-	name = "Firestorm"
+//INFERNO - Level 5
+/datum/discipline_power/thaumaturgy/path/flames/five
+	name = "Inferno"
 	desc = "Unleash a devastating storm of fire that affects multiple targets in an area."
 
 	level = 5
 	cooldown_length = 20 SECONDS
 	violates_masquerade = TRUE
-	target_type = TARGET_LIVING
+	target_type = TARGET_TURF | TARGET_LIVING
 	range = 10
 
 	grouped_powers = list(
-		/datum/discipline_power/path/flames/one,
-		/datum/discipline_power/path/flames/two,
-		/datum/discipline_power/path/flames/three,
-		/datum/discipline_power/path/flames/four
+		/datum/discipline_power/thaumaturgy/path/flames/one,
+		/datum/discipline_power/thaumaturgy/path/flames/two,
+		/datum/discipline_power/thaumaturgy/path/flames/three,
+		/datum/discipline_power/thaumaturgy/path/flames/four
 	)
 
-// TODO : needs some kind of animation or sound - perhaps with rolls we can make this into an 'explosion' too, rather than a summoned molotov? also, we need to ensure it can target
-// turfs, not just players. With the subsystem to unlock these abilities, we should ensure that there is no possible way a player can get flames 5 unless the round is 2 hours in at the very least.
-
-/datum/discipline_power/path/flames/five/activate(atom/target)
+/datum/discipline_power/thaumaturgy/path/flames/five/activate(atom/target)
 	. = ..()
+
+	// Return early if the base thaumaturgy activation failed or botched
+	if(.)
+		return
+
 	to_chat(owner, span_notice("You begin channeling a devastating firestorm..."))
+
+	// Get the target turf
+	var/turf/center = get_turf(target)
+
+	// Calculate area size based on successes (minimum 1 tile, maximum 2 tiles from center)
+	var/area_range = clamp(success_count, 1, 2)
+
+	// Create warning overlays first
+	var/list/affected_turfs = list()
+	for(var/turf/T in range(area_range, center))
+		affected_turfs += T
+		// Add warning overlay from fire.dmi
+		new /obj/effect/temp_visual/inferno_warning(T)
+	// Show warning message
+	owner.visible_message(span_warning("[owner] begins channeling dangerous magic, reality warping around the target area!"))
+
+	// Wait for channel time - this gives players time to see the warning and react
 	if(!do_after(owner, 4 SECONDS))
 		to_chat(owner, span_warning("Your firestorm casting was interrupted!"))
+		// Clean up any remaining warning overlays
+		for(var/turf/T in affected_turfs)
+			for(var/obj/effect/temp_visual/inferno_warning/W in T)
+				qdel(W)
 		return
-	var/turf/center = get_turf(target)
-	var/list/affected_turfs = list()
-	// Get 4x4 area around target (2 tiles in each direction from center)
-	for(var/turf/T in range(2, center))
-		affected_turfs += T
-		new /obj/effect/fire(T)
 
-	// Create visual effects and deal damage
+	// Calculate damage and fire stacks based on successes
+	var/base_damage = 20 + (success_count * 5) + owner.thaum_damage_plus + owner.get_total_mentality()
+	var/fire_stacks_amount = 3 + success_count
+	var/ignite_chance = min(60 + (success_count * 10), 95) // 60% base, +10% per success, max 95%
+
+	// Create the actual inferno effect
 	for(var/turf/T in affected_turfs)
+		// Remove warning overlay and create fire effect
+		for(var/obj/effect/temp_visual/inferno_warning/W in T)
+			qdel(W)
+		new /obj/effect/fire(T)
 
 		// Damage all mobs on each tile
 		for(var/mob/living/L in T)
 			if(L == owner) // Don't damage self - but caster still gets set on fire
 				continue
 
-			var/damage_amount = 35 + owner.thaum_damage_plus + owner.get_total_mentality()
-			L.adjustFireLoss(damage_amount)
+			L.adjustFireLoss(base_damage)
 
-			// High chance to ignite
-			if(prob(80))
-				L.adjust_fire_stacks(5)
+			// Chance to ignite based on successes
+			if(prob(ignite_chance))
+				L.adjust_fire_stacks(fire_stacks_amount)
 				L.IgniteMob()
 
 			to_chat(L, span_userdanger("You are caught in a supernatural firestorm!"))
 
 	playsound(center, effect_sound, 100, TRUE)
 	owner.visible_message(span_danger("[owner] unleashes a devastating firestorm!"))
+
+	// Show success-based feedback to caster
+	switch(success_count)
+		if(1)
+			to_chat(owner, span_notice("Your firestorm burns with modest intensity."))
+		if(2)
+			to_chat(owner, span_notice("Your firestorm rages with considerable power."))
+		if(3 to INFINITY)
+			to_chat(owner, span_notice("Your firestorm burns with devastating supernatural fury!"))
+
+// Warning overlay object
+/obj/effect/temp_visual/inferno_warning
+	name = "impending inferno"
+	desc = "The air shimmers with dangerous heat. Something terrible is about to happen here!"
+	icon = 'icons/effects/fire.dmi'
+	icon_state = "fire"
+	alpha = 150
+	duration = 4 SECONDS // Matches the channel time
+
+/obj/effect/temp_visual/inferno_warning/Initialize()
+	. = ..()
+	// Add a pulsing animation to make it more noticeable
+	animate(src, alpha = 50, time = 10, loop = -1)
+	animate(alpha = 200, time = 10)
+
+	// Optional: Add a warning message to anyone who enters the tile
+	RegisterSignal(loc, COMSIG_ATOM_ENTERED, .proc/warn_entering_mob)
+
+/obj/effect/temp_visual/inferno_warning/proc/warn_entering_mob(datum/source, atom/movable/entered)
+	if(isliving(entered))
+		var/mob/living/L = entered
+		to_chat(L, span_warning("You feel intense supernatural heat building in this area!"))
 
 // Projectile for Flame Bolt - based on thaumaturgy projectile
 /obj/projectile/flames
@@ -272,9 +328,8 @@
 	if(isliving(target))
 		var/mob/living/L = target
 		// Chance to ignite target
-		//if(prob(30))
-		//	L.adjust_fire_stacks(2)
-		//	L.IgniteMob()
+		if(prob(10))
+			L.adjust_fire_stacks(2)
+			L.IgniteMob()
 		L.visible_message(span_danger("[target] is struck by supernatural flames!"), span_userdanger("You are burned by supernatural fire!"))
-		new /obj/effect/fire(get_turf(target))
 		playsound(get_turf(target), 'modular_tfn/modules/paths/sounds/fireball.ogg', 50, TRUE)
