@@ -84,11 +84,11 @@
 	for(var/obj/item/lighter/hand_of_flame/flame in owner.held_items)
 		qdel(flame)
 
-//FLAME BOLT - Level 2
+//Campfire - Level 2
 // TODO : ok now this is just a 'fireball' spell - not sure if thats canon/wanted, perhaps we make it like one, but add the ability for the user to 'throw' the fire.
 /datum/discipline_power/thaumaturgy/path/flames/two
-	name = "Flame Bolt"
-	desc = "Hurl a bolt of supernatural fire at your target."
+	name = "Campfire"
+	desc = "Conjure up enough flame that would exist in a campfire - and use it to hurt at your foes."
 
 	level = 2
 	cooldown_length = 1 SECONDS
@@ -195,7 +195,7 @@
 	desc = "Unleash a devastating storm of fire that affects multiple targets in an area."
 
 	level = 5
-	cooldown_length = 20 SECONDS
+	cooldown_length = 20 SECONDS // remind me to increase this when pr is published
 	violates_masquerade = TRUE
 	target_type = TARGET_TURF | TARGET_LIVING
 	range = 10
@@ -216,38 +216,33 @@
 
 	to_chat(owner, span_notice("You begin channeling a devastating firestorm..."))
 
-	// Get the target turf
 	var/turf/center = get_turf(target)
 
-	// Calculate area size based on successes (minimum 1 tile, maximum 2 tiles from center)
-	var/area_range = clamp(success_count, 1, 2)
+	// minimum one tile away from the center, maximum 2 tiles away from the center
+	var/area_range = clamp(success_count, 1, 3)
 
-	// Create warning overlays first
+	// create the inferno warning on all affected turfs in area_range from center
 	var/list/affected_turfs = list()
 	for(var/turf/T in range(area_range, center))
 		affected_turfs += T
-		// Add warning overlay from fire.dmi
 		new /obj/effect/temp_visual/inferno_warning(T)
-	// Show warning message
-	owner.visible_message(span_warning("[owner] begins channeling dangerous magic, reality warping around the target area!"))
+	owner.visible_message(span_warning("Sparks begin to fly and the temperature begins to climb... what could be happening?!"))
 
-	// Wait for channel time - this gives players time to see the warning and react
 	if(!do_after(owner, 4 SECONDS))
 		to_chat(owner, span_warning("Your firestorm casting was interrupted!"))
-		// Clean up any remaining warning overlays
-		for(var/turf/T in affected_turfs)
+		for(var/turf/T in affected_turfs) // delete all inferno warnings if casting was interrupted
 			for(var/obj/effect/temp_visual/inferno_warning/W in T)
 				qdel(W)
 		return
 
-	// Calculate damage and fire stacks based on successes
+	// damage dealt to those standing in the zone is based on successes and so are the fire stacks
 	var/base_damage = 20 + (success_count * 5) + owner.thaum_damage_plus + owner.get_total_mentality()
 	var/fire_stacks_amount = 3 + success_count
 	var/ignite_chance = min(60 + (success_count * 10), 95) // 60% base, +10% per success, max 95%
 
-	// Create the actual inferno effect
+	// casting succeeded
 	for(var/turf/T in affected_turfs)
-		// Remove warning overlay and create fire effect
+		// remove inferno warning and insert the actual fire objects
 		for(var/obj/effect/temp_visual/inferno_warning/W in T)
 			qdel(W)
 		new /obj/effect/fire(T)
@@ -272,11 +267,11 @@
 	// Show success-based feedback to caster
 	switch(success_count)
 		if(1)
-			to_chat(owner, span_notice("Your firestorm burns with modest intensity."))
+			to_chat(owner, span_bolddanger("Your firestorm burns with modest intensity."))
 		if(2)
-			to_chat(owner, span_notice("Your firestorm rages with considerable power."))
+			to_chat(owner, span_bolddanger("Your firestorm rages with considerable power."))
 		if(3 to INFINITY)
-			to_chat(owner, span_notice("Your firestorm burns with devastating supernatural fury!"))
+			to_chat(owner, span_bolddanger("Your firestorm burns with devastating supernatural fury!"))
 
 // Warning overlay object
 /obj/effect/temp_visual/inferno_warning
@@ -289,11 +284,11 @@
 
 /obj/effect/temp_visual/inferno_warning/Initialize()
 	. = ..()
-	// Add a pulsing animation to make it more noticeable
+	// pulsing animation
 	animate(src, alpha = 50, time = 10, loop = -1)
 	animate(alpha = 200, time = 10)
 
-	// Optional: Add a warning message to anyone who enters the tile
+	// warning message sent to mobs that stand on the tile
 	RegisterSignal(loc, COMSIG_ATOM_ENTERED, .proc/warn_entering_mob)
 
 /obj/effect/temp_visual/inferno_warning/proc/warn_entering_mob(datum/source, atom/movable/entered)
@@ -331,5 +326,8 @@
 		if(prob(10))
 			L.adjust_fire_stacks(2)
 			L.IgniteMob()
+		if(prob(10))
+			var/target_turf = get_turf(L)
+			new /obj/effect/fire(target_turf)
 		L.visible_message(span_danger("[target] is struck by supernatural flames!"), span_userdanger("You are burned by supernatural fire!"))
 		playsound(get_turf(target), 'modular_tfn/modules/paths/sounds/fireball.ogg', 50, TRUE)

@@ -22,13 +22,14 @@
 //SPARK - Level 1
 /datum/discipline_power/thaumaturgy/path/levinbolt/one
 	name = "Spark"
-	desc = "Generate a small electrical discharge upon being struck."
+	desc = "Generate a small electrical discharge upon being struck, or target objects to disrupt their electronics."
 
 	level = 1
 	check_flags = DISC_CHECK_CAPABLE | DISC_CHECK_CONSCIOUS
 	violates_masquerade = FALSE
 	toggled = TRUE
 	duration_length = 2 TURNS
+	target_type = TARGET_OBJ | TARGET_LIVING
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/levinbolt/three
@@ -38,36 +39,33 @@
 	var/original_light_power = 0
 	var/original_light_color = null
 	var/original_light_on = FALSE
-
-//when the owner is attacked by mob/living, mob/living has a 30% chance (or maybe a roll, or maybe more) to suffer a small stun. probably need to use signals, but there doesnt seem to be an appropriate one.
-// todo : check /tg/ for appropriate signals, implement them
+	var/static/mutable_appearance/electricity
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/activate()
 	. = ..()
-	if(.)
-		RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(spark_counter))
+	if(!active)
+		return
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(spark_counter))
+	electricity = electricity || mutable_appearance('icons/effects/effects.dmi', "electricity", EFFECTS_LAYER)
+	owner.add_overlay(electricity)
 
-		// Store original light values
-		original_light_range = owner.light_range
-		original_light_power = owner.light_power
-		original_light_color = owner.light_color
-		original_light_on = owner.light_on
-
-		// Apply electric lighting effect
-		owner.set_light_range(2)
-		owner.set_light_power(1)
-		owner.set_light_color(COLOR_WHITE) // Electric blue color
-		owner.set_light_on(TRUE)
-
+	// Set up overlay lighting component for electric glow
+	owner.light_system = MOVABLE_LIGHT
+	owner.AddComponent(/datum/component/overlay_lighting, 2, 1, "#CCFFFF", TRUE)
+	to_chat(owner, span_notice("Small sparks of electricity begin crackling around you!"))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/deactivate()
 	. = ..()
 	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
-	// Restore original lighting
-	owner.set_light_range(original_light_range)
-	owner.set_light_power(original_light_power)
-	owner.set_light_color(original_light_color)
-	owner.set_light_on(original_light_on)
+	owner.cut_overlay(electricity)
+	// Remove the lighting component
+	var/datum/component/overlay_lighting/light_comp = owner.GetComponent(/datum/component/overlay_lighting)
+	if(light_comp)
+		qdel(light_comp)
+
+	// Reset light system
+	owner.light_system = initial(owner.light_system)
+	to_chat(owner, span_notice("The electricity around you fades away."))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_counter(mob/source, obj/item/weapon, mob/living/attacker)
 	if(prob(30))
@@ -140,34 +138,34 @@
 	var/original_light_power = 0
 	var/original_light_color = null
 	var/original_light_on = FALSE
+	var/static/mutable_appearance/electricity2
+
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/activate()
 	. = ..()
-	if(.)
-		RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(power_array_counter))
-
-		// Store original light values
-		original_light_range = owner.light_range
-		original_light_power = owner.light_power
-		original_light_color = owner.light_color
-		original_light_on = owner.light_on
-
-		// Apply electric lighting effect
-		owner.set_light_range(2)
-		owner.set_light_power(1)
-		owner.set_light_color(COLOR_WHITE) // Electric blue color
-		owner.set_light_on(TRUE)
-		//owner.set_light_range_power_color(2, 1, COLOR_WHITE) -- ??
+	if(!active)
+		return
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(power_array_counter))
+	electricity2 = electricity2 || mutable_appearance('icons/effects/effects.dmi', "electricity2", EFFECTS_LAYER)
+	owner.add_overlay(electricity2)
+	// Set up stronger overlay lighting component for more intense electric glow
+	owner.light_system = MOVABLE_LIGHT
+	owner.AddComponent(/datum/component/overlay_lighting, 3, 2, "#00FFFF", TRUE)
+	to_chat(owner, span_notice("Intense electricity surges around your entire body!"))
 
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/deactivate()
 	. = ..()
 	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
-	// Restore original lighting
-	owner.set_light_range(original_light_range)
-	owner.set_light_power(original_light_power)
-	owner.set_light_color(original_light_color)
-	owner.set_light_on(original_light_on)
+	owner.cut_overlay(electricity2)
+	// Remove the lighting component
+	var/datum/component/overlay_lighting/light_comp = owner.GetComponent(/datum/component/overlay_lighting)
+	if(light_comp)
+		qdel(light_comp)
+
+	// Reset light system
+	owner.light_system = initial(owner.light_system)
+	to_chat(owner, span_notice("The electricity around your body dissipates."))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/proc/power_array_counter(mob/source, obj/item/weapon, mob/living/attacker)
 	if(prob(30))
@@ -333,3 +331,67 @@
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/activate(atom/target)
 	. = ..()
+
+
+/*
+//SPARK - Level 1
+/datum/discipline_power/thaumaturgy/path/levinbolt/one
+	name = "Spark"
+	desc = "Generate a small electrical discharge upon being struck."
+
+	level = 1
+	check_flags = DISC_CHECK_CAPABLE | DISC_CHECK_CONSCIOUS
+	violates_masquerade = FALSE
+	toggled = TRUE
+	duration_length = 2 TURNS
+
+	grouped_powers = list(
+		/datum/discipline_power/thaumaturgy/path/levinbolt/three
+	)
+	// storing original light values to control mobs lighting when theyre charged by electricity (dots one, three and five)
+	var/original_light_range = 0
+	var/original_light_power = 0
+	var/original_light_color = null
+	var/original_light_on = FALSE
+	var/static/mutable_appearance/electricity
+
+
+//when the owner is attacked by mob/living, mob/living has a 30% chance (or maybe a roll, or maybe more) to suffer a small stun. probably need to use signals, but there doesnt seem to be an appropriate one.
+// todo : check /tg/ for appropriate signals, implement them
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/one/activate()
+	. = ..()
+	if(!active)
+		return
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(spark_counter))
+	electricity = electricity || mutable_appearance('icons/effects/effects.dmi', "electricity", EFFECTS_LAYER)
+	owner.add_overlay(electricity)
+
+	// Set up overlay lighting component for electric glow
+	owner.light_system = MOVABLE_LIGHT
+	owner.AddComponent(/datum/component/overlay_lighting, 2, 1, "#CCFFFF", TRUE)
+	to_chat(owner, span_notice("Small sparks of electricity begin crackling around you!"))
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/one/deactivate()
+	. = ..()
+	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+	owner.cut_overlay(electricity)
+	// Remove the lighting component
+	var/datum/component/overlay_lighting/light_comp = owner.GetComponent(/datum/component/overlay_lighting)
+	if(light_comp)
+		qdel(light_comp)
+
+	// Reset light system
+	owner.light_system = initial(owner.light_system)
+	to_chat(owner, span_notice("The electricity around you fades away."))
+
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_counter(mob/source, obj/item/weapon, mob/living/attacker)
+	if(prob(30))
+		attacker.Jitter(2)
+		if(ishuman(attacker))
+			var/mob/living/carbon/human/H = attacker
+			H.electrocution_animation(40)
+		attacker.emote("me", EMOTE_VISIBLE, "is electrocuted!")
+		attacker.Stun(3 SECONDS)
+*/
