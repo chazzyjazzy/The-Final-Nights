@@ -88,7 +88,7 @@ Unless you know what you're doing, only use the first three numbers. They're in 
 	beauty_modifier = 0.3
 	armor_modifiers = list(MELEE = 1.3, BULLET = 1.3, LASER = 0.6, ENERGY = 1, BOMB = 1.2, BIO = 1, RAD = 1, FIRE = 1, ACID = 1)
 
-//TFN EDIT ADDITION - Making Heist Loot Sellable -- note : The unique named items have their own 'cost' var which is supposed to represent their sell value.
+//TFN EDIT ADDITION - Making Heist Loot Sellable
 /obj/item/stack/sheet/mineral/diamond/Initialize()
 	. = ..()
 	// check if it's a named unique diamond
