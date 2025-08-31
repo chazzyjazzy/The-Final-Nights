@@ -343,8 +343,7 @@
 			var/ritual_type = rune_names[ritual]
 			new ritual_type(H.loc)
 			H.bloodpool = max(H.bloodpool - 2, 0)
-			if(H.CheckEyewitness(H, H, 7, FALSE))
-				H.AdjustMasquerade(-1)
+			SEND_SIGNAL(H, COMSIG_MASQUERADE_VIOLATION)
 
 	else
 		var/list/rune_names = list()
@@ -360,5 +359,4 @@
 			var/rune = pick(rune_names)
 			new rune(H.loc)
 			H.bloodpool = max(H.bloodpool - 2, 0)
-			if(H.CheckEyewitness(H, H, 7, FALSE))
-				H.AdjustMasquerade(-1)
+			SEND_SIGNAL(H, COMSIG_MASQUERADE_VIOLATION)
