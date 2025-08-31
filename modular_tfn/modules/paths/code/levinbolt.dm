@@ -29,7 +29,7 @@
 	violates_masquerade = FALSE
 	toggled = TRUE
 	duration_length = 2 TURNS
-	target_type = TARGET_OBJ | TARGET_LIVING
+
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/levinbolt/three
@@ -46,17 +46,19 @@
 	if(!active)
 		return
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(spark_counter))
+	RegisterSignal(owner, COMSIG_MOB_CLICKON, PROC_REF(spark_target_click))
 	electricity = electricity || mutable_appearance('icons/effects/effects.dmi', "electricity", EFFECTS_LAYER)
 	owner.add_overlay(electricity)
 
 	// Set up overlay lighting component for electric glow
 	owner.light_system = MOVABLE_LIGHT
-	owner.AddComponent(/datum/component/overlay_lighting, 2, 1, "#CCFFFF", TRUE)
-	to_chat(owner, span_notice("Small sparks of electricity begin crackling around you!"))
+	owner.AddComponent(/datum/component/overlay_lighting, 2, 1, "#f1fdfd", TRUE)
+	to_chat(owner, span_notice("Small sparks of electricity begin crackling around you! Youn can now disable certain electrical systems with just a touch - and attackers will sometimes feel a slight shock."))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/deactivate()
 	. = ..()
 	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+	UnregisterSignal(owner, COMSIG_MOB_CLICKON)
 	owner.cut_overlay(electricity)
 	// Remove the lighting component
 	var/datum/component/overlay_lighting/light_comp = owner.GetComponent(/datum/component/overlay_lighting)
@@ -75,6 +77,56 @@
 			H.electrocution_animation(40)
 		attacker.emote("me", EMOTE_VISIBLE, "is electrocuted!")
 		attacker.Stun(3 SECONDS)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_target_click(mob/source, atom/target, params)
+	// Only work if the power is toggled and active
+	if(!active || !toggled)
+		return
+
+	// Check if target is in range (adjacent or same tile)
+	if(!target || get_dist(owner, target) > 1)
+		return
+
+	// Handle cargo express computer
+	if(istype(target, /obj/machinery/computer/cargo/express))
+		var/obj/machinery/computer/cargo/express/cargo_comp = target
+		cargo_comp.locked = 0
+
+		// Visual and audio effects
+		var/datum/effect_system/spark_spread/spark_system = new
+		spark_system.set_up(3, 1, get_turf(target))
+		spark_system.start()
+		playsound(target, 'sound/effects/sparks4.ogg', 50, TRUE)
+
+		to_chat(owner, span_notice("You send electrical sparks into [target], unlocking its systems!"))
+		owner.visible_message(span_warning("[owner] sends sparks of electricity into [target]!"))
+		return TRUE
+
+	// Handle fusebox
+	if(istype(target, /obj/fusebox))
+		var/obj/fusebox/fuse = target
+
+		// Break the fusebox
+		fuse.damaged += 50
+		fuse.check_damage(owner)
+
+		// Visual and audio effects
+		var/datum/effect_system/spark_spread/spark_system = new
+		spark_system.set_up(5, 1, get_turf(target))
+		spark_system.start()
+		playsound(target, 'sound/effects/sparks2.ogg', 75, TRUE)
+
+		to_chat(owner, span_notice("You overload [target] with electrical energy!"))
+		owner.visible_message(span_warning("[owner] sends a surge of electricity into [target]!"))
+
+		// Small chance to electrocute the user too
+		if(prob(15))
+			owner.electrocute_act(10, target, siemens_coeff = 1, flags = NONE)
+			to_chat(owner, span_warning("Some of the electrical feedback hits you!"))
+
+		return TRUE
+
+	return FALSE
 
 //ILLUMINATE - Level 2
 /datum/discipline_power/thaumaturgy/path/levinbolt/two
@@ -146,11 +198,13 @@
 	if(!active)
 		return
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(power_array_counter))
+	RegisterSignal(owner, COMSIG_MOB_CLICKON, PROC_REF(powerarray_target_click))
+
 	electricity2 = electricity2 || mutable_appearance('icons/effects/effects.dmi', "electricity2", EFFECTS_LAYER)
 	owner.add_overlay(electricity2)
 	// Set up stronger overlay lighting component for more intense electric glow
 	owner.light_system = MOVABLE_LIGHT
-	owner.AddComponent(/datum/component/overlay_lighting, 3, 2, "#00FFFF", TRUE)
+	owner.AddComponent(/datum/component/overlay_lighting, 3, 2, "#e9ffff", TRUE)
 	to_chat(owner, span_notice("Intense electricity surges around your entire body!"))
 
 
@@ -177,6 +231,88 @@
 		attacker.Jitter(2)
 		attacker.Stun(3 SECONDS)
 		attacker.adjustFireLoss(30)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/three/proc/powerarray_target_click(mob/source, atom/target, params)
+	// Only work if the power is toggled and active
+	if(!active || !toggled)
+		return
+
+	// Check if target is in range (adjacent or same tile)
+	if(!target || get_dist(owner, target) > 1)
+		return
+
+	// Human electronics disabling
+	if(ishuman(target))
+		var/mob/living/carbon/human/H = target
+		var/disabled_any = FALSE
+		for(var/obj/item/I in H.get_all_slots())
+			if(istype(I, /obj/item/p25radio))
+				var/obj/item/p25radio/radio = I
+				if(radio.powered)
+					radio.powered = FALSE
+					to_chat(H, span_warning("Your [I.name] crackles violently and powers down!"))
+					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], disabling it!"))
+					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
+					disabled_any = TRUE
+				else
+					radio.powered = TRUE
+					to_chat(H, span_warning ("Electricity surges into your radio - turning it on!"))
+					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], turning it on!"))
+					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
+					disabled_any = TRUE
+		if(disabled_any)
+			var/datum/effect_system/spark_spread/spark_system = new
+			spark_system.set_up(5, 1, get_turf(H))
+			spark_system.start()
+			return TRUE
+
+
+		if(disabled_any)
+			var/datum/effect_system/spark_spread/spark_system = new
+			spark_system.set_up(5, 1, get_turf(H))
+			spark_system.start()
+			return TRUE
+
+	// Handle cargo express computer
+	if(istype(target, /obj/machinery/computer/cargo/express))
+		var/obj/machinery/computer/cargo/express/cargo_comp = target
+		cargo_comp.locked = 0
+
+		// Visual and audio effects
+		var/datum/effect_system/spark_spread/spark_system = new
+		spark_system.set_up(3, 1, get_turf(target))
+		spark_system.start()
+		playsound(target, 'sound/effects/sparks4.ogg', 50, TRUE)
+
+		to_chat(owner, span_notice("You send electrical sparks into [target], unlocking its systems!"))
+		owner.visible_message(span_warning("[owner] sends sparks of electricity into [target]!"))
+		return TRUE
+
+	// Handle fusebox
+	if(istype(target, /obj/fusebox))
+		var/obj/fusebox/fuse = target
+
+		// Break the fusebox
+		fuse.damaged += 50
+		fuse.check_damage(owner)
+
+		// Visual and audio effects
+		var/datum/effect_system/spark_spread/spark_system = new
+		spark_system.set_up(5, 1, get_turf(target))
+		spark_system.start()
+		playsound(target, 'sound/effects/sparks2.ogg', 75, TRUE)
+
+		to_chat(owner, span_notice("You overload [target] with electrical energy!"))
+		owner.visible_message(span_warning("[owner] sends a surge of electricity into [target]!"))
+
+		// Small chance to electrocute the user too
+		if(prob(15))
+			owner.electrocute_act(10, target, siemens_coeff = 1, flags = NONE)
+			to_chat(owner, span_warning("Some of the electrical feedback hits you!"))
+
+		return TRUE
+
+	return FALSE
 
 //ZEUS' FURY - Level 4 - Enhanced with Chain Lightning
 /datum/discipline_power/thaumaturgy/path/levinbolt/four
@@ -333,65 +469,3 @@
 	. = ..()
 
 
-/*
-//SPARK - Level 1
-/datum/discipline_power/thaumaturgy/path/levinbolt/one
-	name = "Spark"
-	desc = "Generate a small electrical discharge upon being struck."
-
-	level = 1
-	check_flags = DISC_CHECK_CAPABLE | DISC_CHECK_CONSCIOUS
-	violates_masquerade = FALSE
-	toggled = TRUE
-	duration_length = 2 TURNS
-
-	grouped_powers = list(
-		/datum/discipline_power/thaumaturgy/path/levinbolt/three
-	)
-	// storing original light values to control mobs lighting when theyre charged by electricity (dots one, three and five)
-	var/original_light_range = 0
-	var/original_light_power = 0
-	var/original_light_color = null
-	var/original_light_on = FALSE
-	var/static/mutable_appearance/electricity
-
-
-//when the owner is attacked by mob/living, mob/living has a 30% chance (or maybe a roll, or maybe more) to suffer a small stun. probably need to use signals, but there doesnt seem to be an appropriate one.
-// todo : check /tg/ for appropriate signals, implement them
-
-/datum/discipline_power/thaumaturgy/path/levinbolt/one/activate()
-	. = ..()
-	if(!active)
-		return
-	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(spark_counter))
-	electricity = electricity || mutable_appearance('icons/effects/effects.dmi', "electricity", EFFECTS_LAYER)
-	owner.add_overlay(electricity)
-
-	// Set up overlay lighting component for electric glow
-	owner.light_system = MOVABLE_LIGHT
-	owner.AddComponent(/datum/component/overlay_lighting, 2, 1, "#CCFFFF", TRUE)
-	to_chat(owner, span_notice("Small sparks of electricity begin crackling around you!"))
-
-/datum/discipline_power/thaumaturgy/path/levinbolt/one/deactivate()
-	. = ..()
-	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
-	owner.cut_overlay(electricity)
-	// Remove the lighting component
-	var/datum/component/overlay_lighting/light_comp = owner.GetComponent(/datum/component/overlay_lighting)
-	if(light_comp)
-		qdel(light_comp)
-
-	// Reset light system
-	owner.light_system = initial(owner.light_system)
-	to_chat(owner, span_notice("The electricity around you fades away."))
-
-
-/datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_counter(mob/source, obj/item/weapon, mob/living/attacker)
-	if(prob(30))
-		attacker.Jitter(2)
-		if(ishuman(attacker))
-			var/mob/living/carbon/human/H = attacker
-			H.electrocution_animation(40)
-		attacker.emote("me", EMOTE_VISIBLE, "is electrocuted!")
-		attacker.Stun(3 SECONDS)
-*/
