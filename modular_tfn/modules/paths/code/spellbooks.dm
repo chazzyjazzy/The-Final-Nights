@@ -260,7 +260,7 @@
 	research_value = 50
 	last_study_time = 0
 	study_cooldown = 30 MINUTES
-	study_research_value = 200
+	study_research_value = 100
 	icon_state = "veneficorum"
 	study_flavor_texts = list(
 		"You delve into Etrius's detailed explanations of blood manipulation, gaining deeper insight into the fundamental principles of Thaumaturgy.",

@@ -11,6 +11,89 @@
 	effect_sound = 'sound/magic/lightningbolt.ogg'
 
 
+// Base shared procedure for all levinbolt powers
+/datum/discipline_power/thaumaturgy/path/levinbolt/proc/levinbolt_target_click(mob/source, atom/target, params, include_radio_effects = FALSE)
+	if(!active || !toggled)
+		return
+
+	if(!target || get_dist(owner, target) > 1)
+		return
+
+	// Radio effects (only for level 3)
+	if(include_radio_effects && ishuman(target))
+		var/mob/living/carbon/human/H = target
+		var/disabled_any = FALSE
+		for(var/obj/item/I in H.get_all_slots())
+			if(istype(I, /obj/item/p25radio))
+				var/obj/item/p25radio/radio = I
+				if(radio.powered)
+					radio.powered = FALSE
+					to_chat(H, span_warning("Your [I.name] crackles violently and powers down!"))
+					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], disabling it!"))
+					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
+					disabled_any = TRUE
+				else
+					radio.powered = TRUE
+					to_chat(H, span_warning ("Electricity surges into your radio - turning it on!"))
+					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], turning it on!"))
+					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
+					disabled_any = TRUE
+		if(disabled_any)
+			var/datum/effect_system/spark_spread/spark_system = new
+			spark_system.set_up(5, 1, get_turf(H))
+			spark_system.start()
+			return TRUE
+
+	// Handle cargo express computer
+	if(istype(target, /obj/machinery/computer/cargo/express))
+		var/obj/machinery/computer/cargo/express/cargo_comp = target
+		if(cargo_comp.locked == 0)
+			cargo_comp.locked = 1
+		else
+			cargo_comp.locked = 0
+
+		// Visual and audio effects
+		var/datum/effect_system/spark_spread/spark_system = new
+		spark_system.set_up(3, 1, get_turf(target))
+		spark_system.start()
+		playsound(target, 'sound/effects/sparks4.ogg', 50, TRUE)
+
+		// Different messages based on level
+		if(include_radio_effects) // Level 3
+			to_chat(owner, span_notice("You send electrical sparks into [target], unlocking its systems!"))
+		else // Level 1
+			to_chat(owner, span_notice("You send electrical sparks into [target]!"))
+
+		owner.visible_message(span_warning("[owner] sends sparks of electricity into [target]!"))
+		return TRUE
+
+	// Handle fusebox
+	if(istype(target, /obj/fusebox))
+		var/obj/fusebox/fuse = target
+
+		// Break the fusebox
+		fuse.damaged += 101
+		fuse.check_damage(owner, TRUE)
+
+		// Visual and audio effects
+		var/datum/effect_system/spark_spread/spark_system = new
+		spark_system.set_up(5, 1, get_turf(target))
+		spark_system.start()
+		playsound(target, 'sound/effects/sparks2.ogg', 75, TRUE)
+
+		to_chat(owner, span_notice("You overload [target] with electrical energy!"))
+		owner.visible_message(span_warning("[owner] sends a surge of electricity into [target]!"))
+
+		// Small chance to electrocute the user too
+		if(prob(15))
+			owner.electrocute_act(10, target, siemens_coeff = 1, flags = NONE)
+			to_chat(owner, span_warning("Some of the electrical feedback hits you!"))
+
+		return TRUE
+
+	return FALSE
+
+
 // spark
 // illuminate
 // power array
@@ -30,9 +113,9 @@
 	toggled = TRUE
 	duration_length = 2 TURNS
 
-
 	grouped_powers = list(
-		/datum/discipline_power/thaumaturgy/path/levinbolt/three
+		/datum/discipline_power/thaumaturgy/path/levinbolt/three,
+		/datum/discipline_power/thaumaturgy/path/levinbolt/five
 	)
 	// storing original light values to control mobs lighting when theyre charged by electricity (dots one, three and five)
 	var/original_light_range = 0
@@ -79,54 +162,7 @@
 		attacker.Stun(3 SECONDS)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_target_click(mob/source, atom/target, params)
-	// Only work if the power is toggled and active
-	if(!active || !toggled)
-		return
-
-	// Check if target is in range (adjacent or same tile)
-	if(!target || get_dist(owner, target) > 1)
-		return
-
-	// Handle cargo express computer
-	if(istype(target, /obj/machinery/computer/cargo/express))
-		var/obj/machinery/computer/cargo/express/cargo_comp = target
-		cargo_comp.locked = 0
-
-		// Visual and audio effects
-		var/datum/effect_system/spark_spread/spark_system = new
-		spark_system.set_up(3, 1, get_turf(target))
-		spark_system.start()
-		playsound(target, 'sound/effects/sparks4.ogg', 50, TRUE)
-
-		to_chat(owner, span_notice("You send electrical sparks into [target], unlocking its systems!"))
-		owner.visible_message(span_warning("[owner] sends sparks of electricity into [target]!"))
-		return TRUE
-
-	// Handle fusebox
-	if(istype(target, /obj/fusebox))
-		var/obj/fusebox/fuse = target
-
-		// Break the fusebox
-		fuse.damaged += 50
-		fuse.check_damage(owner)
-
-		// Visual and audio effects
-		var/datum/effect_system/spark_spread/spark_system = new
-		spark_system.set_up(5, 1, get_turf(target))
-		spark_system.start()
-		playsound(target, 'sound/effects/sparks2.ogg', 75, TRUE)
-
-		to_chat(owner, span_notice("You overload [target] with electrical energy!"))
-		owner.visible_message(span_warning("[owner] sends a surge of electricity into [target]!"))
-
-		// Small chance to electrocute the user too
-		if(prob(15))
-			owner.electrocute_act(10, target, siemens_coeff = 1, flags = NONE)
-			to_chat(owner, span_warning("Some of the electrical feedback hits you!"))
-
-		return TRUE
-
-	return FALSE
+	return levinbolt_target_click(source, target, params, FALSE)
 
 //ILLUMINATE - Level 2
 /datum/discipline_power/thaumaturgy/path/levinbolt/two
@@ -183,7 +219,8 @@
 	duration_length = 2 TURNS
 
 	grouped_powers = list(
-		/datum/discipline_power/thaumaturgy/path/levinbolt/one
+		/datum/discipline_power/thaumaturgy/path/levinbolt/one,
+		/datum/discipline_power/thaumaturgy/path/levinbolt/five
 	)
 	// storing original light values to control mobs lighting when theyre charged by electricity (dots one, three and five)
 	var/original_light_range = 0
@@ -233,86 +270,8 @@
 		attacker.adjustFireLoss(30)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/proc/powerarray_target_click(mob/source, atom/target, params)
-	// Only work if the power is toggled and active
-	if(!active || !toggled)
-		return
+	return levinbolt_target_click(source, target, params, TRUE)
 
-	// Check if target is in range (adjacent or same tile)
-	if(!target || get_dist(owner, target) > 1)
-		return
-
-	// Human electronics disabling
-	if(ishuman(target))
-		var/mob/living/carbon/human/H = target
-		var/disabled_any = FALSE
-		for(var/obj/item/I in H.get_all_slots())
-			if(istype(I, /obj/item/p25radio))
-				var/obj/item/p25radio/radio = I
-				if(radio.powered)
-					radio.powered = FALSE
-					to_chat(H, span_warning("Your [I.name] crackles violently and powers down!"))
-					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], disabling it!"))
-					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
-					disabled_any = TRUE
-				else
-					radio.powered = TRUE
-					to_chat(H, span_warning ("Electricity surges into your radio - turning it on!"))
-					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], turning it on!"))
-					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
-					disabled_any = TRUE
-		if(disabled_any)
-			var/datum/effect_system/spark_spread/spark_system = new
-			spark_system.set_up(5, 1, get_turf(H))
-			spark_system.start()
-			return TRUE
-
-
-		if(disabled_any)
-			var/datum/effect_system/spark_spread/spark_system = new
-			spark_system.set_up(5, 1, get_turf(H))
-			spark_system.start()
-			return TRUE
-
-	// Handle cargo express computer
-	if(istype(target, /obj/machinery/computer/cargo/express))
-		var/obj/machinery/computer/cargo/express/cargo_comp = target
-		cargo_comp.locked = 0
-
-		// Visual and audio effects
-		var/datum/effect_system/spark_spread/spark_system = new
-		spark_system.set_up(3, 1, get_turf(target))
-		spark_system.start()
-		playsound(target, 'sound/effects/sparks4.ogg', 50, TRUE)
-
-		to_chat(owner, span_notice("You send electrical sparks into [target], unlocking its systems!"))
-		owner.visible_message(span_warning("[owner] sends sparks of electricity into [target]!"))
-		return TRUE
-
-	// Handle fusebox
-	if(istype(target, /obj/fusebox))
-		var/obj/fusebox/fuse = target
-
-		// Break the fusebox
-		fuse.damaged += 50
-		fuse.check_damage(owner)
-
-		// Visual and audio effects
-		var/datum/effect_system/spark_spread/spark_system = new
-		spark_system.set_up(5, 1, get_turf(target))
-		spark_system.start()
-		playsound(target, 'sound/effects/sparks2.ogg', 75, TRUE)
-
-		to_chat(owner, span_notice("You overload [target] with electrical energy!"))
-		owner.visible_message(span_warning("[owner] sends a surge of electricity into [target]!"))
-
-		// Small chance to electrocute the user too
-		if(prob(15))
-			owner.electrocute_act(10, target, siemens_coeff = 1, flags = NONE)
-			to_chat(owner, span_warning("Some of the electrical feedback hits you!"))
-
-		return TRUE
-
-	return FALSE
 
 //ZEUS' FURY - Level 4 - Enhanced with Chain Lightning
 /datum/discipline_power/thaumaturgy/path/levinbolt/four
@@ -455,17 +414,143 @@
 
 	to_chat(owner, span_warning("Zeus' Fury fizzles out. [reason]"))
 
-// TODO: Combination of some disciplines. It should flashbang everyone upon being activated, and allow them to shock others dramatically with their hand for a short duration.
 //EYE OF THE STORM - Level 5
 /datum/discipline_power/thaumaturgy/path/levinbolt/five
 	name = "Eye of the Storm"
 	desc = "Become charged with an incredible amount of energy."
 
 	level = 5
-	cooldown_length = 60 SECONDS
 	violates_masquerade = TRUE
+	toggled = TRUE
+	duration_length = 1 TURNS
+	vitae_cost = 2
+
+	var/lightning_timer
+	var/spark_timer
+	var/static/mutable_appearance/electricity3
+	grouped_powers = list(
+		/datum/discipline_power/thaumaturgy/path/levinbolt/one,
+		/datum/discipline_power/thaumaturgy/path/levinbolt/three
+	)
+
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/activate(atom/target)
 	. = ..()
+	if(!.)
+		return
+	add_electricity_overlay()
+	RegisterSignal(owner, COMSIG_CLICK, PROC_REF(storm_target_click))
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(storm_counter))
+	spark_timer = addtimer(CALLBACK(src, PROC_REF(create_sparks)), 2 SECONDS, TIMER_STOPPABLE | TIMER_LOOP)
+	lightning_timer = addtimer(CALLBACK(src, PROC_REF(fire_lightning_bolt)), 5 SECONDS, TIMER_STOPPABLE | TIMER_LOOP)
 
+	// Visual and audio feedback
+	owner.visible_message(span_danger("[owner] becomes surrounded by crackling electrical energy!"))
+	to_chat(owner, span_notice("You feel incredible electrical power coursing through your body!"))
+	playsound(owner, 'sound/effects/sparks4.ogg', 75, TRUE)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/add_electricity_overlay()
+	if(!owner || electricity3)
+		return
+	electricity3 = electricity3 || mutable_appearance('icons/effects/effects.dmi', "electricity2", EFFECTS_LAYER)
+	owner.add_overlay(electricity3)
+	owner.light_system = MOVABLE_LIGHT
+	owner.AddComponent(/datum/component/overlay_lighting, 5, 4, "#e9ffff", TRUE)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/remove_electricity_overlay()
+	if(!owner || !electricity3)
+		return
+
+	owner.cut_overlay(electricity3)
+	QDEL_NULL(electricity3)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/create_sparks()
+	if(!owner)
+		return
+
+	var/datum/effect_system/spark_spread/spark_system = new
+	spark_system.set_up(rand(3,7), 1, get_turf(owner))
+	spark_system.start()
+
+	if(prob(50))
+		playsound(owner, pick('sound/effects/sparks1.ogg', 'sound/effects/sparks2.ogg', 'sound/effects/sparks3.ogg', 'sound/effects/sparks4.ogg'), 40, TRUE)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/fire_lightning_bolt()
+	if(!owner)
+		return
+
+	var/list/potential_targets = list()
+	for(var/mob/living/L in range(7, owner))
+		if(L != owner && L.stat != DEAD)
+			potential_targets += L
+
+	if(!length(potential_targets))
+		return
+
+	var/mob/living/target = pick(potential_targets)
+
+	owner.Beam(target, icon_state="lightning[rand(1,12)]", time = 10)
+
+	target.electrocute_act(rand(15,25), "Eye of the Storm", flags = SHOCK_NOGLOVES)
+	target.Jitter(25)
+	if(ishuman(target))
+		var/mob/living/carbon/human/H = target
+		H.electrocution_animation(50)
+
+	if(prob(60))
+		target.Stun(2 SECONDS)
+		target.visible_message(span_warning("[target] convulses from the electrical shock!"))
+
+	var/datum/effect_system/spark_spread/spark_system = new
+	spark_system.set_up(8, 1, get_turf(target))
+	spark_system.start()
+
+	owner.visible_message(span_danger("Lightning arcs from [owner] to [target]!"))
+	playsound(target, 'sound/magic/lightningshock.ogg', 75, TRUE)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/storm_counter(mob/source, obj/item/weapon, mob/living/attacker)
+	if(prob(60))
+		attacker.Jitter(3)
+		if(ishuman(attacker))
+			var/mob/living/carbon/human/H = attacker
+			H.electrocution_animation(60)
+		attacker.emote("me", EMOTE_VISIBLE, "is violently electrocuted!")
+		attacker.Stun(4 SECONDS)
+		attacker.electrocute_act(rand(10,20), owner, siemens_coeff = 1, flags = NONE)
+		var/datum/effect_system/spark_spread/spark_system = new
+		spark_system.set_up(5, 1, get_turf(attacker))
+		spark_system.start()
+		playsound(attacker, 'sound/effects/sparks4.ogg', 60, TRUE)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/storm_target_click(mob/source, atom/target, params)
+	return levinbolt_target_click(source, target, params, TRUE)
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/deactivate()
+	if(!owner)
+		return
+
+	remove_electricity_overlay()
+	UnregisterSignal(owner, list(COMSIG_CLICK, COMSIG_ATOM_ATTACKBY))
+
+	// Stop timers
+	if(spark_timer)
+		deltimer(spark_timer)
+		spark_timer = null
+	if(lightning_timer)
+		deltimer(lightning_timer)
+		lightning_timer = null
+
+	owner.visible_message(span_notice("The electrical energy around [owner] dissipates."))
+	to_chat(owner, span_notice("The storm within you calms."))
+
+	. = ..()
+
+/datum/discipline_power/thaumaturgy/path/levinbolt/five/Destroy()
+	if(spark_timer)
+		deltimer(spark_timer)
+	if(lightning_timer)
+		deltimer(lightning_timer)
+	if(electricity3)
+		QDEL_NULL(electricity3)
+	. = ..()
 

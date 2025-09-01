@@ -5,6 +5,7 @@ SUBSYSTEM_DEF(occult_research)
 	var/base_research_rate = 1 // Base points per tick
 	var/necromancy_bonus = 0.5 // Additional bonus for necromancy
 	var/thaumaturgy_bonus = 0.5 // Additional bonus for thaumaturgy
+	var/obtenebration_bonus = 0.5
 
 /datum/controller/subsystem/occult_research/fire(resumed = FALSE)
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
@@ -21,6 +22,7 @@ SUBSYSTEM_DEF(occult_research)
 	var/research_gain = 0
 	var/has_necromancy = FALSE
 	var/has_thaumaturgy = FALSE
+	var/has_obtenebration
 
 	// Check what disciplines the user has
 	for(var/datum/action/discipline/D in user.actions)
@@ -32,6 +34,8 @@ SUBSYSTEM_DEF(occult_research)
 				has_necromancy = TRUE
 			if("Thaumaturgy")
 				has_thaumaturgy = TRUE
+			if("Obtenebration")
+				has_obtenebration = TRUE
 
 	// Calculate research gain
 	if(has_necromancy || has_thaumaturgy)
@@ -41,11 +45,13 @@ SUBSYSTEM_DEF(occult_research)
 			research_gain += necromancy_bonus
 		if(has_thaumaturgy)
 			research_gain += thaumaturgy_bonus
+		if(has_obtenebration)
+			research_gain += obtenebration_bonus
 
 		// Add the research points
 		user.research_points += research_gain
 
-		if(world.time % (5 MINUTES) == 0)
+		if(world.time % (10 MINUTES) == 0)
 			to_chat(user, span_notice("Your occult studies have yielded [research_gain] research points. Total: [user.research_points]"))
 
 /mob/living/carbon/human/verb/check_research_points()

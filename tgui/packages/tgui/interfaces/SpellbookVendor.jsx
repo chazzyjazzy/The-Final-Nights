@@ -91,7 +91,36 @@ export const SpellbookVendor = (props) => {
         >
           <Table style={{ 'background-color': '#0d0000' }}>
             {inventory.map((product) => {
-              const canAfford = data.user && product.price <= data.user.points;
+              const canAfford = data.user && product.cost <= data.user.points;
+              const inStock = product.available && product.stock > 0;
+              const canPurchase = canAfford && inStock;
+
+              // Determine button text and styling
+              let buttonText = '';
+              let buttonStyle = {};
+
+              if (!inStock) {
+                buttonText = 'Out of Stock!';
+                buttonStyle = {
+                  'min-width': '105px',
+                  'text-align': 'center',
+                  'background-color': '#2a2a2a',
+                  'border-color': '#555555',
+                  'color': '#888888',
+                  'cursor': 'not-allowed'
+                };
+              } else {
+                buttonText = product.cost + ' research points';
+                buttonStyle = {
+                  'min-width': '105px',
+                  'text-align': 'center',
+                  'background-color': canAfford ? '#660000' : '#4d1a1a',
+                  'border-color': '#990000',
+                  'color': canAfford ? '#ffcccc' : '#996666',
+                  'transition': 'all 0.2s ease',
+                  'cursor': canAfford ? 'pointer' : 'not-allowed'
+                };
+              }
 
               return (
                 <Table.Row
@@ -106,24 +135,20 @@ export const SpellbookVendor = (props) => {
                       className={classes(['vending32x32', product.path])}
                       style={{
                         'vertical-align': 'middle',
-                        'filter': 'hue-rotate(0deg) saturate(1.2) brightness(0.9)'
+                        'filter': inStock ? 'hue-rotate(0deg) saturate(1.2) brightness(0.9)' : 'grayscale(100%) brightness(0.5)'
                       }}
                     />{' '}
-                    <b style={{ 'color': '#ff4444' }}>{product.name}</b>
+                    <b style={{ 'color': inStock ? '#ff4444' : '#666666' }}>{product.name}</b>
+                    <br />
+                    <span style={{ 'font-size': '0.8em', 'color': inStock ? '#996666' : '#555555' }}>
+                      Stock: {product.stock || 0}
+                    </span>
                   </Table.Cell>
                   <Table.Cell>
                     <Button
-                      style={{
-                        'min-width': '105px',
-                        'text-align': 'center',
-                        'background-color': canAfford ? '#660000' : '#4d1a1a',
-                        'border-color': '#990000',
-                        'color': canAfford ? '#ffcccc' : '#996666',
-                        'transition': 'all 0.2s ease',
-                        'cursor': canAfford ? 'pointer' : 'not-allowed'
-                      }}
+                      style={buttonStyle}
                       onMouseEnter={(e) => {
-                        if (canAfford) {
+                        if (canPurchase) {
                           e.target.style.backgroundColor = '#990000';
                           e.target.style.color = '#ffffff';
                           e.target.style.borderColor = '#cc0000';
@@ -131,15 +156,15 @@ export const SpellbookVendor = (props) => {
                         }
                       }}
                       onMouseLeave={(e) => {
-                        if (canAfford) {
+                        if (canPurchase) {
                           e.target.style.backgroundColor = '#660000';
                           e.target.style.color = '#ffcccc';
                           e.target.style.borderColor = '#990000';
                           e.target.style.boxShadow = 'none';
                         }
                       }}
-                      disabled={!canAfford}
-                      content={product.price + ' research points'}
+                      disabled={!canPurchase}
+                      content={buttonText}
                       onClick={() =>
                         act('purchase', {
                           ref: product.ref,
