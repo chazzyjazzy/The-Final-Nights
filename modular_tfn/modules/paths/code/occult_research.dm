@@ -1,11 +1,11 @@
 SUBSYSTEM_DEF(occult_research)
 	name = "Occult Research"
 	flags = SS_BACKGROUND
-	wait = 30 SECONDS // How often to process research points
-	var/base_research_rate = 1 // Base points per tick
-	var/necromancy_bonus = 0.5 // Additional bonus for necromancy
-	var/thaumaturgy_bonus = 0.5 // Additional bonus for thaumaturgy
-	var/obtenebration_bonus = 0.5
+	wait = 60 SECONDS // How often to process research points
+	var/base_research_rate = 2 // Base points per tick
+	var/necromancy_bonus = 1 // Additional bonus for necromancy
+	var/thaumaturgy_bonus = 1 // Additional bonus for thaumaturgy
+	var/obtenebration_bonus = 1
 
 /datum/controller/subsystem/occult_research/fire(resumed = FALSE)
 	for(var/mob/living/carbon/human/H in GLOB.player_list)

@@ -301,14 +301,12 @@
 		to_chat(regent, span_alert("Error: Target is not a Tremere clan member!"))
 		return FALSE
 
-	// can't seize more than they have
 	var/actual_amount = min(amount, target.research_points)
 
 	if(actual_amount <= 0)
 		to_chat(regent, span_alert("Error: Target has no research points to seize!"))
 		return FALSE
 
-	// Perform the seizure
 	target.research_points -= actual_amount
 	regent.research_points += actual_amount
 
@@ -338,7 +336,6 @@
 
 		H.research_points += artifact.research_value
 
-		// Increment stock for this artifact type
 		increment_stock(artifact.type)
 
 		if(artifact.research_value >= 20)
@@ -351,7 +348,6 @@
 		qdel(artifact)
 		return TRUE
 
-	// Check if it's a spellbook being donated
 	if(istype(W, /obj/item/path_spellbook))
 		var/obj/item/path_spellbook/spellbook = W
 
@@ -361,11 +357,9 @@
 
 		var/mob/living/carbon/human/H = user
 
-		// Spellbooks give research points based on their level (assumed to be stored somewhere)
-		var/research_reward = 5 // Base reward, could be modified based on spellbook level
+		var/research_reward = 5 // base reward modified by spellbook
 		H.research_points += research_reward
 
-		// Increment stock for this spellbook type
 		increment_stock(spellbook.type)
 
 		to_chat(user, span_notice("The Archives accept your spellbook, granting you [research_reward] research points and adding its knowledge to the collection."))
@@ -373,7 +367,4 @@
 		qdel(spellbook)
 		return TRUE
 
-	// Fall back to default behavior for non-artifacts/spellbooks
 	return ..()
-
-// TODO : special shop for necromancers

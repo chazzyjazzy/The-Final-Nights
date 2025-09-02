@@ -12,58 +12,23 @@
 
 
 
-// hand of flame
-// flame bolt
-// pillar of fire
+// candle
+// palm of flame
+// campfire
 // engulf
 // firestorm
 
 // pretty certain these are not lore accurate particularly flame bolt
 
-// Hand of Flame lighter item
-/obj/item/lighter/hand_of_flame
-	name = "hand of flame"
-	desc = "Your hand burns with supernatural fire."
-	icon = 'modular_tfn/modules/paths/icons/paths.dmi'
-	icon_state = "flame" // TODO SPRITES
-	inhand_icon_state = "flame" // TODO SPRITES
-	lefthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_lefthand.dmi'
-	righthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_righthand.dmi'
-	force = 20
-	damtype = BURN
-	lit = TRUE
-	light_system = MOVABLE_LIGHT
-	light_range = 3
-	light_power = 1
-	light_color = COLOR_ORANGE
-	light_on = TRUE
 
-/obj/item/lighter/hand_of_flame/Initialize(mapload)
-	. = ..()
-	set_light_on(TRUE)
-
-/obj/item/lighter/hand_of_flame/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
-	. = ..()
-	if(proximity_flag && isliving(target))
-		var/mob/living/L = target
-		// Chance to ignite target
-		if(prob(25)) // TODO make this a thaumaturgy / mentality roll, unless base probs are ok
-			L.adjust_fire_stacks(1)
-			L.IgniteMob()
-		playsound(src, 'modular_tfn/modules/paths/sounds/fireball.ogg', 25, TRUE)
-
-//HAND OF FLAME - Level 1
+//Candle
 /datum/discipline_power/thaumaturgy/path/flames/one
-	name = "Hand of Flame"
-	desc = "Ignite your hands with supernatural fire, adding burn damage to your punches."
+	name = "Candle"
+	desc = "Conjure a flame that is the size of a candle. Can be used as a lighter - not much else."
 
 	level = 1
-
-	check_flags = DISC_CHECK_CAPABLE
 	violates_masquerade = TRUE
-
 	toggled = TRUE
-	duration_length = 6 TURNS // how long is a turn again? 5 seconds maybe?
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/flames/two,
@@ -75,26 +40,32 @@
 /datum/discipline_power/thaumaturgy/path/flames/one/activate()
 	. = ..()
 	owner.drop_all_held_items()
-	owner.put_in_r_hand(new /obj/item/lighter/hand_of_flame(owner))
-	owner.put_in_l_hand(new /obj/item/lighter/hand_of_flame(owner))
+	var/obj/item/lighter/conjured/flame/candle/right_candle = new(owner)
+	var/obj/item/lighter/conjured/flame/candle/left_candle = new(owner)
+	// Mark them as discipline items so deactivate can find them
+	right_candle.being_deleted = FALSE
+	left_candle.being_deleted = FALSE
+	owner.put_in_r_hand(right_candle)
+	owner.put_in_l_hand(left_candle)
 
 /datum/discipline_power/thaumaturgy/path/flames/one/deactivate()
 	. = ..()
-	// Remove flame weapons
-	for(var/obj/item/lighter/hand_of_flame/flame in owner.held_items)
-		qdel(flame)
+	// Remove flame weapons safely without dropping them
+	for(var/obj/item/lighter/conjured/flame/candle/candle in owner.held_items)
+		candle.discipline_delete()
 
-//Campfire - Level 2
-// TODO : ok now this is just a 'fireball' spell - not sure if thats canon/wanted, perhaps we make it like one, but add the ability for the user to 'throw' the fire.
+//PALM OF FLAME - Level 2
 /datum/discipline_power/thaumaturgy/path/flames/two
-	name = "Campfire"
-	desc = "Conjure up enough flame that would exist in a campfire - and use it to hurt at your foes."
+	name = "Palm of Flame"
+	desc = "Ignite your hands with supernatural fire, adding burn damage to your punches."
 
 	level = 2
-	cooldown_length = 1 SECONDS
+
+	check_flags = DISC_CHECK_CAPABLE
 	violates_masquerade = TRUE
-	range = 7
-	target_type = TARGET_LIVING
+
+	toggled = TRUE
+	duration_length = 2 TURNS // how long is a turn again? 5 seconds maybe?
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/flames/one,
@@ -103,24 +74,27 @@
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
-// TODO : add a botch where the user gets set on fire instead. these abilities should be strong - as they're acquired mid-round through 'jobby' activities, but they need 'magical accident' drawbacks
-/datum/discipline_power/thaumaturgy/path/flames/two/activate(mob/living/target)
+/datum/discipline_power/thaumaturgy/path/flames/two/activate()
 	. = ..()
-	var/turf/start = get_turf(owner)
-	var/obj/projectile/flames/flamebolt/H = new(start)
-	H.firer = owner
-	H.damage = 20 + owner.thaum_damage_plus + owner.get_total_mentality()
-	H.preparePixelProjectile(target, start)
-	H.level = 2
-	H.fire(direct_target = target)
-	H.cruelty_multiplier = 1.1
-	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
+	owner.drop_all_held_items()
+	var/obj/item/lighter/conjured/flame/palm_of_flame/right_flame = new(owner)
+	var/obj/item/lighter/conjured/flame/palm_of_flame/left_flame = new(owner)
+	// Mark them as discipline items so deactivate can find them
+	right_flame.being_deleted = FALSE
+	left_flame.being_deleted = FALSE
+	owner.put_in_r_hand(right_flame)
+	owner.put_in_l_hand(left_flame)
 
+/datum/discipline_power/thaumaturgy/path/flames/two/deactivate()
+	. = ..()
+	// Remove flame weapons safely without dropping them
+	for(var/obj/item/lighter/conjured/flame/palm_of_flame/flame in owner.held_items)
+		flame.discipline_delete()
 
-//PILLAR OF FIRE - Level 3
+//Campfire - Level 3
 /datum/discipline_power/thaumaturgy/path/flames/three
-	name = "Pillar of Fire"
-	desc = "Summon a towering pillar of flame from the ground beneath your target."
+	name = "Campfire"
+	desc = "Summon enough flame that would be in a campfire, and hurl it from your hands."
 
 	level = 3
 	cooldown_length = 10 SECONDS
@@ -135,24 +109,18 @@
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
-// TODO : Right now this ability is a placeholder, just does damage and adds a fire stack, very boring
+// TODO : add a botch where the user gets set on fire instead. these abilities should be strong - as they're acquired mid-round through 'jobby' activities, but they need 'magical accident' drawbacks
 /datum/discipline_power/thaumaturgy/path/flames/three/activate(mob/living/target)
 	. = ..()
-	var/turf/target_turf = get_turf(target)
-	if(!target_turf)
-		return
-
-	// Deal damage
-	var/damage_amount = 25 + owner.thaum_damage_plus + owner.get_total_mentality()
-	target.adjustFireLoss(damage_amount)
-
-	// Chance to ignite
-	if(prob(60))
-		target.adjust_fire_stacks(3)
-		target.IgniteMob()
-
-	to_chat(target, span_userdanger("A massive pillar of fire erupts beneath you!"))
-	playsound(target_turf, effect_sound, 50, TRUE)
+	var/turf/start = get_turf(owner)
+	var/obj/projectile/flames/flamebolt/H = new(start)
+	H.firer = owner
+	H.damage = 20 + owner.thaum_damage_plus + owner.get_total_mentality()
+	H.preparePixelProjectile(target, start)
+	H.level = 2
+	H.fire(direct_target = target)
+	H.cruelty_multiplier = 1.1
+	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
 //ENGULF - Level 4
 /datum/discipline_power/thaumaturgy/path/flames/four

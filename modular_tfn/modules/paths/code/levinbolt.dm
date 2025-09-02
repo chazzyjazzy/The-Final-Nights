@@ -173,37 +173,18 @@
 	toggled = TRUE
 	duration_length = 2 TURNS
 
-/obj/item/lighter/levinbolt_arm
-	name = "Illuminate"
-	desc = "Your arm surges with electricity!"
-	icon = 'modular_tfn/modules/paths/icons/paths.dmi'
-	icon_state = "illuminate" // TODO SPRITES
-	inhand_icon_state = "illuminate" // TODO SPRITES
-	lefthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_lefthand.dmi'
-	righthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_righthand.dmi'
-	force = 20
-	damtype = BURN
-	lit = TRUE
-	light_system = MOVABLE_LIGHT
-	light_range = 2
-	light_power = 1
-	light_color = COLOR_WHITE
-	light_on = TRUE
 
-/obj/item/lighter/levinbolt_arm/Initialize(mapload)
-	. = ..()
-	set_light_on(TRUE)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/two/activate(mob/living/target)
 	. = ..()
 	owner.drop_all_held_items()
-	owner.put_in_r_hand(new /obj/item/lighter/levinbolt_arm(owner))
-	owner.put_in_l_hand(new /obj/item/lighter/levinbolt_arm(owner))
+	owner.put_in_r_hand(new /obj/item/lighter/conjured/levinbolt_arm(owner))
+	owner.put_in_l_hand(new /obj/item/lighter/conjured/levinbolt_arm(owner))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/two/deactivate()
 	. = ..()
 	// Remove levinbolt arm weapons
-	for(var/obj/item/lighter/levinbolt_arm/illuminate in owner.held_items)
+	for(var/obj/item/lighter/conjured/levinbolt_arm/illuminate in owner.held_items)
 		qdel(illuminate)
 
 // TODO: More powerful than spark, this should discharge a greater amount of energy around the user, stunning and also damaging attackers. (Visible to all)
@@ -491,7 +472,7 @@
 
 	owner.Beam(target, icon_state="lightning[rand(1,12)]", time = 10)
 
-	target.electrocute_act(rand(15,25), "Eye of the Storm", flags = SHOCK_NOGLOVES)
+	target.adjustFireLoss(30)
 	target.Jitter(25)
 	if(ishuman(target))
 		var/mob/living/carbon/human/H = target
