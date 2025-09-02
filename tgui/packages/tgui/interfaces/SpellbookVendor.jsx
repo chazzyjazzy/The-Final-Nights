@@ -22,9 +22,16 @@ export const SpellbookVendor = (props) => {
     }
   };
 
+  // Get selected member object
+  const getSelectedMember = () => {
+    if (!selectedTarget) return null;
+    return (data.tremere_members || []).find(m => m.ref === selectedTarget);
+  };
+
   // Handle point transfer
   const handleTransfer = () => {
-    if (!selectedTarget || !transferAmount) {
+    const selectedMember = getSelectedMember();
+    if (!selectedMember || !transferAmount) {
       return;
     }
 
@@ -34,7 +41,7 @@ export const SpellbookVendor = (props) => {
     }
 
     act('transfer_points', {
-      target_ref: selectedTarget.ref,
+      target_ref: selectedMember.ref,
       amount: amount
     });
 
@@ -42,7 +49,8 @@ export const SpellbookVendor = (props) => {
   };
 
   const handleSeize = () => {
-    if (!selectedTarget || !transferAmount) {
+    const selectedMember = getSelectedMember();
+    if (!selectedMember || !transferAmount) {
       return;
     }
 
@@ -52,11 +60,35 @@ export const SpellbookVendor = (props) => {
     }
 
     act('seize_points', {
-      target_ref: selectedTarget.ref,
+      target_ref: selectedMember.ref,
       amount: amount
     });
 
     setTransferAmount('');
+  };
+
+  // Create dropdown options with proper formatting
+  const getDropdownOptions = () => {
+    const members = data.tremere_members || [];
+    if (members.length === 0) {
+      return [];
+    }
+    return members.map(member => ({
+      text: `${member.name} (${member.role}) - ${member.points} points`,
+      value: member.ref
+    }));
+  };
+
+  // Get the display text for selected member
+  const getSelectedText = () => {
+    if (!selectedTarget) {
+      return 'Select a clan member...';
+    }
+    const selectedMember = getSelectedMember();
+    if (!selectedMember) {
+      return 'Select a clan member...';
+    }
+    return `${selectedMember.name} (${selectedMember.role}) - ${selectedMember.points} points`;
   };
 
   return (
@@ -228,12 +260,13 @@ export const SpellbookVendor = (props) => {
                 </Box>
                 <Dropdown
                   width="100%"
-                  options={data.tremere_members.map((member) => ({
-                    text: `${member.name} (${member.role}) - ${member.points} pts`,
-                    value: member
-                  }))}
-                  selected={selectedTarget ? `${selectedTarget.name} (${selectedTarget.role}) - ${selectedTarget.points} pts` : 'Select a clan member...'}
-                  onSelected={(value) => setSelectedTarget(value)}
+                  options={getDropdownOptions()}
+                  selected={getSelectedText()}
+                  onSelected={(value) => {
+                    console.log("Dropdown selected:", value);
+                    setSelectedTarget(value);
+                  }}
+                  color="red"
                   style={{
                     'background-color': '#330000',
                     'border-color': '#660000',

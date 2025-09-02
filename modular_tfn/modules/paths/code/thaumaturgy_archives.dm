@@ -260,7 +260,7 @@
 		return FALSE
 
 	// Verify target is still a valid Tremere member
-	if(!(target.mind?.assigned_role in list("Chantry Archivist", "Chantry Gargoyle", "Tremere Regent")))
+	if(!(target.mind?.assigned_role in list("Chantry Archivist", "Chantry Gargoyle", "Chantry Regent")))
 		to_chat(sender, span_alert("Error: Target is no longer a valid recipient!"))
 		return FALSE
 
@@ -280,7 +280,7 @@
 
 	var/mob/living/carbon/human/regent = usr
 
-	if(regent.mind?.assigned_role != "Tremere Regent")
+	if(regent.mind?.assigned_role != "Chantry Regent")
 		to_chat(regent, span_alert("Error: Only the Regent may exercise such authority!"))
 		return FALSE
 
@@ -297,7 +297,7 @@
 		return FALSE
 
 	// verify target is a valid Tremere member
-	if(!(target.mind?.assigned_role in list("Chantry Archivist", "Chantry Gargoyle", "Tremere Regent")))
+	if(!(target.mind?.assigned_role in list("Chantry Archivist", "Chantry Gargoyle", "Chantry Regent")))
 		to_chat(regent, span_alert("Error: Target is not a Tremere clan member!"))
 		return FALSE
 
