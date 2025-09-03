@@ -6,6 +6,7 @@ SUBSYSTEM_DEF(occult_research)
 	var/necromancy_bonus = 1 // Additional bonus for necromancy
 	var/thaumaturgy_bonus = 1 // Additional bonus for thaumaturgy
 	var/obtenebration_bonus = 1
+	var/list/collected_blood = list()
 
 /datum/controller/subsystem/occult_research/fire(resumed = FALSE)
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
@@ -65,3 +66,55 @@ SUBSYSTEM_DEF(occult_research)
 
 	to_chat(src, span_notice("You currently have [research_points] research points."))
 
+
+// Check if blood sample has been collected and award research points
+/datum/controller/subsystem/occult_research/proc/process_blood_collection(mob/living/carbon/human/caster, datum/reagent/blood/blood_sample)
+	if(!blood_sample || !blood_sample.data)
+		return
+
+	var/blood_data = blood_sample.data
+	var/blood_species = blood_data["species"]
+	var/blood_name = blood_data["real_name"]
+
+	// Only process certain species
+	if(!(blood_species in list(/datum/species/kindred, /datum/species/garou, /datum/species/ghoul, /datum/species/kuei_jin)))
+		return
+
+	// Create unique identifier for this blood sample
+	var/blood_identifier = "[blood_name]_[blood_species]"
+
+	// Check if we've already collected this blood
+	if(blood_identifier in collected_blood)
+		to_chat(caster, span_notice("You have already analyzed blood from this individual."))
+		return
+
+	// Add to collected blood list
+	collected_blood += blood_identifier
+
+	// Research points awarded based on species, clan, generation
+	var/research_award = 0
+	var/species_name = ""
+	var/research_message = ""
+
+	switch(blood_species)
+		if("kindred")
+			var/generation = blood_data["generation"]
+			var/clan = blood_data["clan"]
+			research_award = (14 - generation) * 5 //im assuming not many people will exactly want to give the TREMERE their blood so, perhaps this needs to be balanced in the future
+			species_name = "Kindred"
+			research_message = "You gain new insights into the [species_name] from clan [clan]! You gain [research_award] research points."
+		if("garou")
+			research_award = 30
+			species_name = "Garou"
+			research_message = "The blood of the [species_name]! Its blood burns with fury and rage - You gain [research_award] research points."
+		if("ghoul")
+			research_award = 5
+			species_name = "Ghoul"
+			research_message = "The blood of a [species_name] servitor. How boring. You gain [research_award] research points."
+		if("kuei-jin")
+			research_award = 15
+			species_name = "Kuei-Jin"
+			research_message = "The blood of the Cathayans. You gain [research_award] research points."
+
+	caster.research_points += research_award
+	to_chat(caster, span_notice("[research_message]"))

@@ -11,7 +11,7 @@
 	effect_sound = 'sound/magic/lightningbolt.ogg'
 
 
-// Base shared procedure for all levinbolt powers
+// levinbolt allows for the user to click on certain electronics, disabling them, like radios while people are still wearing them, warehouse computer, fuseboxes.
 /datum/discipline_power/thaumaturgy/path/levinbolt/proc/levinbolt_target_click(mob/source, atom/target, params, include_radio_effects = FALSE)
 	if(!active || !toggled)
 		return
@@ -19,7 +19,7 @@
 	if(!target || get_dist(owner, target) > 1)
 		return
 
-	// Radio effects (only for level 3)
+	// disable radios, only used in levinbolt 3 and 5
 	if(include_radio_effects && ishuman(target))
 		var/mob/living/carbon/human/H = target
 		var/disabled_any = FALSE
@@ -44,7 +44,7 @@
 			spark_system.start()
 			return TRUE
 
-	// Handle cargo express computer
+	// Warehouse computer 'hacking'
 	if(istype(target, /obj/machinery/computer/cargo/express))
 		var/obj/machinery/computer/cargo/express/cargo_comp = target
 		if(cargo_comp.locked == 0)
@@ -52,22 +52,18 @@
 		else
 			cargo_comp.locked = 0
 
-		// Visual and audio effects
+		// sparks
 		var/datum/effect_system/spark_spread/spark_system = new
 		spark_system.set_up(3, 1, get_turf(target))
 		spark_system.start()
 		playsound(target, 'sound/effects/sparks4.ogg', 50, TRUE)
 
-		// Different messages based on level
-		if(include_radio_effects) // Level 3
-			to_chat(owner, span_notice("You send electrical sparks into [target], unlocking its systems!"))
-		else // Level 1
-			to_chat(owner, span_notice("You send electrical sparks into [target]!"))
+		to_chat(owner, span_notice("You send electrical sparks into [target]!"))
 
 		owner.visible_message(span_warning("[owner] sends sparks of electricity into [target]!"))
 		return TRUE
 
-	// Handle fusebox
+	// Fusebox short-circuiting
 	if(istype(target, /obj/fusebox))
 		var/obj/fusebox/fuse = target
 
@@ -109,7 +105,7 @@
 
 	level = 1
 	check_flags = DISC_CHECK_CAPABLE | DISC_CHECK_CONSCIOUS
-	violates_masquerade = FALSE
+	violates_masquerade = TRUE
 	toggled = TRUE
 	duration_length = 2 TURNS
 
@@ -128,8 +124,13 @@
 	. = ..()
 	if(!active)
 		return
+
+	//signal for counterattack
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(spark_counter))
+
+	//signal for disabling electronics
 	RegisterSignal(owner, COMSIG_MOB_CLICKON, PROC_REF(spark_target_click))
+
 	electricity = electricity || mutable_appearance('icons/effects/effects.dmi', "electricity", EFFECTS_LAYER)
 	owner.add_overlay(electricity)
 
@@ -159,7 +160,7 @@
 			var/mob/living/carbon/human/H = attacker
 			H.electrocution_animation(40)
 		attacker.emote("me", EMOTE_VISIBLE, "is electrocuted!")
-		attacker.Stun(3 SECONDS)
+		attacker.Stun(1 SECONDS)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_target_click(mob/source, atom/target, params)
 	return levinbolt_target_click(source, target, params, FALSE)
@@ -173,8 +174,6 @@
 	toggled = TRUE
 	duration_length = 2 TURNS
 
-
-
 /datum/discipline_power/thaumaturgy/path/levinbolt/two/activate(mob/living/target)
 	. = ..()
 	owner.drop_all_held_items()
@@ -187,7 +186,6 @@
 	for(var/obj/item/lighter/conjured/levinbolt_arm/illuminate in owner.held_items)
 		qdel(illuminate)
 
-// TODO: More powerful than spark, this should discharge a greater amount of energy around the user, stunning and also damaging attackers. (Visible to all)
 //POWER ARRAY - Level 3
 /datum/discipline_power/thaumaturgy/path/levinbolt/three
 	name = "Power Array"
@@ -195,7 +193,7 @@
 
 	level = 3
 	check_flags = DISC_CHECK_CAPABLE | DISC_CHECK_CONSCIOUS
-	violates_masquerade = FALSE
+	violates_masquerade = TRUE
 	toggled = TRUE
 	duration_length = 2 TURNS
 
@@ -215,7 +213,10 @@
 	. = ..()
 	if(!active)
 		return
+	//proc for counterattack
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(power_array_counter))
+
+	//proc for clicking on objects to disable electronics
 	RegisterSignal(owner, COMSIG_MOB_CLICKON, PROC_REF(powerarray_target_click))
 
 	electricity2 = electricity2 || mutable_appearance('icons/effects/effects.dmi', "electricity2", EFFECTS_LAYER)
@@ -302,11 +303,9 @@
 /datum/discipline_power/thaumaturgy/path/levinbolt/four/proc/execute_zeus_fury(mob/living/primary_target)
 	owner.cut_overlay(electric_halo)
 
-	// Use success_count from parent class for chain bounces and damage
-	var/max_bounces = success_count // Each success = one additional bounce
-	var/bolt_damage = 20 + (success_count * 8) // Base 20 + 8 per success
+	var/max_bounces = success_count // Lightning chain dependent upon successes - two successes, two targets hit
+	var/bolt_damage = 20 + (success_count * 4) // Base 20 + 4 per success
 
-	// Success-based flavor text
 	switch(success_count)
 		if(1)
 			owner.visible_message(span_danger("[owner.name] releases a crackling bolt of lightning!"),
@@ -317,23 +316,24 @@
 		if(4 to 5)
 			owner.visible_message(span_reallybig(span_bolddanger("[owner.name] commands the very storm itself!")),
 				span_reallybig(span_bolddanger("You become a conduit for divine wrath!")))
-		else // 6+ successes - legendary
+		else // 6+ successes
 			owner.visible_message(span_reallybig(span_bolddanger("The air itself SCREAMS as [owner.name] becomes lightning incarnate!")),
 				span_reallybig(span_bolddanger("UNLIMITED POWER courses through your being!")))
 
 	playsound(get_turf(owner), 'sound/magic/lightningbolt.ogg', min(50 + (success_count * 10), 100), TRUE, extrarange = success_count)
 
-	// Create the initial lightning bolt to primary target
+	// bolt of lightning to the first target
 	owner.Beam(primary_target, icon_state="lightning[rand(1,12)]", time = (5 + success_count))
 
-	// Start the chain lightning sequence
+	// Starts the chain lightning with bolt_damage as the bolt energy
 	chain_bolt(owner, primary_target, bolt_damage, max_bounces, list(owner))
 
+// Proced each time a lightning bolt is sent
 /datum/discipline_power/thaumaturgy/path/levinbolt/four/proc/chain_bolt(atom/origin, mob/living/current_target, bolt_energy, bounces_left, list/already_hit)
 	current_target.electrocute_act(bolt_energy, "Zeus' Fury", flags = SHOCK_NOGLOVES)
 	playsound(get_turf(current_target), 'sound/magic/lightningshock.ogg', 60, TRUE)
 
-	// Additional effects scale with success count
+	// Animation for being struck
 	current_target.Jitter(20 + (success_count * 5))
 	if(ishuman(current_target))
 		var/mob/living/carbon/human/H = current_target
@@ -342,21 +342,21 @@
 	// Better chance to stun with more successes
 	var/stun_chance = min(30 + (success_count * 15), 85)
 	if(bolt_energy >= 20 && prob(stun_chance))
-		var/stun_duration = (1 + success_count) SECONDS
+		var/stun_duration = (success_count) SECONDS
 		current_target.Paralyze(stun_duration)
 		current_target.visible_message(span_warning("[current_target] convulses violently from the electrical shock!"))
 
-	// Add current target to already hit list
+	// No duplicating targets
 	already_hit += current_target
 
-	// If no bounces left, end the chain
+	// Count the bounces
 	if(bounces_left <= 0)
 		return
 
-	// Find next target for chain lightning
+	// Find next target
 	var/list/possible_targets = list()
 	for(var/mob/living/L in view(range, current_target))
-		if(L in already_hit) // Don't hit the same target twice
+		if(L in already_hit)
 			continue
 		possible_targets += L
 
@@ -365,7 +365,7 @@
 
 	// Pick closest target for more realistic chain lightning
 	var/mob/living/next_target = null
-	var/shortest_distance = INFINITY
+	var/shortest_distance = INFINITY //compares distance between potential targets relative to infinity, but list is limited by view of the current victim
 	for(var/mob/living/potential in possible_targets)
 		var/distance = get_dist(current_target, potential)
 		if(distance < shortest_distance)
@@ -373,25 +373,22 @@
 			next_target = potential
 
 	if(next_target)
-		// Slight delay for dramatic effect, shorter with more successes (more control)
-		var/chain_delay = max(5 - success_count, 1)
+		var/chain_delay = max(5 - success_count, 1) // slight delay for coolness
 		addtimer(CALLBACK(src, PROC_REF(continue_chain), current_target, next_target, bolt_energy, bounces_left, already_hit), chain_delay)
 
+//reduces damage and bounces_left for each subsequent bolt
 /datum/discipline_power/thaumaturgy/path/levinbolt/four/proc/continue_chain(atom/origin, mob/living/next_target, bolt_energy, bounces_left, list/already_hit)
-	// Create lightning arc to next target
 	origin.Beam(next_target, icon_state="lightning[rand(1,12)]", time = (5 + success_count))
-
-	// With more successes, energy loss per bounce is reduced (better control)
-	var/energy_retention = 0.8 + (success_count * 0.05) // 80% base, up to 110% with many successes
+	// With more successes, damage loss per bounce is reduced
+	var/energy_retention = 0.8 + (success_count * 0.05) // 80% base, up to 100% with 5 successes
 	var/reduced_energy = max(bolt_energy * energy_retention, 10) // Minimum 10 damage
 
-	// Continue the chain
+	// Continue the chain, applying reduced damage and bounces, while retaining the already_hit list
 	chain_bolt(origin, next_target, reduced_energy, bounces_left - 1, already_hit)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/four/proc/cancel_fury(reason)
 	if(electric_halo)
 		owner.cut_overlay(electric_halo)
-
 
 	to_chat(owner, span_warning("Zeus' Fury fizzles out. [reason]"))
 
@@ -419,31 +416,25 @@
 	. = ..()
 	if(!.)
 		return
-	add_electricity_overlay()
-	RegisterSignal(owner, COMSIG_CLICK, PROC_REF(storm_target_click))
-	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(storm_counter))
-	spark_timer = addtimer(CALLBACK(src, PROC_REF(create_sparks)), 2 SECONDS, TIMER_STOPPABLE | TIMER_LOOP)
-	lightning_timer = addtimer(CALLBACK(src, PROC_REF(fire_lightning_bolt)), 5 SECONDS, TIMER_STOPPABLE | TIMER_LOOP)
-
-	// Visual and audio feedback
-	owner.visible_message(span_danger("[owner] becomes surrounded by crackling electrical energy!"))
-	to_chat(owner, span_notice("You feel incredible electrical power coursing through your body!"))
-	playsound(owner, 'sound/effects/sparks4.ogg', 75, TRUE)
-
-/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/add_electricity_overlay()
-	if(!owner || electricity3)
-		return
 	electricity3 = electricity3 || mutable_appearance('icons/effects/effects.dmi', "electricity2", EFFECTS_LAYER)
 	owner.add_overlay(electricity3)
 	owner.light_system = MOVABLE_LIGHT
 	owner.AddComponent(/datum/component/overlay_lighting, 5, 4, "#e9ffff", TRUE)
 
-/datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/remove_electricity_overlay()
-	if(!owner || !electricity3)
-		return
+	//signal for clicking electronics to disable them
+	RegisterSignal(owner, COMSIG_CLICK, PROC_REF(storm_target_click))
 
-	owner.cut_overlay(electricity3)
-	QDEL_NULL(electricity3)
+	//signal for counterattack from being struck
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(storm_counter))
+
+	//create sparks every few seconds for coolness
+	spark_timer = addtimer(CALLBACK(src, PROC_REF(create_sparks)), 2 SECONDS, TIMER_STOPPABLE | TIMER_LOOP)
+
+	//fire lightning bolt at a random nearby mob
+	lightning_timer = addtimer(CALLBACK(src, PROC_REF(fire_lightning_bolt)), 5 SECONDS, TIMER_STOPPABLE | TIMER_LOOP)
+	owner.visible_message(span_danger("[owner] becomes surrounded by crackling electrical energy!"))
+	to_chat(owner, span_notice("You feel incredible electrical power coursing through your body!"))
+	playsound(owner, 'sound/effects/sparks4.ogg', 75, TRUE)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/create_sparks()
 	if(!owner)
@@ -472,14 +463,14 @@
 
 	owner.Beam(target, icon_state="lightning[rand(1,12)]", time = 10)
 
-	target.adjustFireLoss(30)
+	target.adjustFireLoss(20)
 	target.Jitter(25)
 	if(ishuman(target))
 		var/mob/living/carbon/human/H = target
 		H.electrocution_animation(50)
 
 	if(prob(60))
-		target.Stun(2 SECONDS)
+		target.Stun(1 SECONDS)
 		target.visible_message(span_warning("[target] convulses from the electrical shock!"))
 
 	var/datum/effect_system/spark_spread/spark_system = new
@@ -510,7 +501,8 @@
 	if(!owner)
 		return
 
-	remove_electricity_overlay()
+	owner.cut_overlay(electricity3)
+	QDEL_NULL(electricity3)
 	UnregisterSignal(owner, list(COMSIG_CLICK, COMSIG_ATOM_ATTACKBY))
 
 	// Stop timers

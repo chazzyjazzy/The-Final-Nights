@@ -1,30 +1,22 @@
 /datum/discipline/path
 	var/action_type = /datum/action/discipline/path
 	var/action_replaced = FALSE // Track if we've already done the replacement
-	selectable = FALSE
+	selectable = FALSE //cant buy it as a ghoul
 
-
-// ALERT : the discipline icons were interrupting with this alot, the parent type was overriding the subtype's icons, so below is a rather hammy method to replace it
-// TODO : figure out the issue with these icons so that we don't have this monster of a solution to get correct icons from modular_tfn/whatever/paths.dmi instead of code/whateverwod13/actions.dmi
-// TODO : The adminverb 'Remove Discipline' doesnt appear to properly remove the discipline. Removing a path then adding it again causes duplicates, and the previous one never goes away.
-// TODO : lol looks like remove discipline adminverb just doesnt remove disciplines
 // Override post_gain to replace the action after the base system is done
 /datum/discipline/path/post_gain()
 	. = ..()
 
-	// Only do this once per discipline
 	if(action_replaced || !owner)
 		return
 
-	// Give the base system a moment to create the action, then replace it
-	spawn(1)
-		replace_base_action()
+	replace_base_action()
 
+// so a 'base action' was being created for the paths, bugging out the UI, solved this by just replacing this 'base action' upon creation
 /datum/discipline/path/proc/replace_base_action()
 	if(!owner)
 		return
 
-	// Find the base discipline action that was created for this discipline
 	var/datum/action/discipline/base_action = null
 	for(var/datum/action/discipline/action in owner.actions)
 		if(action.discipline == src && action.type == /datum/action/discipline)
@@ -70,12 +62,10 @@
 			current_button.name = discipline.current_power.name
 			current_button.desc = discipline.current_power.desc
 
-			// Add discipline icon overlay using path icons
 			var/discipline_icon_state = discipline.icon_state || "default"
 			current_button.add_overlay(mutable_appearance('modular_tfn/modules/paths/icons/paths.dmi', discipline_icon_state))
 			current_button.button_icon_state = discipline_icon_state
 
-			// Add level indicator overlay using path icons
 			if(discipline.level_casting)
 				current_button.add_overlay(mutable_appearance('modular_tfn/modules/paths/icons/paths.dmi', "[discipline.level_casting]"))
 		else

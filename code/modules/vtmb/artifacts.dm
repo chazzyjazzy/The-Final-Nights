@@ -75,6 +75,20 @@
 	var/list/owned_amounts = owner.artifact_owned_amounts
 	return owned_amounts[type] || 0
 
+/obj/item/vtm_artifact/proc/calculate_stacked_value(base_value)
+	var/owned_count = get_owned_amount()
+	if(owned_count <= 0)
+		return 0
+
+	var/total_value = 0
+	var/current_value = base_value
+
+	for(var/i = 1; i <= owned_count; i++)
+		total_value += current_value
+		current_value *= 0.5 // Each subsequent item gives half the value
+
+	return total_value
+
 /obj/item/vtm_artifact/proc/identificate()
 	if(!identified)
 		name = true_name

@@ -1,3 +1,4 @@
+// Base path spellbook with identification system
 /obj/item/path_spellbook
 	name = "Path Spellbook"
 	desc = "A default path spellbook. if you're seeing this ingame, please report to coders"
@@ -6,12 +7,39 @@
 	var/path_type = null
 	var/path_level = 1
 	var/do_after_time = 300 // 30 seconds
-	var/activate_sound = 'modular_tfn/modules/paths/sounds/open_book.wav' // sound played when the spellbook is used
-	var/deactivate_sound = 'modular_tfn/modules/paths/sounds/close_book.wav' // sound played when the spellbook is finished using
+	var/activate_sound = 'modular_tfn/modules/paths/sounds/open_book.wav'
+	var/deactivate_sound = 'modular_tfn/modules/paths/sounds/close_book.wav'
 	drop_sound = 'sound/items/handling/book_drop.ogg'
 	pickup_sound = 'sound/items/handling/book_pickup.ogg'
 
+	// Identification system
+	var/identified = FALSE
+	var/true_name = ""
+	var/true_desc = ""
+
+/obj/item/path_spellbook/Initialize(mapload)
+	. = ..()
+	if(!identified)
+		// Store the real name and description
+		true_name = name
+		true_desc = desc
+		// Set disguised appearance
+		name = "dusty forgotten tome"
+		desc = "This book is covered in dust and the pages appear worn. Its probably not important."
+
+/obj/item/path_spellbook/examine(mob/user)
+	. = ..()
+	if(!identified)
+		. += span_notice("You could try to <b>clean</b> off the dust to see what lies beneath.")
+
 /obj/item/path_spellbook/attack_self(mob/living/carbon/human/user)
+
+	if(!identified)
+		if(do_after(user, 5 SECONDS))
+			to_chat(user, span_cult("You wipe the dust off the previously irrelevant tome. Did someone misplace it from the Library?"))
+			src.identified = TRUE
+			return
+
 	var/is_knowing = FALSE
 	var/datum/species/kindred/species = user.dna.species
 	var/datum/discipline/existing_path_discipline = null

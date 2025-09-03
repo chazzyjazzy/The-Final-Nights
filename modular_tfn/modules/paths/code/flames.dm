@@ -10,16 +10,11 @@
 
 	effect_sound = 'modular_tfn/modules/paths/sounds/fireball.ogg'
 
-
-
 // candle
 // palm of flame
 // campfire
 // engulf
 // firestorm
-
-// pretty certain these are not lore accurate particularly flame bolt
-
 
 //Candle
 /datum/discipline_power/thaumaturgy/path/flames/one
@@ -40,32 +35,23 @@
 /datum/discipline_power/thaumaturgy/path/flames/one/activate()
 	. = ..()
 	owner.drop_all_held_items()
-	var/obj/item/lighter/conjured/flame/candle/right_candle = new(owner)
-	var/obj/item/lighter/conjured/flame/candle/left_candle = new(owner)
-	// Mark them as discipline items so deactivate can find them
-	right_candle.being_deleted = FALSE
-	left_candle.being_deleted = FALSE
-	owner.put_in_r_hand(right_candle)
-	owner.put_in_l_hand(left_candle)
+	owner.put_in_r_hand(new /obj/item/lighter/conjured/flame/candle(owner))
+	owner.put_in_l_hand(new /obj/item/lighter/conjured/flame/candle(owner))
 
 /datum/discipline_power/thaumaturgy/path/flames/one/deactivate()
 	. = ..()
-	// Remove flame weapons safely without dropping them
 	for(var/obj/item/lighter/conjured/flame/candle/candle in owner.held_items)
-		candle.discipline_delete()
+		qdel(candle)
 
 //PALM OF FLAME - Level 2
 /datum/discipline_power/thaumaturgy/path/flames/two
 	name = "Palm of Flame"
 	desc = "Ignite your hands with supernatural fire, adding burn damage to your punches."
-
 	level = 2
-
 	check_flags = DISC_CHECK_CAPABLE
 	violates_masquerade = TRUE
-
 	toggled = TRUE
-	duration_length = 2 TURNS // how long is a turn again? 5 seconds maybe?
+	duration_length = 2 TURNS
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/flames/one,
@@ -77,19 +63,13 @@
 /datum/discipline_power/thaumaturgy/path/flames/two/activate()
 	. = ..()
 	owner.drop_all_held_items()
-	var/obj/item/lighter/conjured/flame/palm_of_flame/right_flame = new(owner)
-	var/obj/item/lighter/conjured/flame/palm_of_flame/left_flame = new(owner)
-	// Mark them as discipline items so deactivate can find them
-	right_flame.being_deleted = FALSE
-	left_flame.being_deleted = FALSE
-	owner.put_in_r_hand(right_flame)
-	owner.put_in_l_hand(left_flame)
+	owner.put_in_r_hand(new /obj/item/lighter/conjured/flame/palm_of_flame(owner))
+	owner.put_in_l_hand(new /obj/item/lighter/conjured/flame/palm_of_flame(owner))
 
 /datum/discipline_power/thaumaturgy/path/flames/two/deactivate()
 	. = ..()
-	// Remove flame weapons safely without dropping them
-	for(var/obj/item/lighter/conjured/flame/palm_of_flame/flame in owner.held_items)
-		flame.discipline_delete()
+	for(var/obj/item/lighter/conjured/flame/palm_of_flame/flame in owner.contents)
+		qdel(flame)
 
 //Campfire - Level 3
 /datum/discipline_power/thaumaturgy/path/flames/three
@@ -97,7 +77,7 @@
 	desc = "Summon enough flame that would be in a campfire, and hurl it from your hands."
 
 	level = 3
-	cooldown_length = 10 SECONDS
+	cooldown_length = 5 SECONDS
 	violates_masquerade = TRUE
 	target_type = TARGET_LIVING
 	range = 7
@@ -109,17 +89,16 @@
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
-// TODO : add a botch where the user gets set on fire instead. these abilities should be strong - as they're acquired mid-round through 'jobby' activities, but they need 'magical accident' drawbacks
 /datum/discipline_power/thaumaturgy/path/flames/three/activate(mob/living/target)
 	. = ..()
 	var/turf/start = get_turf(owner)
 	var/obj/projectile/flames/flamebolt/H = new(start)
 	H.firer = owner
-	H.damage = 20 + owner.thaum_damage_plus + owner.get_total_mentality()
+	H.damage = 20 + owner.thaum_damage_plus + success_count
 	H.preparePixelProjectile(target, start)
-	H.level = 2
+	H.level = 3
 	H.fire(direct_target = target)
-	H.cruelty_multiplier = 1.1
+	H.cruelty_multiplier = 1.1 // we dont want crits doing fucking 80 burn to vampires
 	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
 //ENGULF - Level 4
@@ -140,22 +119,19 @@
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
-// TODO : Right now this ability is a placeholder just like three, just does damage and adds a flamestack, very boring, it can be better
 /datum/discipline_power/thaumaturgy/path/flames/four/activate(mob/living/target)
 	. = ..()
 	if(!target)
 		return
 
-	// Initial damage
-	var/damage_amount = 30 + owner.thaum_damage_plus + owner.get_total_mentality()
+	var/damage_amount = 25 + owner.thaum_damage_plus + success_count
 	target.adjustFireLoss(damage_amount)
 
-	// Heavy fire stacks and ignition
-	target.adjust_fire_stacks(8)
+	target.adjust_fire_stacks(4 + success_count)
 	target.IgniteMob()
 
 	to_chat(target, span_userdanger("You are engulfed in supernatural flames!"))
-	playsound(get_turf(target), effect_sound, 75, TRUE)
+	playsound(get_turf(target), effect_sound, 100, TRUE)
 
 //INFERNO - Level 5
 /datum/discipline_power/thaumaturgy/path/flames/five
@@ -178,15 +154,11 @@
 /datum/discipline_power/thaumaturgy/path/flames/five/activate(atom/target)
 	. = ..()
 
-	// Return early if the base thaumaturgy activation failed or botched
-	if(.)
-		return
-
 	to_chat(owner, span_notice("You begin channeling a devastating firestorm..."))
 
 	var/turf/center = get_turf(target)
 
-	// minimum one tile away from the center, maximum 2 tiles away from the center
+	// minimum one tile away from the center, maximum 3 tiles away from the center
 	var/area_range = clamp(success_count, 1, 3)
 
 	// create the inferno warning on all affected turfs in area_range from center
@@ -196,7 +168,7 @@
 		new /obj/effect/temp_visual/inferno_warning(T)
 	owner.visible_message(span_warning("Sparks begin to fly and the temperature begins to climb... what could be happening?!"))
 
-	if(!do_after(owner, 4 SECONDS))
+	if(!do_after(owner, 2 SECONDS))
 		to_chat(owner, span_warning("Your firestorm casting was interrupted!"))
 		for(var/turf/T in affected_turfs) // delete all inferno warnings if casting was interrupted
 			for(var/obj/effect/temp_visual/inferno_warning/W in T)
@@ -204,7 +176,7 @@
 		return
 
 	// damage dealt to those standing in the zone is based on successes and so are the fire stacks
-	var/base_damage = 20 + (success_count * 5) + owner.thaum_damage_plus + owner.get_total_mentality()
+	var/base_damage = 20 + (success_count * 5) + owner.thaum_damage_plus
 	var/fire_stacks_amount = 3 + success_count
 	var/ignite_chance = min(60 + (success_count * 10), 95) // 60% base, +10% per success, max 95%
 
@@ -248,7 +220,7 @@
 	icon = 'icons/effects/fire.dmi'
 	icon_state = "fire"
 	alpha = 150
-	duration = 4 SECONDS // Matches the channel time
+	duration = 2 SECONDS // Matches the channel time
 
 /obj/effect/temp_visual/inferno_warning/Initialize()
 	. = ..()

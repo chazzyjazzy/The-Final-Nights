@@ -83,7 +83,28 @@
 		after_random_load()
 		update_appearance() //Make sure you look proper
 
+	//TFN ADDITION START - Paths
+	// Check if we're NOT in a chantry area and roll for occult book spawn
 	var/area/our_area = get_area(src)
+	if(!istype(our_area, /area/vtm/interior/chantry) && prob(5))
+		// 5% chance to spawn in a bookcase thats not the library - there are very few bookcases
+		var/occult_book_type = pick(
+			/obj/item/occult_book/veneficorum_artum_sanguis,
+			/obj/item/occult_book/das_tiefe_geheimnis,
+			/obj/item/path_spellbook/lure_of_flames/level1,
+			/obj/item/path_spellbook/lure_of_flames/level2,
+			/obj/item/path_spellbook/lure_of_flames/level3,
+			/obj/item/path_spellbook/lure_of_flames/level4,
+			/obj/item/path_spellbook/lure_of_flames/level5,
+			/obj/item/path_spellbook/levinbolt/level1,
+			/obj/item/path_spellbook/levinbolt/level2,
+			/obj/item/path_spellbook/levinbolt/level3,
+			/obj/item/path_spellbook/levinbolt/level4,
+			/obj/item/path_spellbook/levinbolt/level5)
+		new occult_book_type(src)
+		update_appearance()
+	//TFN ADDITION END - Paths
+
 	var/area_type = our_area.type //Save me from the dark
 
 	if(!SSlibrary.books_by_area[area_type])
@@ -94,6 +115,7 @@
 	for(var/obj/item/book/book in contents)
 		var/datum/book_info/info = book.book_data
 		books_in_area += info.return_copy()
+
 
 /obj/structure/bookcase/examine(mob/user)
 	. = ..()
@@ -156,7 +178,7 @@
 			return
 		return ..()
 
-	if(isbook(attacking_item))
+	if(isbook(attacking_item) || istype(attacking_item, /obj/item/path_spellbook) || istype(attacking_item, /obj/item/occult_book))
 		if(!user.transferItemToLoc(attacking_item, src))
 			return ..()
 		update_appearance()

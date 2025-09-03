@@ -1,4 +1,4 @@
-// UI data for the tome - similar to the vendor but from item context
+// UI data for the tome
 /obj/item/necromancy_tome/ui_data(mob/user)
 	. = list()
 	.["user"] = list()
@@ -28,19 +28,19 @@
 	if(!isliving(usr))
 		return ..()
 
-	// For now, there are no items in the prize list, but this is ready for future implementation
+	// for now, there are no items in the prize list, but this is ready for future implementation
 	to_chat(usr, span_notice("The tome whispers that its pages remain empty, awaiting dark knowledge..."))
 	return TRUE
 
 
 /obj/machinery/mineral/equipment_vendor/fastfood/necromancy
-	name = "Bone Codex"
+	name = "Necromantic Grimoire"
 	desc = "A sinister grimoire that trades necromantic knowledge and artifacts for the souls of the departed."
-	icon_state = "mining" // You may want to create a custom icon
+	icon_state = "mining"
 	owner_needed = FALSE
 	dispenses_dollars = FALSE
 	prize_list = list(
-		// Empty for now - will be populated in future PR
+		// Empty for now
 	)
 
 // NecromancyVendor.jsx in tgui/interfaces
