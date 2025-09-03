@@ -14,30 +14,16 @@
 	lefthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_lefthand.dmi'
 	righthand_file = 'modular_tfn/modules/paths/icons/paths_inhand_righthand.dmi'
 
-// Parent dropped behavior - handle being_deleted check and deletion
-/obj/item/lighter/conjured/dropped(mob/user)
-	. = ..()
-	if(being_deleted)
-		return
-	being_deleted = TRUE
-	qdel(src)
-
 // Add a safe deletion proc for discipline deactivation
 /obj/item/lighter/conjured/proc/discipline_delete()
-	if(being_deleted)
+	if(being_deleted || QDELETED(src))
 		return
-	being_deleted = TRUE
 	qdel(src)
 
 // Override parent behavior - can't be turned off
 /obj/item/lighter/conjured/attack_self(mob/user)
 	to_chat(user, span_notice("The supernatural flame cannot be extinguished by normal means."))
 	return
-
-// Override parent behavior - can't be placed on tables/surfaces normally
-/obj/item/lighter/conjured/MouseDrop(atom/over_object, src_location, over_location)
-	to_chat(usr, span_notice("The supernatural flame refuses to be placed down."))
-	return TRUE // Return TRUE to prevent default behavior
 
 // Keep the flame always lit
 /obj/item/lighter/conjured/set_lit(new_lit)
@@ -58,40 +44,28 @@
 
 /obj/item/lighter/conjured/flame/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	. = ..()
-	if(being_deleted)
+	if(being_deleted || QDELETED(src))
 		return
-	being_deleted = TRUE
 
+	// Create fire effect before deletion
 	if(prob(20))
 		var/turf/target_turf = get_turf(src)
 		if(target_turf)
 			new /obj/effect/fire(target_turf)
+
 	qdel(src)
 
 /obj/item/lighter/conjured/flame/dropped(mob/user)
-	. = ..() // Call parent which handles being_deleted check and qdel
-	// Only create fire if this was a natural drop (not discipline deactivation)
-	if(being_deleted && prob(20) && !QDELETED(src))
+	if(being_deleted || QDELETED(src))
+		return
+
+	// Create fire effect before deletion (only on natural drops)
+	if(prob(20))
 		var/turf/target_turf = get_turf(src)
 		if(target_turf)
 			new /obj/effect/fire(target_turf)
 
-// Override discipline_delete to prevent fire creation during deactivation
-/obj/item/lighter/conjured/flame/discipline_delete()
-	if(being_deleted)
-		return
-	being_deleted = TRUE
-	qdel(src) // Clean deletion without fire effects
-
-/obj/item/lighter/conjured/flame/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
-	. = ..()
-	if(proximity_flag && isliving(target))
-		var/mob/living/L = target
-		// Chance to ignite target
-		if(prob(25))
-			L.adjust_fire_stacks(1)
-			L.IgniteMob()
-		playsound(src, 'modular_tfn/modules/paths/sounds/fireball.ogg', 25, TRUE)
+	. = ..() // Call parent which will qdel
 
 // Specific flame implementations
 /obj/item/lighter/conjured/flame/candle
