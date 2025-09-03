@@ -9,17 +9,17 @@
 	prize_list = list(
 	// SPELLBOOKS - Priced for full path completion by 2-2.5 hours
 	// Total cost for 1-5: 350 points (achievable in ~1.5-2 hours active play)
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level I)",	/obj/item/path_spellbook/lure_of_flames/level1,	50),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level II)",	/obj/item/path_spellbook/lure_of_flames/level2,	60),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level III)",	/obj/item/path_spellbook/lure_of_flames/level3,	70),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level IV)",	/obj/item/path_spellbook/lure_of_flames/level4,	80),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level V)",	/obj/item/path_spellbook/lure_of_flames/level5,	90),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level I)",	/obj/item/path_spellbook/lure_of_flames/level1,	90),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level II)",	/obj/item/path_spellbook/lure_of_flames/level2,	100),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level III)",	/obj/item/path_spellbook/lure_of_flames/level3,	110),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level IV)",	/obj/item/path_spellbook/lure_of_flames/level4,	120),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level V)",	/obj/item/path_spellbook/lure_of_flames/level5,	130),
 
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level I)",	/obj/item/path_spellbook/levinbolt/level1,	50),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level II)",	/obj/item/path_spellbook/levinbolt/level2,	60),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level III)",	/obj/item/path_spellbook/levinbolt/level3,	70),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level IV)",	/obj/item/path_spellbook/levinbolt/level4,	80),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level V)",	/obj/item/path_spellbook/levinbolt/level5,	90),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level I)",	/obj/item/path_spellbook/levinbolt/level1,	90),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level II)",	/obj/item/path_spellbook/levinbolt/level2,	100),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level III)",	/obj/item/path_spellbook/levinbolt/level3,	110),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level IV)",	/obj/item/path_spellbook/levinbolt/level4,	120),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level V)",	/obj/item/path_spellbook/levinbolt/level5, 130),
 
 	// ARTIFACTS - Research value + 50+ premium
 	// Lower tier artifacts (15-20 research value)
@@ -337,6 +337,17 @@
 		H.research_points += artifact.research_value
 
 		increment_stock(artifact.type)
+		increment_stock(pick(
+			/obj/item/path_spellbook/lure_of_flames/level1,
+			/obj/item/path_spellbook/lure_of_flames/level2,
+			/obj/item/path_spellbook/lure_of_flames/level3,
+			/obj/item/path_spellbook/lure_of_flames/level4,
+			/obj/item/path_spellbook/lure_of_flames/level5,
+			/obj/item/path_spellbook/levinbolt/level1,
+			/obj/item/path_spellbook/levinbolt/level2,
+			/obj/item/path_spellbook/levinbolt/level3,
+			/obj/item/path_spellbook/levinbolt/level4,
+			/obj/item/path_spellbook/levinbolt/level5))
 
 		if(artifact.research_value >= 20)
 			to_chat(user, span_nicegreen("The Archives hungrily consume the powerful artifact, granting you [artifact.research_value] research points and adding it to their collection!"))

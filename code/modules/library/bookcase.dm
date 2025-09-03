@@ -116,7 +116,6 @@
 		var/datum/book_info/info = book.book_data
 		books_in_area += info.return_copy()
 
-
 /obj/structure/bookcase/examine(mob/user)
 	. = ..()
 	if(!anchored)

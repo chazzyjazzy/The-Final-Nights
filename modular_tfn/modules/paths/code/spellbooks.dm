@@ -104,9 +104,6 @@
 			to_chat(user, span_notice("The knowledge of [name] flows into your mind!"))
 		else
 			// If the user already knows the path, update the level
-			// TODO: Updating the level of the path causes it to become unusable, despite learning it being just fine
-
-			//existing_path_discipline.set_level(path_level) -- this didnt work
 			to_chat(user, span_notice("You have increased your knowledge of [name]!"))
 
 			// Remove the old discipline entirely
