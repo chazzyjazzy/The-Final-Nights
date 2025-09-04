@@ -20,10 +20,8 @@
 /obj/item/path_spellbook/Initialize(mapload)
 	. = ..()
 	if(!identified)
-		// Store the real name and description
 		true_name = name
 		true_desc = desc
-		// Set disguised appearance
 		name = "dusty forgotten tome"
 		desc = "This book is covered in dust and the pages appear worn. Its probably not important."
 
@@ -69,7 +67,6 @@
 								return
 							else if(path_level == existing_path_discipline.level + 1)
 								// The book's level is one higher than the user's current level
-								to_chat(user, span_notice("Debug - You can learn this book!"))
 								user.playsound_local(user, activate_sound, 50, FALSE)
 							else if (path_level > existing_path_discipline.level + 1)
 								// The book's level is too high for the user to learn
@@ -84,7 +81,6 @@
 				to_chat(user, span_warning("You must know the first level of this path before you can learn higher levels!"))
 				return
 			else if(path_level == 1 && !is_knowing)
-				to_chat(user, span_notice("Debug - You do not know the path and can learn it!"))
 				user.playsound_local(user, activate_sound, 50, FALSE)
 	else
 		to_chat(user, span_warning("You must be a Kindred to use this spellbook!"))

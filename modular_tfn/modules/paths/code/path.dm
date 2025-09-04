@@ -24,7 +24,7 @@
 			break
 
 	if(base_action)
-		// Create our path action
+		// Create the path action
 		var/datum/action/discipline/path/path_action = new /datum/action/discipline/path(src)
 
 		// Grant the path action

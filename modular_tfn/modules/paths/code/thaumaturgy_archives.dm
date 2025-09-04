@@ -44,9 +44,9 @@
 
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/New()
 	. = ..()
-	// Initialize stock - each item starts with 1 in stock
+	// Initialize stock - each item starts with 2 in stock
 	for(var/datum/data/mining_equipment/prize in prize_list)
-		item_stock[prize.equipment_path] = 1
+		item_stock[prize.equipment_path] = 2
 
 // the world initializes vending products much earlier in the compilation order. have to add these items to GLOB.vending_products after GLOB.vending_products is initialized.
 // perhaps this problem is solved if we just place the vendor in strongdmm. need to test this

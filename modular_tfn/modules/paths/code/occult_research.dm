@@ -2,9 +2,8 @@ SUBSYSTEM_DEF(occult_research)
 	name = "Occult Research"
 	flags = SS_BACKGROUND
 	wait = 60 SECONDS // How often to process research points
-	var/base_research_rate = 2 // Base points per tick
+	var/base_research_rate = 1.5 // Base points per tick
 	var/necromancy_bonus = 1 // Additional bonus for necromancy
-	var/thaumaturgy_bonus = 1 // Additional bonus for thaumaturgy
 	var/obtenebration_bonus = 1
 	var/list/collected_blood = list()
 
@@ -22,7 +21,6 @@ SUBSYSTEM_DEF(occult_research)
 /datum/controller/subsystem/occult_research/proc/process_research_points(mob/living/carbon/human/user)
 	var/research_gain = 0
 	var/has_necromancy = FALSE
-	var/has_thaumaturgy = FALSE
 	var/has_obtenebration
 
 	// Check what disciplines the user has
@@ -33,23 +31,14 @@ SUBSYSTEM_DEF(occult_research)
 		switch(D.discipline.name)
 			if("Necromancy")
 				has_necromancy = TRUE
-			if("Thaumaturgy")
-				has_thaumaturgy = TRUE
 			if("Obtenebration")
 				has_obtenebration = TRUE
 
-	// Calculate research gain
-	if(has_necromancy || has_thaumaturgy)
-		research_gain = base_research_rate
-
 		if(has_necromancy)
 			research_gain += necromancy_bonus
-		if(has_thaumaturgy)
-			research_gain += thaumaturgy_bonus
 		if(has_obtenebration)
 			research_gain += obtenebration_bonus
 
-		// Add the research points
 		user.research_points += research_gain
 
 		if(world.time % (10 MINUTES) == 0)
@@ -73,33 +62,28 @@ SUBSYSTEM_DEF(occult_research)
 		return
 
 	var/blood_data = blood_sample.data
-	var/blood_species = blood_data["species"]  // This is a STRING like "Kindred", not a type path
+	var/blood_species = blood_data["species"]
 	var/blood_name = blood_data["real_name"]
 
-	// FIXED: Check using species name strings instead of type paths
-	var/list/allowed_species = list("Kindred", "Garou", "Ghoul", "Kuei-Jin", "kindred", "garou", "ghoul", "kuei-jin")
+	var/list/allowed_species = list("Vampire", "Garou", "Ghoul", "Kuei-Jin")
 	if(!(blood_species in allowed_species))
 		return
 
-	// Create unique identifier for this blood sample
 	var/blood_identifier = "[blood_name]_[blood_species]"
 
-	// Check if we've already collected this blood
+	// check if the bloods already been collected
 	if(blood_identifier in collected_blood)
-		to_chat(caster, span_notice("You have already analyzed blood from this individual."))
+		to_chat(caster, span_notice("This blood was already identified."))
 		return
 
-	// Add to collected blood list
 	collected_blood += blood_identifier
 
-	// Research points awarded based on species, clan, generation
 	var/research_award = 0
 	var/species_name = ""
 	var/research_message = ""
 
-	// FIXED: Use lowertext() to handle case variations
 	switch(lowertext(blood_species))
-		if("kindred")
+		if("vampire")
 			var/generation = blood_data["generation"]
 			var/clan = blood_data["clan"]
 			research_award = (14 - generation) * 5
@@ -108,15 +92,15 @@ SUBSYSTEM_DEF(occult_research)
 		if("garou")
 			research_award = 30
 			species_name = "Garou"
-			research_message = "The blood of the [species_name]! Its blood burns with fury and rage - You gain [research_award] research points."
+			research_message = "You gain [research_award] research points."
 		if("ghoul")
 			research_award = 5
 			species_name = "Ghoul"
-			research_message = "The blood of a [species_name] servitor. How boring. You gain [research_award] research points."
+			research_message = "You gain [research_award] research points."
 		if("kuei-jin")
 			research_award = 15
 			species_name = "Kuei-Jin"
-			research_message = "The blood of the Cathayans. You gain [research_award] research points."
+			research_message = "You gain [research_award] research points."
 
 	caster.research_points += research_award
 	to_chat(caster, span_notice("[research_message]"))
