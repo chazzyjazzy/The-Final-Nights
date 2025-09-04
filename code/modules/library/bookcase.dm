@@ -86,8 +86,8 @@
 	//TFN ADDITION START - Paths
 	// Check if we're NOT in a chantry area and roll for occult book spawn
 	var/area/our_area = get_area(src)
-	if(!istype(our_area, /area/vtm/interior/chantry) && prob(5))
-		// 5% chance to spawn in a bookcase thats not the library - there are very few bookcases
+	if(!istype(our_area, /area/vtm/interior/chantry) && prob(20))
+		// 20% chance to spawn in a bookcase thats not the library - there are very few bookcases - this will need to be changed if more bookcases show up
 		var/occult_book_type = pick(
 			/obj/item/occult_book/veneficorum_artum_sanguis,
 			/obj/item/occult_book/das_tiefe_geheimnis,

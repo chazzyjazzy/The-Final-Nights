@@ -764,7 +764,7 @@
 	word = "Reveal thy bloodline for mine eyes."
 	thaumlevel = 2
 
-/obj/ritualrune/bloodwalk/attack_hand(mob/user)
+/obj/ritualrune/bloodwalk/attack_hand(mob/living/user)
 	for(var/obj/item/reagent_containers/syringe/S in loc)
 		for(var/datum/reagent/blood/B in S.reagents.reagent_list)
 			var/blood_data = B.data

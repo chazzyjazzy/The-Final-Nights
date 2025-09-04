@@ -73,11 +73,12 @@ SUBSYSTEM_DEF(occult_research)
 		return
 
 	var/blood_data = blood_sample.data
-	var/blood_species = blood_data["species"]
+	var/blood_species = blood_data["species"]  // This is a STRING like "Kindred", not a type path
 	var/blood_name = blood_data["real_name"]
 
-	// Only process certain species
-	if(!(blood_species in list(/datum/species/kindred, /datum/species/garou, /datum/species/ghoul, /datum/species/kuei_jin)))
+	// FIXED: Check using species name strings instead of type paths
+	var/list/allowed_species = list("Kindred", "Garou", "Ghoul", "Kuei-Jin", "kindred", "garou", "ghoul", "kuei-jin")
+	if(!(blood_species in allowed_species))
 		return
 
 	// Create unique identifier for this blood sample
@@ -96,11 +97,12 @@ SUBSYSTEM_DEF(occult_research)
 	var/species_name = ""
 	var/research_message = ""
 
-	switch(blood_species)
+	// FIXED: Use lowertext() to handle case variations
+	switch(lowertext(blood_species))
 		if("kindred")
 			var/generation = blood_data["generation"]
 			var/clan = blood_data["clan"]
-			research_award = (14 - generation) * 5 //im assuming not many people will exactly want to give the TREMERE their blood so, perhaps this needs to be balanced in the future
+			research_award = (14 - generation) * 5
 			species_name = "Kindred"
 			research_message = "You gain new insights into the [species_name] from clan [clan]! You gain [research_award] research points."
 		if("garou")

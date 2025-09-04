@@ -38,6 +38,8 @@
 		if(do_after(user, 5 SECONDS))
 			to_chat(user, span_cult("You wipe the dust off the previously irrelevant tome. Did someone misplace it from the Library?"))
 			src.identified = TRUE
+			name = true_name
+			desc = true_desc
 			return
 
 	var/is_knowing = FALSE

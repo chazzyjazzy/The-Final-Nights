@@ -10,7 +10,7 @@
 	if(action_replaced || !owner)
 		return
 
-	replace_base_action()
+	addtimer(CALLBACK(src, PROC_REF(replace_base_action)), 1 SECONDS)
 
 // so a 'base action' was being created for the paths, bugging out the UI, solved this by just replacing this 'base action' upon creation
 /datum/discipline/path/proc/replace_base_action()
