@@ -381,6 +381,7 @@
 	toggled = TRUE
 	duration_length = 1 TURNS
 	vitae_cost = 2
+	cooldown_length = 30 SECONDS
 
 	var/lightning_timer
 	var/spark_timer
