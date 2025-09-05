@@ -134,12 +134,12 @@
 	H.physiology.armor.bullet -= armor_bonus
 
 
-/*
+
 /obj/item/vtm_artifact/tarulfang
 	true_name = "Tarulfang"
 	true_desc = "Decreases chance of frenzy."
 	icon_state = "tarulfang"
-*/
+
 /obj/item/vtm_artifact/weekapaug_thistle/get_powers()
 	..()
 	owner.frenzy_chance_boost = 5
@@ -173,7 +173,7 @@
 			owner.adjustFireLoss(-heal_amount)
 
 
-/*
+
 /obj/item/vtm_artifact/saulocept
 	true_name = "Saulocept"
 	true_desc = "More experience points."
@@ -186,7 +186,7 @@
 /obj/item/vtm_artifact/saulocept/remove_powers()
 	..()
 	owner.experience_plus = 0
-*/
+
 
 // ---------------------------------------------GALDJUM-----------------------------------------------------------
 /obj/item/vtm_artifact/galdjum
