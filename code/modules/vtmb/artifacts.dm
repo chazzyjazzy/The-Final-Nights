@@ -44,19 +44,17 @@
 	if(!owner || !identified)
 		return
 
-	// Initialize the list if it doesn't exist
 	if(!istype(owner.artifact_owned_amounts, /list))
 		owner.artifact_owned_amounts = list()
 
 	var/list/owned_amounts = owner.artifact_owned_amounts
 	var/artifact_type = type
 
-	// Get current amount or initialize to 0
 	var/current_amount = owned_amounts[artifact_type] || 0
 
 	// Update the amount
 	current_amount += change
-	current_amount = max(0, current_amount) // Don't let it go below 0
+	current_amount = max(0, current_amount)
 
 	// Store the new amount
 	owned_amounts[artifact_type] = current_amount
@@ -85,7 +83,7 @@
 
 	for(var/i = 1; i <= owned_count; i++)
 		total_value += current_value
-		current_value *= 0.5 // Each subsequent item gives half the value
+		current_value *= 0.2 // Each subsequent item gives 20% the full value
 
 	return total_value
 
@@ -119,14 +117,22 @@
 /obj/item/vtm_artifact/weekapaug_thistle/get_powers()
 	..()
 	var/mob/living/carbon/human/H = owner
-	H.physiology.armor.melee = H.physiology.armor.melee+10
-	H.physiology.armor.bullet = H.physiology.armor.bullet+10
+	// Base armor value of 10, with diminishing returns
+	var/armor_bonus = calculate_stacked_value(10)
+
+	H.physiology.armor.melee += armor_bonus
+	H.physiology.armor.bullet += armor_bonus
+
+	to_chat(owner, span_notice("Your armor increases by [armor_bonus] (you own [get_owned_amount()] weekapaug thistles)."))
 
 /obj/item/vtm_artifact/weekapaug_thistle/remove_powers()
 	..()
 	var/mob/living/carbon/human/H = owner
-	H.physiology.armor.melee = H.physiology.armor.melee-10
-	H.physiology.armor.bullet = H.physiology.armor.bullet-10
+	var/armor_bonus = calculate_stacked_value(10)
+
+	H.physiology.armor.melee -= armor_bonus
+	H.physiology.armor.bullet -= armor_bonus
+
 
 /*
 /obj/item/vtm_artifact/tarulfang
@@ -150,13 +156,22 @@
 	var/last_regen = 0
 	research_value = 15
 
+/obj/item/vtm_artifact/mummywrap_fetish/get_powers()
+	. = ..()
+	to_chat(owner, span_green("The mummywrap fetish mends your wounds every minute. ([get_owned_amount()] fetishes)."))
+
 /obj/item/vtm_artifact/mummywrap_fetish/process(delta_time)
 	. = ..()
 	if(identified && owner)
-		if(last_regen+60 < world.time)
+		if(last_regen + 60 < world.time)
 			last_regen = world.time
-			owner.adjustBruteLoss(-5)
-			owner.adjustFireLoss(-5)
+
+			// Base healing of 5, with diminishing returns
+			var/heal_amount = calculate_stacked_value(5)
+
+			owner.adjustBruteLoss(-heal_amount)
+			owner.adjustFireLoss(-heal_amount)
+
 
 /*
 /obj/item/vtm_artifact/saulocept
@@ -182,11 +197,16 @@
 
 /obj/item/vtm_artifact/galdjum/get_powers()
 	..()
-	owner.discipline_time_plus = 25
+	// Base discipline time of 25, with diminishing returns
+	var/time_bonus = calculate_stacked_value(25)
+	owner.discipline_time_plus += time_bonus
+
+	to_chat(owner, span_notice("Your discipline duration increases by [time_bonus] (you own [get_owned_amount()] galdjum)."))
 
 /obj/item/vtm_artifact/galdjum/remove_powers()
 	..()
-	owner.discipline_time_plus = 0
+	var/time_bonus = calculate_stacked_value(25)
+	owner.discipline_time_plus -= time_bonus
 
 
 // ---------------------------------------------FAE CHARM-----------------------------------------------------------
@@ -197,15 +217,23 @@
 	true_name = "Fae Charm"
 	true_desc = "Faster movement speed."
 	icon_state = "fae_charm"
-	research_value = 50
+	research_value = 35
+	var/applied_speed_bonus = 0
 
 /obj/item/vtm_artifact/fae_charm/get_powers()
 	..()
-	owner.add_movespeed_modifier(/datum/movespeed_modifier/fae_charm)
+	// Calculate total speed bonus with diminishing returns
+	applied_speed_bonus = calculate_stacked_value(0.20)
 
-/obj/item/vtm_artifact/fae_charm/remove_powers()
-	..()
+	// Remove any existing modifier first
 	owner.remove_movespeed_modifier(/datum/movespeed_modifier/fae_charm)
+
+	// Create and apply new modifier with calculated bonus
+	var/datum/movespeed_modifier/fae_charm/speed_mod = new
+	speed_mod.multiplicative_slowdown = -applied_speed_bonus
+	owner.add_movespeed_modifier(speed_mod)
+
+	to_chat(owner, span_notice("Your movement speed increases by [applied_speed_bonus] (you own [get_owned_amount()] fae charms)."))
 
 
 // ---------------------------------------------HEART OF ELIZA-----------------------------------------------------------
@@ -213,19 +241,24 @@
 	true_name = "Heart of Eliza"
 	true_desc = "Melee damage boost."
 	icon_state = "h_eliza"
-	research_value = 70
+	research_value = 50
 
 /obj/item/vtm_artifact/heart_of_eliza/get_powers()
 	..()
 	var/mob/living/carbon/human/H = owner
 	if(H.dna)
-		H.dna.species.meleemod = H.dna.species.meleemod+0.5
+		// Base melee bonus of 0.5, with diminishing returns
+		var/melee_bonus = calculate_stacked_value(0.5)
+		H.dna.species.meleemod += melee_bonus
+
+		to_chat(owner, span_notice("Your melee damage increases by [melee_bonus] (you own [get_owned_amount()] hearts of eliza)."))
 
 /obj/item/vtm_artifact/heart_of_eliza/remove_powers()
 	..()
 	var/mob/living/carbon/human/H = owner
 	if(H.dna)
-		H.dna.species.meleemod = H.dna.species.meleemod-0.5
+		var/melee_bonus = calculate_stacked_value(0.5)
+		H.dna.species.meleemod -= melee_bonus
 
 
 //// ---------------------------------------------BLOODSTAR-----------------------------------------------------------
@@ -237,11 +270,16 @@
 
 /obj/item/vtm_artifact/bloodstar/get_powers()
 	..()
-	owner.bloodpower_time_plus = 50
+	// Base bloodpower time of 50, with diminishing returns
+	var/time_bonus = calculate_stacked_value(50)
+	owner.bloodpower_time_plus += time_bonus
+
+	to_chat(owner, span_notice("Your bloodpower duration increases by [time_bonus] (you own [get_owned_amount()] bloodstars)."))
 
 /obj/item/vtm_artifact/bloodstar/remove_powers()
 	..()
-	owner.bloodpower_time_plus = 0
+	var/time_bonus = calculate_stacked_value(50)
+	owner.bloodpower_time_plus -= time_bonus
 
 
 // ---------------------------------------------DAIMONORI-----------------------------------------------------------
@@ -249,15 +287,20 @@
 	true_name = "Daimonori"
 	true_desc = "Increases thaumaturgy damage."
 	icon_state = "daimonori"
-	research_value = 50
+	research_value = 20
 
 /obj/item/vtm_artifact/daimonori/get_powers()
 	..()
-	owner.thaum_damage_plus = 10
+	// Base thaumaturgy damage of 10, with diminishing returns
+	var/thaum_bonus = calculate_stacked_value(10)
+	owner.thaum_damage_plus += thaum_bonus
+
+	to_chat(owner, span_notice("Your thaumaturgy damage increases by [thaum_bonus] (you own [get_owned_amount()] of these artifacts)."))
 
 /obj/item/vtm_artifact/daimonori/remove_powers()
 	..()
-	owner.thaum_damage_plus = 0
+	var/thaum_bonus = calculate_stacked_value(10)
+	owner.thaum_damage_plus -= thaum_bonus
 
 
 // ---------------------------------------------KEY OF ALAMUT-----------------------------------------------------------
@@ -265,25 +308,36 @@
 	true_name = "Key of Alamut"
 	true_desc = "Decreases incoming damage."
 	icon_state = "k_alamut"
-	research_value = 60
+	research_value = 50
 
 /obj/item/vtm_artifact/key_of_alamut/get_powers()
 	..()
 	var/mob/living/carbon/human/H = owner
-	if(H.dna.species.brutemod == 0.3)
-		return
 	if(H.dna)
-		H.dna.species.brutemod = H.dna.species.brutemod-0.2
-		H.dna.species.burnmod = H.dna.species.burnmod-0.2
+		// Base damage reduction of 0.2, with diminishing returns
+		var/damage_reduction = calculate_stacked_value(0.2)
+
+		// Ensure we don't go below minimum damage taken
+		var/new_brutemod = max(0.1, H.dna.species.brutemod - damage_reduction)
+		var/new_burnmod = max(0.1, H.dna.species.burnmod - damage_reduction)
+
+		var/actual_brute_reduction = H.dna.species.brutemod - new_brutemod
+		var/actual_burn_reduction = H.dna.species.burnmod - new_burnmod
+
+		H.dna.species.brutemod = new_brutemod
+		H.dna.species.burnmod = new_burnmod
+
+		to_chat(owner, span_notice("Your damage resistance increases by [actual_brute_reduction] brute/[actual_burn_reduction] burn (you own [get_owned_amount()] keys of alamut)."))
 
 /obj/item/vtm_artifact/key_of_alamut/remove_powers()
 	..()
 	var/mob/living/carbon/human/H = owner
-	if(H.dna.species.brutemod == 0.5)
-		return
 	if(H.dna)
-		H.dna.species.brutemod = H.dna.species.brutemod+0.2
-		H.dna.species.burnmod = H.dna.species.burnmod+0.2
+		var/damage_reduction = calculate_stacked_value(0.2)
+
+		// Restore damage values, capped at reasonable maximums
+		H.dna.species.brutemod = min(2.0, H.dna.species.brutemod + damage_reduction)
+		H.dna.species.burnmod = min(2.0, H.dna.species.burnmod + damage_reduction)
 
 // ---------------------------------------------ODIOUS CHALICE-----------------------------------------------------------
 /obj/item/vtm_artifact/odious_chalice
@@ -291,7 +345,7 @@
 	true_desc = "Stores blood from every attack."
 	icon_state = "o_chalice"
 	var/stored_blood = 0
-	research_value = 100
+	research_value = 50
 
 /obj/item/vtm_artifact/odious_chalice/examine(mob/user)
 	. = ..()
@@ -355,7 +409,7 @@
 	icon_state = "bloodstone"
 	var/mob/living/carbon/human/bound_identifier // Who identified it first
 	var/datum/action/bloodstone_track/tracking_action
-	research_value = 70
+	research_value = 50
 
 
 /obj/item/vtm_artifact/bloodstone/identificate()
@@ -366,12 +420,10 @@
 			bound_identifier = user
 			to_chat(user, span_warning("The bloodstone pulses with dark energy as it bonds to your essence. You will always know its location."))
 
-			// Grant the tracking action
 			tracking_action = new /datum/action/bloodstone_track(user, src)
 			tracking_action.Grant(user)
 
 /obj/item/vtm_artifact/bloodstone/Destroy()
-	// Clean up the action when bloodstone is destroyed
 	if(tracking_action)
 		tracking_action.Remove(bound_identifier)
 		QDEL_NULL(tracking_action)
@@ -388,6 +440,7 @@
 									/obj/item/vtm_artifact/daimonori, /obj/item/vtm_artifact/bloodstar,
 									/obj/item/vtm_artifact/heart_of_eliza, /obj/item/vtm_artifact/fae_charm,
 									/obj/item/vtm_artifact/galdjum, /obj/item/vtm_artifact/mummywrap_fetish,
-									/obj/item/vtm_artifact/weekapaug_thistle, /obj/item/vtm_artifact/bloodstone)
+									/obj/item/vtm_artifact/weekapaug_thistle, /obj/item/vtm_artifact/bloodstone,
+									/obj/item/occult_book/veneficorum_artum_sanguis, /obj/item/occult_book/das_tiefe_geheimnis)
 		new spawn_artifact(loc)
 	qdel(src)

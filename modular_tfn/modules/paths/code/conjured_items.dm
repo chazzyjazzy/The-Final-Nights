@@ -28,12 +28,11 @@
 
 // Lure of flames conjured weapons
 /obj/item/lighter/conjured/flame
-	// Shared flame characteristics
 	light_range = 3
 	light_power = 1
 	light_color = COLOR_ORANGE
 
-// Enhanced afterattack for flame items - includes ignition chance
+// afterattack for flame items - includes ignition chance
 /obj/item/lighter/conjured/flame/afterattack(atom/target, mob/living/user, proximity_flag, click_parameters)
 	if(proximity_flag && isliving(target))
 		var/mob/living/L = target

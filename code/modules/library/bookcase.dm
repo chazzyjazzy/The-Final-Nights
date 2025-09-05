@@ -177,7 +177,7 @@
 			return
 		return ..()
 
-	if(isbook(attacking_item) || istype(attacking_item, /obj/item/path_spellbook) || istype(attacking_item, /obj/item/occult_book))
+	if(isbook(attacking_item) || istype(attacking_item, /obj/item/path_spellbook) || istype(attacking_item, /obj/item/occult_book)) // TFN EDIT - Paths
 		if(!user.transferItemToLoc(attacking_item, src))
 			return ..()
 		update_appearance()

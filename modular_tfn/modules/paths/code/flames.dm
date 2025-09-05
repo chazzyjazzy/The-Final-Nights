@@ -10,13 +10,7 @@
 
 	effect_sound = 'modular_tfn/modules/paths/sounds/fireball.ogg'
 
-// candle
-// palm of flame
-// campfire
-// engulf
-// firestorm
-
-//Candle
+//CANDLE - LEVEL 1
 /datum/discipline_power/thaumaturgy/path/flames/one
 	name = "Candle"
 	desc = "Conjure a flame that is the size of a candle. Can be used as a lighter - not much else."
@@ -71,7 +65,7 @@
 	for(var/obj/item/lighter/conjured/flame/palm_of_flame/flame in owner.contents)
 		qdel(flame)
 
-//Campfire - Level 3
+//CAMPFIRE - Level 3
 /datum/discipline_power/thaumaturgy/path/flames/three
 	name = "Campfire"
 	desc = "Summon enough flame that would be in a campfire, and hurl it from your hands."
@@ -139,7 +133,7 @@
 	desc = "Unleash a devastating storm of fire that affects multiple targets in an area."
 
 	level = 5
-	cooldown_length = 20 SECONDS // remind me to increase this when pr is published
+	cooldown_length = 50 SECONDS
 	violates_masquerade = TRUE
 	target_type = TARGET_TURF | TARGET_LIVING
 	range = 10
@@ -236,7 +230,7 @@
 		var/mob/living/L = entered
 		to_chat(L, span_warning("You feel intense supernatural heat building in this area!"))
 
-// Projectile for Flame Bolt - based on thaumaturgy projectile
+// Projectile for Flame Bolt
 /obj/projectile/flames
 	name = "flame"
 	icon = 'icons/obj/projectiles.dmi'

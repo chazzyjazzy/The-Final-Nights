@@ -38,7 +38,7 @@ GLOBAL_PROTECT(admin_verbs_admin)
 	/client/proc/toggle_canon,
 	/client/proc/reward_exp,
 	/client/proc/grant_discipline,
-	/client/proc/grant_path,
+	/client/proc/grant_path,            // TFN ADDITION - Paths
 	/client/proc/remove_discipline,
 	/client/proc/whitelist_panel,
 	/*
@@ -547,7 +547,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 		if ((preferences.pref_species.id != "kindred") && (preferences.pref_species.id != "ghoul"))
 			to_chat(usr, "<span class='warning'>Your target is not a vampire or a ghoul.</span>")
 			return
-		var/giving_discipline = input("What Discipline do you want to give [player]?") as null|anything in (subtypesof(/datum/discipline) - preferences.discipline_types - /datum/discipline/bloodheal - /datum/discipline/path)
+		var/giving_discipline = input("What Discipline do you want to give [player]?") as null|anything in (subtypesof(/datum/discipline) - preferences.discipline_types - /datum/discipline/bloodheal - /datum/discipline/path) // TFN EDIT - Paths, added '- /datum/discipline/path'
 		if (giving_discipline)
 			var/giving_discipline_level = input("What rank of this Discipline do you want to give [player]?") as null|anything in list(0, 1, 2, 3, 4, 5)
 			if (!isnull(giving_discipline_level))
@@ -577,6 +577,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 
 	SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Discipline") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
+// TFN ADDITION - Paths
 /client/proc/grant_path()
 	set name = "Grant Path"
 	set category = "Admin"
@@ -628,6 +629,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 						qdel(path)
 
 	SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Path") //Updated feedback name
+//TFN ADDITION - Paths
 
 /client/proc/remove_discipline()
 	set name = "Remove Discipline"

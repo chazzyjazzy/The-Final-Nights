@@ -1,4 +1,3 @@
-// Base path spellbook with identification system
 /obj/item/path_spellbook
 	name = "Path Spellbook"
 	desc = "A default path spellbook. if you're seeing this ingame, please report to coders"

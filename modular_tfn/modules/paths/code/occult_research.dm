@@ -3,7 +3,7 @@ SUBSYSTEM_DEF(occult_research)
 	flags = SS_BACKGROUND
 	wait = 60 SECONDS // How often to process research points
 	var/base_research_rate = 1.5 // Base points per tick
-	var/necromancy_bonus = 1 // Additional bonus for necromancy
+	var/necromancy_bonus = 1
 	var/obtenebration_bonus = 1
 	var/list/collected_blood = list()
 
@@ -19,9 +19,9 @@ SUBSYSTEM_DEF(occult_research)
 		process_research_points(H)
 
 /datum/controller/subsystem/occult_research/proc/process_research_points(mob/living/carbon/human/user)
-	var/research_gain = 0
+	var/research_gain = base_research_rate
 	var/has_necromancy = FALSE
-	var/has_obtenebration
+	var/has_obtenebration = FALSE
 
 	// Check what disciplines the user has
 	for(var/datum/action/discipline/D in user.actions)

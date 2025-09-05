@@ -11,12 +11,9 @@ export const SpellbookVendor = (props) => {
 
   const inventory = data.product_records || [];
 
-  // Determine greeting based on knowledge
   const getGreeting = () => {
     if (data.user && data.user.has_thaumaturgy) {
       return "Greetings, student of the blood...";
-    } else if (data.user && data.user.has_necromancy) {
-      return "Greetings, student of the shroud...";
     } else {
       return "Greetings, seeker...";
     }
@@ -67,7 +64,7 @@ export const SpellbookVendor = (props) => {
     setTransferAmount('');
   };
 
-  // Create dropdown options with proper formatting
+  // Create dropdown options
   const getDropdownOptions = () => {
     const members = data.tremere_members || [];
     if (members.length === 0) {

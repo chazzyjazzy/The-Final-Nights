@@ -3,12 +3,11 @@
 	desc = "Use your occult research to reap the benefits of safeguarded knowledge and artifacts."
 	dispenses_dollars = FALSE
 
-	// Stock tracking - each item starts with 1 in stock
+	// Stock tracking - each item starts with 2 in stock
 	var/list/item_stock = list()
 
 	prize_list = list(
-	// SPELLBOOKS - Priced for full path completion by 2-2.5 hours
-	// Total cost for 1-5: 350 points (achievable in ~1.5-2 hours active play)
+	// SPELLBOOKS
 	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level I)",	/obj/item/path_spellbook/lure_of_flames/level1,	90),
 	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level II)",	/obj/item/path_spellbook/lure_of_flames/level2,	100),
 	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level III)",	/obj/item/path_spellbook/lure_of_flames/level3,	110),
@@ -21,35 +20,33 @@
 	new /datum/data/mining_equipment("Levinbolt Spellbook (Level IV)",	/obj/item/path_spellbook/levinbolt/level4,	120),
 	new /datum/data/mining_equipment("Levinbolt Spellbook (Level V)",	/obj/item/path_spellbook/levinbolt/level5, 130),
 
-	// ARTIFACTS - Research value + 50+ premium
-	// Lower tier artifacts (15-20 research value)
-	new /datum/data/mining_equipment("Weekapaug Thistle", /obj/item/vtm_artifact/weekapaug_thistle, 75),    // was 20 research value
-	new /datum/data/mining_equipment("Mummywrap Fetish", /obj/item/vtm_artifact/mummywrap_fetish, 70),      // was 15 research value
-	new /datum/data/mining_equipment("Galdjum", /obj/item/vtm_artifact/galdjum, 70),                       // was 15 research value
-	new /datum/data/mining_equipment("Bloodstar", /obj/item/vtm_artifact/bloodstar, 70),                  // was 15 research value
+	// ARTIFACTS
+	// Lower tier artifacts
+	new /datum/data/mining_equipment("Weekapaug Thistle", /obj/item/vtm_artifact/weekapaug_thistle, 75),
+	new /datum/data/mining_equipment("Mummywrap Fetish", /obj/item/vtm_artifact/mummywrap_fetish, 70),
+	new /datum/data/mining_equipment("Galdjum", /obj/item/vtm_artifact/galdjum, 70),
+	new /datum/data/mining_equipment("Bloodstar", /obj/item/vtm_artifact/bloodstar, 70),
 
-	// Mid tier artifacts (50-70 research value)
-	new /datum/data/mining_equipment("Fae Charm", /obj/item/vtm_artifact/fae_charm, 120),                 // was 50 research value
-	new /datum/data/mining_equipment("Daimonori", /obj/item/vtm_artifact/daimonori, 120),                 // was 50 research value
-	new /datum/data/mining_equipment("Key of Alamut", /obj/item/vtm_artifact/key_of_alamut, 130),          // was 60 research value
-	new /datum/data/mining_equipment("Heart of Eliza", /obj/item/vtm_artifact/heart_of_eliza, 140),        // was 70 research value
-	new /datum/data/mining_equipment("Bloodstone", /obj/item/vtm_artifact/bloodstone, 140),               // was 70 research value
+	// Mid tier artifacts
+	new /datum/data/mining_equipment("Fae Charm", /obj/item/vtm_artifact/fae_charm, 120),
+	new /datum/data/mining_equipment("Daimonori", /obj/item/vtm_artifact/daimonori, 120),
+	new /datum/data/mining_equipment("Key of Alamut", /obj/item/vtm_artifact/key_of_alamut, 130),
+	new /datum/data/mining_equipment("Heart of Eliza", /obj/item/vtm_artifact/heart_of_eliza, 140),
+	new /datum/data/mining_equipment("Bloodstone", /obj/item/vtm_artifact/bloodstone, 140),
 
-	// High tier artifacts (100+ research value)
-	new /datum/data/mining_equipment("Odious Chalice", /obj/item/vtm_artifact/odious_chalice, 180),        // was 100 research value
+	// High tier artifacts
+	new /datum/data/mining_equipment("Odious Chalice", /obj/item/vtm_artifact/odious_chalice, 180),
 
 	// Random artifact - priced as mid-tier since it's random
-	new /datum/data/mining_equipment("Random Occult Artifact", /obj/item/vtm_artifact/rand, 100)
+	new /datum/data/mining_equipment("Random Occult Artifact (50% chance of nothing)", /obj/item/vtm_artifact/rand, 60)
 )
 
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/New()
 	. = ..()
-	// Initialize stock - each item starts with 2 in stock
+	//each item starts with 2 in stock
 	for(var/datum/data/mining_equipment/prize in prize_list)
 		item_stock[prize.equipment_path] = 2
 
-// the world initializes vending products much earlier in the compilation order. have to add these items to GLOB.vending_products after GLOB.vending_products is initialized.
-// perhaps this problem is solved if we just place the vendor in strongdmm. need to test this
 /world/New()
 	. = ..()
 	GLOB.vending_products[/obj/item/path_spellbook/lure_of_flames/level1] = 1
@@ -74,7 +71,7 @@
 	GLOB.vending_products[/obj/item/vtm_artifact/weekapaug_thistle] = 1
 	GLOB.vending_products[/obj/item/vtm_artifact/bloodstone] = 1
 
-// Helper proc to check if role has purchasing privileges
+// Helper proc to check if the user isnt an Antitribu thaumaturge
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/proc/has_purchase_privileges(role)
 	return (role in list("Chantry Regent", "Chantry Archivist", "Hound", "Sheriff", "Seneschal", "Prince"))
 
@@ -93,9 +90,9 @@
 			archivists += H
 	return archivists
 
-// Helper proc to distribute research points to leadership (30% tribute)
+// Non-Chantry non-Camarilla Tremeres, when spending their research points, give 30% of their purchase to the Regent, or distributed among all archivists
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/proc/distribute_research_points(amount, purchaser_name, item_name)
-	var/tribute_amount = round(amount * 0.3) // 30% tribute instead of 100%
+	var/tribute_amount = round(amount * 0.3)
 	var/mob/living/carbon/human/regent = find_regent()
 
 	if(regent)
@@ -116,7 +113,7 @@
 			archivist.research_points += points_to_give
 			to_chat(archivist, span_notice("The Archives distribute [points_to_give] research points to you from [purchaser_name]'s purchase of [item_name]."))
 
-// Helper proc to increment stock when items are donated
+// Proc to increase stock when an item is donated
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/proc/increment_stock(item_path)
 	if(item_path in item_stock)
 		item_stock[item_path]++
@@ -133,8 +130,6 @@
 	if(!ui)
 		ui = new(user, src, "SpellbookVendor", name)
 		ui.open()
-
-// Replace your ui_data method with this:
 
 /obj/machinery/mineral/equipment_vendor/fastfood/occult/ui_data(mob/user)
 	. = list()
@@ -170,7 +165,7 @@
 				"ref" = "\ref[tremere_member]"
 			))
 
-	// Generate product_records with current stock info
+
 	.["product_records"] = list()
 	for(var/datum/data/mining_equipment/prize in prize_list)
 		var/stock_count = item_stock[prize.equipment_path] || 0
@@ -203,25 +198,22 @@
 	var/datum/data/mining_equipment/prize = locate(params["ref"]) in prize_list
 	if(!prize || !(prize in prize_list))
 		to_chat(usr, span_alert("Error: Invalid choice!"))
-		flick(icon_deny, src)
 		return
 
 	// Check stock
 	var/current_stock = item_stock[prize.equipment_path] || 0
 	if(current_stock <= 0)
 		to_chat(usr, span_alert("Error: [prize.equipment_name] is out of stock!"))
-		flick(icon_deny, src)
 		return
 
 	if(prize.cost > H.research_points)
 		to_chat(usr, span_alert("Error: Insufficient research points for [prize.equipment_name]! You need [prize.cost] research points."))
-		flick(icon_deny, src)
 		return
 
 	// Deduct research points from purchaser
 	H.research_points -= prize.cost
 
-	// Check if user has purchase privileges - if not, award 30% tribute to leadership
+	// Check if user is loyal to the chantry/camarilla - if not, award 30% tribute to leadership
 	var/user_role = H.mind?.assigned_role
 	var/has_privileges = has_purchase_privileges(user_role)
 
@@ -337,6 +329,8 @@
 		H.research_points += artifact.research_value
 
 		increment_stock(artifact.type)
+
+		//when donating an artifact, increase stock of a random spellbook
 		increment_stock(pick(
 			/obj/item/path_spellbook/lure_of_flames/level1,
 			/obj/item/path_spellbook/lure_of_flames/level2,

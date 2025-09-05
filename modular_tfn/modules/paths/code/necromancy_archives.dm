@@ -1,4 +1,3 @@
-// UI data for the tome
 /obj/item/necromancy_tome/ui_data(mob/user)
 	. = list()
 	.["user"] = list()
@@ -20,7 +19,6 @@
 		.["user"]["job"] = "Unknown"
 		.["user"]["has_necromancy"] = FALSE
 
-// Handle purchases from the tome
 /obj/item/necromancy_tome/ui_act(action, params)
 	if(action != "purchase")
 		return ..()
@@ -50,7 +48,6 @@
 		ui = new(user, src, "NecromancyVendor", name)
 		ui.open()
 
-// Override ui_data to show user's collected_souls and necromancy knowledge
 /obj/machinery/mineral/equipment_vendor/fastfood/necromancy/ui_data(mob/user)
 	. = list()
 	.["user"] = list()

@@ -8,7 +8,6 @@ export const NecromancyVendor = (props) => {
 
   const inventory = data.product_records || [];
 
-  // Determine greeting based on necromancy knowledge
   const getGreeting = () => {
     if (data.user && data.user.has_necromancy) {
       return "Welcome, master of death and shadow...";

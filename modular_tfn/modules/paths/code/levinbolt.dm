@@ -71,7 +71,6 @@
 		fuse.damaged += 101
 		fuse.check_damage(owner, TRUE)
 
-		// Visual and audio effects
 		var/datum/effect_system/spark_spread/spark_system = new
 		spark_system.set_up(5, 1, get_turf(target))
 		spark_system.start()
@@ -88,15 +87,6 @@
 		return TRUE
 
 	return FALSE
-
-
-// spark
-// illuminate
-// power array
-// zeus' fury
-// eye of the storm
-
-// sourced from the wiki and the revised tremere clanbook
 
 //SPARK - Level 1
 /datum/discipline_power/thaumaturgy/path/levinbolt/one
@@ -159,7 +149,6 @@
 		if(ishuman(attacker))
 			var/mob/living/carbon/human/H = attacker
 			H.electrocution_animation(40)
-		attacker.emote("me", EMOTE_VISIBLE, "is electrocuted!")
 		attacker.Stun(1 SECONDS)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_target_click(mob/source, atom/target, params)
@@ -182,7 +171,6 @@
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/two/deactivate()
 	. = ..()
-	// Remove levinbolt arm weapons
 	for(var/obj/item/lighter/conjured/levinbolt_arm/illuminate in owner.held_items)
 		qdel(illuminate)
 
@@ -221,7 +209,6 @@
 
 	electricity2 = electricity2 || mutable_appearance('icons/effects/effects.dmi', "electricity2", EFFECTS_LAYER)
 	owner.add_overlay(electricity2)
-	// Set up stronger overlay lighting component for more intense electric glow
 	owner.light_system = MOVABLE_LIGHT
 	owner.AddComponent(/datum/component/overlay_lighting, 3, 2, "#e9ffff", TRUE)
 	to_chat(owner, span_notice("Intense electricity surges around your entire body!"))
@@ -231,19 +218,16 @@
 	. = ..()
 	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
 	owner.cut_overlay(electricity2)
-	// Remove the lighting component
 	var/datum/component/overlay_lighting/light_comp = owner.GetComponent(/datum/component/overlay_lighting)
 	if(light_comp)
 		qdel(light_comp)
 
-	// Reset light system
 	owner.light_system = initial(owner.light_system)
 	to_chat(owner, span_notice("The electricity around your body dissipates."))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/proc/power_array_counter(mob/source, obj/item/weapon, mob/living/attacker)
 	if(prob(30))
 		attacker.emote("scream")
-		attacker.emote("me", null, "is electrocuted!")
 		if(ishuman(attacker))
 			var/mob/living/carbon/human/H = attacker
 			H.electrocution_animation(40)
@@ -270,11 +254,6 @@
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/four/activate(mob/living/target)
 	. = ..()
-
-	// Check if we failed the roll (botch or failure already handled by parent)
-	if(success_count <= 0)
-		return
-
 	if(!target)
 		to_chat(owner, span_warning("You need a target to direct your fury at!"))
 		return
@@ -292,7 +271,7 @@
 	owner.add_overlay(electric_halo)
 
 	// Allow movement during charge but require 3 seconds focus
-	if(do_after(owner, 3 SECONDS, target, timed_action_flags = (IGNORE_USER_LOC_CHANGE|IGNORE_HELD_ITEM)))
+	if(do_after(owner, 3 SECONDS, timed_action_flags = (IGNORE_USER_LOC_CHANGE|IGNORE_HELD_ITEM)))
 		if(get_dist(owner, target) <= range)
 			execute_zeus_fury(target)
 		else
@@ -414,8 +393,6 @@
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/activate(atom/target)
 	. = ..()
-	if(!.)
-		return
 	electricity3 = electricity3 || mutable_appearance('icons/effects/effects.dmi', "electricity2", EFFECTS_LAYER)
 	owner.add_overlay(electricity3)
 	owner.light_system = MOVABLE_LIGHT
@@ -501,8 +478,6 @@
 	if(!owner)
 		return
 
-	owner.cut_overlay(electricity3)
-	QDEL_NULL(electricity3)
 	UnregisterSignal(owner, list(COMSIG_CLICK, COMSIG_ATOM_ATTACKBY))
 
 	// Stop timers
@@ -515,7 +490,11 @@
 
 	owner.visible_message(span_notice("The electrical energy around [owner] dissipates."))
 	to_chat(owner, span_notice("The storm within you calms."))
-
+	owner.cut_overlay(electricity3)
+	var/datum/component/overlay_lighting/light_comp = owner.GetComponent(/datum/component/overlay_lighting)
+	if(light_comp)
+		qdel(light_comp)
+	QDEL_NULL(electricity3)
 	. = ..()
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/Destroy()
