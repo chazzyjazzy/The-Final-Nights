@@ -728,6 +728,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	all_quirks = SANITIZE_LIST(all_quirks)
 	validate_quirks()
+	if(!islist(all_quirks))
+		all_quirks = list()
 	// TFN EDIT ADDITION START: sanitize headshot
 	if(!valid_headshot_link(null, headshot_link, TRUE))
 		headshot_link = null
@@ -825,7 +827,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["honor"]			, honor)
 	WRITE_FILE(S["glory"]			, glory)
 	WRITE_FILE(S["wisdom"]			, wisdom)
-	WRITE_FILE(S["clan"]			, clan.type)
+	WRITE_FILE(S["clan"]			, clan?.type)
 	WRITE_FILE(S["generation"]			, generation)
 	WRITE_FILE(S["generation_bonus"]			, generation_bonus)
 	WRITE_FILE(S["masquerade_score"] , masquerade_score)
