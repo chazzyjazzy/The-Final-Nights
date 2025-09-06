@@ -581,54 +581,71 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 /client/proc/grant_path()
 	set name = "Grant Path"
 	set category = "Admin"
-	if (!check_rights(R_ADMIN))
+	if(!check_rights(R_ADMIN))
 		return
 
 	var/client/player = input("What player do you want to give a point in a Path to?") as null|anything in GLOB.clients
-	if (player)
-		if (!player.prefs)
-			to_chat(usr, "<span class='warning'>Could not find preferences for [player].")
-			return
-		var/datum/preferences/preferences = player.prefs
-		if ((preferences.pref_species.id != "kindred") && (preferences.pref_species.id != "ghoul"))
-			to_chat(usr, "<span class='warning'>Your target is not a vampire or a ghoul.</span>")
-			return
-		var/giving_path = input("What Path do you want to give [player]?") as null|anything in (subtypesof(/datum/discipline/path) - preferences.discipline_types)
-		if (giving_path)
-			var/giving_path_level = input("What rank of this Path do you want to give [player]?") as null|anything in list(0, 1, 2, 3, 4, 5)
-			if (!isnull(giving_path_level))
-				if ((giving_path_level > 1) && (preferences.pref_species.id == "ghoul"))
-					to_chat(usr, "<span class='warning'>Giving Path at level 1 because ghouls cannot have Paths higher.</span>")
-					giving_path_level = 1
-				var/reason = input("Why are you giving [player] this Path?") as null|text
-				if (reason)
-					// Grant path temporarily (runtime only, not saved to character)
-					var/datum/discipline/path/path = new giving_path(giving_path_level)
+	if(!player)
+		return
 
-					message_admins("[ADMIN_LOOKUPFLW(usr)] gave [ADMIN_LOOKUPFLW(player)] the Path [path.name] at rank [path.level] (temporary). Reason: [reason]")
-					log_admin("[key_name(usr)] gave [key_name(player)] the Path [path.name] at rank [path.level] (temporary). Reason: [reason]")
-					SSoverwatch.record_action(usr, "[key_name(usr)] gave [key_name(player)] the Path [path.name] at rank [path.level] (temporary). Reason: [reason]")
+	if(!player.prefs)
+		to_chat(usr, "<span class='warning'>Could not find preferences for [player].")
+		return
 
-					if ((giving_path_level > 0) && player.mob)
-						if (ishuman(player.mob))
-							var/mob/living/carbon/human/human = player.mob
-							var/datum/species/kindred/species = human.dna.species
+	var/datum/preferences/preferences = player.prefs
+	if(preferences.pref_species.id != "kindred" && preferences.pref_species.id != "ghoul")
+		to_chat(usr, "<span class='warning'>Your target is not a vampire or a ghoul.</span>")
+		return
 
-							if(istype(species, /datum/species/kindred))
-								// Add to runtime disciplines list only
-								species.disciplines += path
-								var/datum/action/discipline/path/path_action = new /datum/action/discipline/path(path)
-								path_action.Grant(human)
-								to_chat(human, span_notice("You feel ancient knowledge flow into your mind... (temporary)"))
-							else
-								to_chat(usr, span_warning("Target is not a Kindred - path not granted."))
-								qdel(path)
-						else
-							qdel(path)
-					else
-						qdel(path)
+	var/giving_path = input("What Path do you want to give [player]?") as null|anything in (subtypesof(/datum/discipline/path) - preferences.discipline_types)
+	if(!giving_path)
+		return
 
-	SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Path") //Updated feedback name
+	var/giving_path_level = input("What rank of this Path do you want to give [player]?") as null|anything in list(0, 1, 2, 3, 4, 5)
+	if(isnull(giving_path_level))
+		return
+
+	if(giving_path_level > 1 && preferences.pref_species.id == "ghoul")
+		to_chat(usr, "<span class='warning'>Giving Path at level 1 because ghouls cannot have Paths higher.</span>")
+		giving_path_level = 1
+
+	var/reason = input("Why are you giving [player] this Path?") as null|text
+	if(!reason)
+		return
+
+	// Grant path temporarily (runtime only, not saved to character)
+	var/datum/discipline/path/path = new giving_path(giving_path_level)
+
+	message_admins("[ADMIN_LOOKUPFLW(usr)] gave [ADMIN_LOOKUPFLW(player)] the Path [path.name] at rank [path.level] (temporary). Reason: [reason]")
+	log_admin("[key_name(usr)] gave [key_name(player)] the Path [path.name] at rank [path.level] (temporary). Reason: [reason]")
+	SSoverwatch.record_action(usr, "[key_name(usr)] gave [key_name(player)] the Path [path.name] at rank [path.level] (temporary). Reason: [reason]")
+
+	if(giving_path_level <= 0 || !player.mob)
+		qdel(path)
+		SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Path")
+		return
+
+	if(!ishuman(player.mob))
+		qdel(path)
+		SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Path")
+		return
+
+	var/mob/living/carbon/human/human = player.mob
+	var/datum/species/kindred/species = human.dna.species
+
+	if(!istype(species, /datum/species/kindred))
+		to_chat(usr, span_warning("Target is not a Kindred - path not granted."))
+		qdel(path)
+		SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Path")
+		return
+
+	// Add to runtime disciplines list only
+	species.disciplines += path
+	var/datum/action/discipline/path/path_action = new /datum/action/discipline/path(path)
+	path_action.Grant(human)
+	to_chat(human, span_notice("You feel ancient knowledge flow into your mind... (temporary)"))
+
+	SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Path")
 //TFN ADDITION - Paths
 
 /client/proc/remove_discipline()
