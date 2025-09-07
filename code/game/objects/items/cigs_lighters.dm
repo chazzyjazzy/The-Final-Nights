@@ -246,6 +246,7 @@ CIGARETTE PACKETS ARE IN FANCY.DM
 		M.update_inv_hands()
 
 /obj/item/clothing/mask/cigarette/proc/handle_reagents()
+	reagents.del_reagent(/datum/reagent/blood/vitae)
 	if(reagents.total_volume)
 		var/to_smoke = REAGENTS_METABOLISM
 		if(iscarbon(loc))
