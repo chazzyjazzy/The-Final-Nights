@@ -524,13 +524,13 @@
 	if (!vampire_species.disciplines)
 		return
 
-		for (var/datum/discipline/discipline in vampire_species.disciplines)
-			if (!discipline.known_powers)
-				continue
-			for (var/datum/discipline_power/power in discipline.known_powers)
-				if (power.toggled && power.active)
-					power.try_deactivate(direct = TRUE)
-					to_chat(src, span_warning("[power.name] deactivates as you fall into torpor."))
+	for (var/datum/discipline/discipline in vampire_species.disciplines)
+		if (!discipline.known_powers)
+			continue
+		for (var/datum/discipline_power/power in discipline.known_powers)
+			if (power.toggled && power.active)
+				power.try_deactivate(direct = TRUE)
+				to_chat(src, span_warning("[power.name] deactivates as you fall into torpor."))
 
 ///Unignores all slowdowns that lack the IGNORE_NOSLOW flag.
 /mob/living/proc/unignore_slowdown(source)
