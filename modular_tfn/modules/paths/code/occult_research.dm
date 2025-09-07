@@ -30,14 +30,9 @@ SUBSYSTEM_DEF(occult_research)
 
 		switch(D.discipline.name)
 			if("Necromancy")
-				has_necromancy = TRUE
+				research_gain += necromancy_bonus
 			if("Obtenebration")
-				has_obtenebration = TRUE
-
-		if(has_necromancy)
-			research_gain += necromancy_bonus
-		if(has_obtenebration)
-			research_gain += obtenebration_bonus
+				research_gain += obtenebration_bonus
 
 		user.research_points += research_gain
 
