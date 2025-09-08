@@ -47,10 +47,7 @@
 	// Warehouse computer 'hacking'
 	if(istype(target, /obj/machinery/computer/cargo/express))
 		var/obj/machinery/computer/cargo/express/cargo_comp = target
-		if(cargo_comp.locked == 0)
-			cargo_comp.locked = 1
-		else
-			cargo_comp.locked = 0
+		cargo_comp.locked = !cargo_comp.locked
 
 		// sparks
 		var/datum/effect_system/spark_spread/spark_system = new
