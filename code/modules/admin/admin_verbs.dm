@@ -532,6 +532,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 					log_admin("[key_name(usr)] gave [whitelistee] the [whitelist] whitelist. Reason: [approval_reason]")
 	SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Whitelist") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
+// TFN ADDITION START
 /client/proc/grant_discipline()
 	set name = "Grant Discipline"
 	set category = "Admin"
@@ -576,6 +577,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 						qdel(discipline)
 
 	SSblackbox.record_feedback("tally", "admin_verb", 1, "Grant Discipline") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
+// TFN ADDITION END
 
 // TFN ADDITION - Paths
 /client/proc/grant_path()
