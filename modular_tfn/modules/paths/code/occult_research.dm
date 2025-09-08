@@ -20,8 +20,6 @@ SUBSYSTEM_DEF(occult_research)
 
 /datum/controller/subsystem/occult_research/proc/process_research_points(mob/living/carbon/human/user)
 	var/research_gain = base_research_rate
-	var/has_necromancy = FALSE
-	var/has_obtenebration = FALSE
 
 	// Check what disciplines the user has
 	for(var/datum/action/discipline/D in user.actions)
