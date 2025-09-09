@@ -55,8 +55,6 @@
 		spark_system.start()
 		playsound(target, 'sound/effects/sparks4.ogg', 50, TRUE)
 
-		to_chat(owner, span_notice("You send electrical sparks into [target]!"))
-
 		owner.visible_message(span_warning("[owner] sends sparks of electricity into [target]!"))
 		return TRUE
 
@@ -73,7 +71,6 @@
 		spark_system.start()
 		playsound(target, 'sound/effects/sparks2.ogg', 75, TRUE)
 
-		to_chat(owner, span_notice("You overload [target] with electrical energy!"))
 		owner.visible_message(span_warning("[owner] sends a surge of electricity into [target]!"))
 
 		// Small chance to electrocute the user too
@@ -141,6 +138,8 @@
 	to_chat(owner, span_notice("The electricity around you fades away."))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_counter(mob/source, obj/item/weapon, mob/living/attacker)
+	SIGNAL_HANDLER
+
 	if(prob(30))
 		attacker.Jitter(2)
 		if(ishuman(attacker))
@@ -149,6 +148,8 @@
 		attacker.Stun(1 SECONDS)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/proc/spark_target_click(mob/source, atom/target, params)
+	SIGNAL_HANDLER
+
 	return levinbolt_target_click(source, target, params, FALSE)
 
 //ILLUMINATE - Level 2
@@ -223,6 +224,8 @@
 	to_chat(owner, span_notice("The electricity around your body dissipates."))
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/proc/power_array_counter(mob/source, obj/item/weapon, mob/living/attacker)
+	SIGNAL_HANDLER
+
 	if(prob(30))
 		attacker.emote("scream")
 		if(ishuman(attacker))
@@ -233,6 +236,8 @@
 		attacker.adjustFireLoss(30)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/proc/powerarray_target_click(mob/source, atom/target, params)
+	SIGNAL_HANDLER
+
 	return levinbolt_target_click(source, target, params, TRUE)
 
 
@@ -456,6 +461,8 @@
 	playsound(target, 'sound/magic/lightningshock.ogg', 75, TRUE)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/storm_counter(mob/source, obj/item/weapon, mob/living/attacker)
+	SIGNAL_HANDLER
+
 	if(prob(60))
 		attacker.Jitter(3)
 		if(ishuman(attacker))
@@ -470,6 +477,8 @@
 		playsound(attacker, 'sound/effects/sparks4.ogg', 60, TRUE)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/proc/storm_target_click(mob/source, atom/target, params)
+	SIGNAL_HANDLER
+
 	return levinbolt_target_click(source, target, params, TRUE)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/five/deactivate()

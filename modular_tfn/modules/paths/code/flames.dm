@@ -92,7 +92,7 @@
 	H.preparePixelProjectile(target, start)
 	H.level = 3
 	H.fire(direct_target = target)
-	H.cruelty_multiplier = 1.1 // we dont want crits doing fucking 80 burn to vampires
+	H.cruelty_multiplier = 2 // we dont want crits doing fucking 80 burn to vampires
 	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
 //ENGULF - Level 4
@@ -226,6 +226,8 @@
 	RegisterSignal(loc, COMSIG_ATOM_ENTERED, PROC_REF(warn_entering_mob))
 
 /obj/effect/temp_visual/inferno_warning/proc/warn_entering_mob(datum/source, atom/movable/entered)
+	SIGNAL_HANDLER
+
 	if(isliving(entered))
 		var/mob/living/L = entered
 		to_chat(L, span_warning("You feel intense supernatural heat building in this area!"))
