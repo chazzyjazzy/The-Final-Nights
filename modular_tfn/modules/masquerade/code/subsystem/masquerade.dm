@@ -44,6 +44,8 @@ SUBSYSTEM_DEF(masquerade)
  * reason - Optional, the reason for the breach. For example,
  */
 /datum/controller/subsystem/masquerade/proc/masquerade_reinforce(atom/source, mob/living/player_breacher, reason)
+	if(!GLOB.canon_event)
+		return
 	. = FALSE
 	for(var/masquerade_breach as anything in masquerade_breachers)
 		var/breach_sources = masquerade_breach[2]
@@ -91,6 +93,8 @@ SUBSYSTEM_DEF(masquerade)
  * reason - The reason for the breach. For example,
  */
 /datum/controller/subsystem/masquerade/proc/masquerade_breach(atom/source, mob/living/player_breacher, reason)
+	if(!GLOB.canon_event)
+		return
 	var/pre_breach_score = player_breacher.masquerade_score
 	if(pre_breach_score == 0)
 		return
