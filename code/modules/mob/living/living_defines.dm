@@ -231,7 +231,7 @@
 
 // TFN ADDITION START - Paths
 	var/research_points = 0
-	var/list/artifact_owned_amounts  // allows for the tracking of multiple artifacts to prevent linear 'stacking', instead introducing exponential decay
+	var/list/artifact_owned_amounts = list()// allows for the tracking of multiple artifacts to prevent linear 'stacking', instead introducing exponential decay
 	var/collected_souls = 0
 // TFN ADDITION END - Paths
 
