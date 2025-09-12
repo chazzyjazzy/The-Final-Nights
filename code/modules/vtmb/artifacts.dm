@@ -18,13 +18,16 @@
 	if(!identified)
 		return
 
-	addtimer(CALLBACK(src, PROC_REF(check_ownership_after_drop)), 1)
+	addtimer(CALLBACK(src, PROC_REF(check_ownership_change)), 1)
 
 /obj/item/vtm_artifact/proc/on_moved(datum/source, atom/old_loc, dir, forced)
 	SIGNAL_HANDLER
 	if(!identified)
 		return
 
+	addtimer(CALLBACK(src, PROC_REF(check_ownership_change)), 1)
+
+/obj/item/vtm_artifact/proc/check_ownership_change()
 	var/mob/current_holder = get_current_holder()
 
 	if(current_holder != owner)
@@ -64,16 +67,6 @@
 		update_owned_amount(-1)
 		remove_powers()
 		owner = null
-
-/obj/item/vtm_artifact/proc/check_ownership_after_drop()
-	var/mob/current_holder = get_current_holder()
-
-	if(!current_holder)
-		// Truly dropped (on turf or in non-carried container)
-		remove_ownership()
-	else if(current_holder != owner)
-		// Transferred to a different mob
-		set_new_owner(current_holder)
 
 /obj/item/vtm_artifact
 	name = "unidentified occult fetish"
@@ -133,9 +126,10 @@
 
 	for(var/i = 1; i <= owned_count; i++)
 		total_value += current_value
-		current_value *= 0.2 // Each subsequent item gives 20% the full value
+		current_value *= 0.2
 
-	return total_value
+	// Return this artifact's share of the total
+	return total_value / owned_count
 
 /obj/item/vtm_artifact/proc/identificate()
 	if(!identified)
@@ -155,7 +149,6 @@
 	.=..()
 	if(HAS_TRAIT(user,TRAIT_THAUMATURGY_KNOWLEDGE))
 		. += "You estimate that this Artifact can be given to the archives to retrieve [research_value] research points."
-
 
 // ---------------------------------------------WEEKAPAUG THISTLE-----------------------------------------------------------
 /obj/item/vtm_artifact/weekapaug_thistle
