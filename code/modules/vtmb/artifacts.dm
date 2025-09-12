@@ -153,25 +153,30 @@
 	true_name = "Mummywrap Fetish"
 	true_desc = "Passive health regeneration."
 	icon_state = "m_fetish"
-	var/last_regen = 0
 	research_value = 15
+
+	COOLDOWN_DECLARE(regen_cooldown)
 
 /obj/item/vtm_artifact/mummywrap_fetish/get_powers()
 	. = ..()
 	to_chat(owner, span_green("The mummywrap fetish mends your wounds every minute. ([get_owned_amount()] fetishes)."))
-
-/obj/item/vtm_artifact/mummywrap_fetish/process(delta_time)
-	. = ..()
 	if(identified && owner)
-		if(last_regen + 60 < world.time)
-			last_regen = world.time
+		addtimer(CALLBACK(src, PROC_REF(do_regeneration)), 40 SECONDS, TIMER_LOOP)
 
-			// Base healing of 5, with diminishing returns
-			var/heal_amount = calculate_stacked_value(5)
+/obj/item/vtm_artifact/mummywrap_fetish/proc/do_regeneration()
+	if(!owner || !identified)
+		return
 
-			owner.adjustBruteLoss(-heal_amount)
-			owner.adjustFireLoss(-heal_amount)
+	if(!COOLDOWN_FINISHED(src, regen_cooldown))
+		return
 
+	COOLDOWN_START(src, regen_cooldown, 60 SECONDS)
+
+	// Base healing of 15, with diminishing returns
+	var/heal_amount = calculate_stacked_value(15)
+
+	owner.adjustBruteLoss(-heal_amount)
+	owner.adjustFireLoss(-heal_amount)
 
 
 /obj/item/vtm_artifact/saulocept
