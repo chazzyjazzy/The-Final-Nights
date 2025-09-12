@@ -18,7 +18,6 @@
 	if(!identified)
 		return
 
-	// Use addtimer to check location after the drop has finished processing
 	addtimer(CALLBACK(src, PROC_REF(check_ownership_after_drop)), 1)
 
 /obj/item/vtm_artifact/proc/on_moved(datum/source, atom/old_loc, dir, forced)
@@ -28,7 +27,6 @@
 
 	var/mob/current_holder = get_current_holder()
 
-	// If we have a different holder than before, update ownership
 	if(current_holder != owner)
 		if(current_holder)
 			set_new_owner(current_holder)
@@ -45,12 +43,6 @@
 		var/obj/item/storage/backpack/backpack = loc
 		if(ismob(backpack.loc))
 			return backpack.loc
-
-	// Could extend this to check other storage types if needed
-	// if(istype(loc, /obj/item/storage))
-	//     var/obj/item/storage/container = loc
-	//     if(ismob(container.loc))
-	//         return container.loc
 
 	return null
 
