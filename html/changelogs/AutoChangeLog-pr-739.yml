@@ -1,4 +1,0 @@
-author: "chazzyjazzy"
-delete-after: True
-changes:
-  - qol: "toggleable disciplines now automatically untoggle when entering torpor"
