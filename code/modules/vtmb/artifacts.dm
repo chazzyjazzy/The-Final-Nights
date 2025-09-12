@@ -1,29 +1,87 @@
-/obj/item/vtm_artifact/pickup(mob/user)
-	..()
-	if(identified)
-		owner = user
-		update_owned_amount(1)
-		START_PROCESSING(SSobj, src)
-		get_powers()
+/obj/item/vtm_artifact/Initialize()
+	. = ..()
+	RegisterSignal(src, COMSIG_ITEM_PICKUP, PROC_REF(on_pickup))
+	RegisterSignal(src, COMSIG_ITEM_DROPPED, PROC_REF(on_dropped))
+	RegisterSignal(src, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
 
-/obj/item/vtm_artifact/dropped(mob/user)
-	..()
-	if(identified)
-		if(isturf(loc))
-			update_owned_amount(-1)
-			STOP_PROCESSING(SSobj, src)
-			if(owner)
-				remove_powers()
-				owner = null
+/obj/item/vtm_artifact/proc/on_pickup(datum/source, mob/user)
+	SIGNAL_HANDLER
+	if(!identified)
+		return
 
-/obj/item/vtm_artifact/process(delta_time)
-	if(owner != loc && owner != loc.loc)
-		forceMove(get_turf(src))
+	var/mob/current_holder = get_current_holder()
+	if(current_holder && current_holder != owner)
+		set_new_owner(current_holder)
+
+/obj/item/vtm_artifact/proc/on_dropped(datum/source, mob/user)
+	SIGNAL_HANDLER
+	if(!identified)
+		return
+
+	// Use addtimer to check location after the drop has finished processing
+	addtimer(CALLBACK(src, PROC_REF(check_ownership_after_drop)), 1)
+
+/obj/item/vtm_artifact/proc/on_moved(datum/source, atom/old_loc, dir, forced)
+	SIGNAL_HANDLER
+	if(!identified)
+		return
+
+	var/mob/current_holder = get_current_holder()
+
+	// If we have a different holder than before, update ownership
+	if(current_holder != owner)
+		if(current_holder)
+			set_new_owner(current_holder)
+		else
+			remove_ownership()
+
+/obj/item/vtm_artifact/proc/get_current_holder()
+	// Direct holder (in hands or equipped)
+	if(ismob(loc))
+		return loc
+
+	// Check if we're in a backpack being worn by someone
+	if(istype(loc, /obj/item/storage/backpack))
+		var/obj/item/storage/backpack/backpack = loc
+		if(ismob(backpack.loc))
+			return backpack.loc
+
+	// Could extend this to check other storage types if needed
+	// if(istype(loc, /obj/item/storage))
+	//     var/obj/item/storage/container = loc
+	//     if(ismob(container.loc))
+	//         return container.loc
+
+	return null
+
+/obj/item/vtm_artifact/proc/set_new_owner(mob/new_owner)
+	if(owner == new_owner)
+		return
+
+	// Remove from old owner
+	if(owner)
+		remove_powers()
+
+	// Set new owner
+	owner = new_owner
+	update_owned_amount(1)
+	get_powers()
+
+/obj/item/vtm_artifact/proc/remove_ownership()
+	if(owner)
 		update_owned_amount(-1)
-		STOP_PROCESSING(SSobj, src)
-		if(owner)
-			remove_powers()
-			owner = null
+		remove_powers()
+		owner = null
+
+/obj/item/vtm_artifact/proc/check_ownership_after_drop()
+	var/mob/current_holder = get_current_holder()
+
+	if(!current_holder)
+		// Truly dropped (on turf or in non-carried container)
+		remove_ownership()
+	else if(current_holder != owner)
+		// Transferred to a different mob
+		set_new_owner(current_holder)
 
 /obj/item/vtm_artifact
 	name = "unidentified occult fetish"
