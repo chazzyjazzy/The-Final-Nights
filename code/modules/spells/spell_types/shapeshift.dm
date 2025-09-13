@@ -144,7 +144,7 @@
 	if(stored.mind)
 		stored.mind.transfer_to(shape)
 
-		// Restore languages AFTER mind transfer (update_atom_languages() will have cleared all languages from the mind since it draws from the atom's language holder)
+		// Bring stored languages after transfer_to (transfer_to calls update_atom_languages() which will have cleared all languages from the mind since it draws from the atom's language holder)
 		var/datum/language_holder/mind_holder = shape.mind?.get_language_holder()
 		if(mind_holder && backup_understood_languages && backup_spoken_languages)
 			for(var/language in backup_understood_languages)
@@ -239,8 +239,18 @@
 		var/dam_percentage = ((shape.health / shape.maxHealth)) // getting percentage of your current hp compared to max HP in shape form
 		var/percent_carbon = (stored.maxHealth * dam_percentage) //this will get the HP remaining left you have in carbon form at base
 		var/gross_damage = (stored.maxHealth - percent_carbon) //This will give you the relative percentage damage you'd take once transforming back
+/* EXAMPLE CALCULATION
+dama_percentage = ( 1 (current HP) / 100 (max hp) ) = 0.002
+percent_carbon = 100 * 0.002 = 0.2
+gross_damage = 100 - 0.2 = 99.75
+Result: you take at least 90 damage when you trasnform back
+*/
 		stored.apply_damage(gross_damage, source.convert_damage_type, forced = TRUE, wound_bonus=CANT_WOUND)
+
 //END OF TFN MODIFIED STUFF
+
+//	if(source.convert_damage)
+//		stored.blood_volume = shape.blood_volume;
 
 	// This guard is important because restore() can also be called on COMSIG_QDELETING for shape, as well as on death.
 	// This can happen in, for example, [/proc/wabbajack] where the mob hit is qdel'd.
