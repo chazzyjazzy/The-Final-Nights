@@ -25,17 +25,27 @@
 		/datum/discipline_power/thaumaturgy/path/flames/four,
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
+	var/list/conjured_candles = list()
 
 /datum/discipline_power/thaumaturgy/path/flames/one/activate()
 	. = ..()
 	owner.drop_all_held_items()
-	owner.put_in_r_hand(new /obj/item/lighter/conjured/flame/candle(owner))
-	owner.put_in_l_hand(new /obj/item/lighter/conjured/flame/candle(owner))
+	var/right_candle = new /obj/item/lighter/conjured/flame/candle(owner)
+	var/left_candle = new /obj/item/lighter/conjured/flame/candle(owner)
+
+	owner.put_in_r_hand(right_candle)
+	owner.put_in_l_hand(left_candle)
+
+	conjured_candles += WEAKREF(right_candle)
+	conjured_candles += WEAKREF(left_candle)
 
 /datum/discipline_power/thaumaturgy/path/flames/one/deactivate()
 	. = ..()
-	for(var/obj/item/lighter/conjured/flame/candle/candle in owner.held_items)
-		qdel(candle)
+	for(var/datum/weakref/candle_ref in conjured_candles)
+		var/obj/item/lighter/conjured/flame/candle/candle = candle_ref.resolve()
+		if(candle)
+			qdel(candle)
+	conjured_candles.Cut()
 
 //PALM OF FLAME - Level 2
 /datum/discipline_power/thaumaturgy/path/flames/two
@@ -54,16 +64,28 @@
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
+	var/list/conjured_flames = list()
+
 /datum/discipline_power/thaumaturgy/path/flames/two/activate()
 	. = ..()
 	owner.drop_all_held_items()
-	owner.put_in_r_hand(new /obj/item/lighter/conjured/flame/palm_of_flame(owner))
-	owner.put_in_l_hand(new /obj/item/lighter/conjured/flame/palm_of_flame(owner))
+
+	var/right_flame = new /obj/item/lighter/conjured/flame/palm_of_flame(owner)
+	var/left_flame = new /obj/item/lighter/conjured/flame/palm_of_flame(owner)
+
+	owner.put_in_r_hand(right_flame)
+	owner.put_in_l_hand(left_flame)
+
+	conjured_flames += WEAKREF(right_flame)
+	conjured_flames += WEAKREF(left_flame)
 
 /datum/discipline_power/thaumaturgy/path/flames/two/deactivate()
 	. = ..()
-	for(var/obj/item/lighter/conjured/flame/palm_of_flame/flame in owner.contents)
-		qdel(flame)
+	for(var/datum/weakref/flame_ref in conjured_flames)
+		var/obj/item/lighter/conjured/flame/palm_of_flame/flame = flame_ref.resolve()
+		if(flame)
+			qdel(flame)
+	conjured_flames.Cut()
 
 //CAMPFIRE - Level 3
 /datum/discipline_power/thaumaturgy/path/flames/three

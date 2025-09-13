@@ -6,6 +6,7 @@ SUBSYSTEM_DEF(occult_research)
 	var/necromancy_bonus = 1
 	var/obtenebration_bonus = 1
 	var/list/collected_blood = list()
+	COOLDOWN_DECLARE(research_notification_cooldown)
 
 /datum/controller/subsystem/occult_research/fire(resumed = FALSE)
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
@@ -34,8 +35,9 @@ SUBSYSTEM_DEF(occult_research)
 
 		user.research_points += research_gain
 
-		if(world.time % (10 MINUTES) == 0)
-			to_chat(user, span_notice("Your occult studies have yielded [research_gain] research points. Total: [user.research_points]"))
+	if(COOLDOWN_FINISHED(src, research_notification_cooldown))
+		COOLDOWN_START(src, research_notification_cooldown, 10 MINUTES)
+		to_chat(user, span_notice("Your occult studies have yielded [research_gain] research points. Total: [user.research_points]"))
 
 /mob/living/carbon/human/verb/check_research_points()
 	set name = "Check Research Points"

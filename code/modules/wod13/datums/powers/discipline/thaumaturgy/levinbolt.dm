@@ -28,14 +28,18 @@
 				var/obj/item/p25radio/radio = I
 				if(radio.powered)
 					radio.powered = FALSE
-					to_chat(H, span_warning("Your [I.name] crackles violently and powers down!"))
-					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], disabling it!"))
+					H.visible_message(
+						span_warning("[H]'s [I.name] crackles violently and powers down!"),
+						span_warning("Your [I.name] crackles violently and powers down!"),
+					)
 					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
 					disabled_any = TRUE
 				else
 					radio.powered = TRUE
-					to_chat(H, span_warning ("Electricity surges into your radio - turning it on!"))
-					to_chat(owner, span_notice("You surge electricity into [H]'s [I.name], turning it on!"))
+					H.visible_message(
+						span_warning("Electricity surges into [H]'s [I.name] - turning it on!"),
+						span_warning("Electricity surges into your radio - turning it on!"),
+					)
 					playsound(H, 'sound/effects/sparks4.ogg', 60, TRUE)
 					disabled_any = TRUE
 		if(disabled_any)
@@ -161,16 +165,28 @@
 	toggled = TRUE
 	duration_length = 2 TURNS
 
+	var/list/conjured_illuminates = list()
+
 /datum/discipline_power/thaumaturgy/path/levinbolt/two/activate(mob/living/target)
 	. = ..()
 	owner.drop_all_held_items()
-	owner.put_in_r_hand(new /obj/item/lighter/conjured/levinbolt_arm(owner))
-	owner.put_in_l_hand(new /obj/item/lighter/conjured/levinbolt_arm(owner))
+
+	var/right_illuminate = new /obj/item/lighter/conjured/levinbolt_arm(owner)
+	var/left_illuminate = new /obj/item/lighter/conjured/levinbolt_arm(owner)
+
+	owner.put_in_r_hand(right_illuminate)
+	owner.put_in_l_hand(left_illuminate)
+
+	conjured_illuminates += WEAKREF(right_illuminate)
+	conjured_illuminates += WEAKREF(left_illuminate)
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/two/deactivate()
 	. = ..()
-	for(var/obj/item/lighter/conjured/levinbolt_arm/illuminate in owner.held_items)
-		qdel(illuminate)
+	for(var/datum/weakref/illuminate_ref in conjured_illuminates)
+		var/obj/item/lighter/conjured/levinbolt_arm/illuminate = illuminate_ref.resolve()
+		if(illuminate)
+			qdel(illuminate)
+	conjured_illuminates.Cut()
 
 //POWER ARRAY - Level 3
 /datum/discipline_power/thaumaturgy/path/levinbolt/three
