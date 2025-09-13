@@ -37,9 +37,6 @@
 			remove_ownership()
 
 /obj/item/vtm_artifact/proc/get_current_holder()
-	// Direct holder (in hands or equipped)
-	if(ismob(loc))
-		return loc
 
 	// Check if we're in a backpack being worn by someone
 	if(istype(loc, /obj/item/storage/backpack))
@@ -64,8 +61,8 @@
 
 /obj/item/vtm_artifact/proc/remove_ownership()
 	if(owner)
-		update_owned_amount(-1)
 		remove_powers()
+		update_owned_amount(-1)
 		owner = null
 
 /obj/item/vtm_artifact
@@ -176,18 +173,16 @@
 	H.physiology.armor.melee -= armor_bonus
 	H.physiology.armor.bullet -= armor_bonus
 
-
-
 /obj/item/vtm_artifact/tarulfang
 	true_name = "Tarulfang"
 	true_desc = "Decreases chance of frenzy."
 	icon_state = "tarulfang"
 
-/obj/item/vtm_artifact/weekapaug_thistle/get_powers()
+/obj/item/vtm_artifact/tarulfang/get_powers()
 	..()
 	owner.frenzy_chance_boost = 5
 
-/obj/item/vtm_artifact/weekapaug_thistle/remove_powers()
+/obj/item/vtm_artifact/tarulfang/remove_powers()
 	..()
 	owner.frenzy_chance_boost = 10
 
@@ -221,7 +216,6 @@
 	owner.adjustBruteLoss(-heal_amount)
 	owner.adjustFireLoss(-heal_amount)
 
-
 /obj/item/vtm_artifact/saulocept
 	true_name = "Saulocept"
 	true_desc = "More experience points."
@@ -234,7 +228,6 @@
 /obj/item/vtm_artifact/saulocept/remove_powers()
 	..()
 	owner.experience_plus = 0
-
 
 // ---------------------------------------------GALDJUM-----------------------------------------------------------
 /obj/item/vtm_artifact/galdjum
@@ -255,7 +248,6 @@
 	..()
 	var/time_bonus = calculate_stacked_value(25)
 	owner.discipline_time_plus -= time_bonus
-
 
 // ---------------------------------------------FAE CHARM-----------------------------------------------------------
 /datum/movespeed_modifier/fae_charm
@@ -283,6 +275,9 @@
 
 	to_chat(owner, span_notice("Your movement speed increases by [applied_speed_bonus] (you own [get_owned_amount()] fae charms)."))
 
+/obj/item/vtm_artifact/fae_charm/remove_powers()
+	..()
+	owner.remove_movespeed_modifier(/datum/movespeed_modifier/fae_charm)
 
 // ---------------------------------------------HEART OF ELIZA-----------------------------------------------------------
 /obj/item/vtm_artifact/heart_of_eliza
@@ -307,7 +302,6 @@
 	if(H.dna)
 		var/melee_bonus = calculate_stacked_value(0.5)
 		H.dna.species.meleemod -= melee_bonus
-
 
 //// ---------------------------------------------BLOODSTAR-----------------------------------------------------------
 /obj/item/vtm_artifact/bloodstar
