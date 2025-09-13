@@ -3572,6 +3572,7 @@
 /area/vtm/interior/millennium_tower/f3)
 "aUj" = (
 /obj/structure/table/wood/fancy/red,
+/obj/machinery/mineral/equipment_vendor/fastfood/occult,
 /turf/open/floor/carpet,
 /area/vtm/interior/chantry/basement)
 "aUn" = (
