@@ -114,6 +114,10 @@
 	var/mob/living/shape
 	var/restoring = FALSE
 	var/obj/effect/proc_holder/spell/targeted/shapeshift/source
+	// Store language data separately from the language holder to preserve across mind transfers
+	var/list/backup_understood_languages
+	var/list/backup_spoken_languages
+	var/backup_selected_language
 
 /obj/shapeshift_holder/Initialize(mapload,obj/effect/proc_holder/spell/targeted/shapeshift/_source, mob/living/caster)
 	. = ..()
@@ -122,8 +126,51 @@
 	if(!istype(shape))
 		CRASH("shapeshift holder created outside mob/living")
 	stored = caster
+
+	// Backup language data BEFORE moving the caster anywhere
+	var/datum/language_holder/original_holder = stored.get_language_holder()
+	if(original_holder)
+		backup_understood_languages = list()
+		backup_spoken_languages = list()
+
+		// Deep copy understood languages with their sources
+		for(var/language in original_holder.understood_languages)
+			var/list/sources = original_holder.understood_languages[language]
+			backup_understood_languages[language] = sources.Copy()
+
+		// Deep copy spoken languages with their sources
+		for(var/language in original_holder.spoken_languages)
+			var/list/sources = original_holder.spoken_languages[language]
+			backup_spoken_languages[language] = sources.Copy()
+
+		backup_selected_language = original_holder.selected_language
+
+		backup_selected_language = original_holder.selected_language
+	to_chat(stored, "DEBUG: Backed up [backup_understood_languages?.len || "NULL"] understood, [backup_spoken_languages?.len || "NULL"] spoken languages")
+
+
 	if(stored.mind)
 		stored.mind.transfer_to(shape)
+
+		// Restore languages AFTER mind transfer (update_atom_languages() will have cleared LANGUAGE_ATOM sources)
+		var/datum/language_holder/mind_holder = shape.mind?.get_language_holder()
+		if(mind_holder && backup_understood_languages && backup_spoken_languages)
+			// Restore all understood languages
+			for(var/language in backup_understood_languages)
+				var/list/sources = backup_understood_languages[language]
+				for(var/source_type in sources)
+					mind_holder.grant_language(language, TRUE, FALSE, source_type)
+
+			// Restore all spoken languages
+			for(var/language in backup_spoken_languages)
+				var/list/sources = backup_spoken_languages[language]
+				for(var/source_type in sources)
+					mind_holder.grant_language(language, FALSE, TRUE, source_type)
+
+			// Restore selected language if possible
+			if(backup_selected_language && mind_holder.can_speak_language(backup_selected_language))
+				mind_holder.selected_language = backup_selected_language
+
 	stored.forceMove(src)
 	stored.notransform = TRUE
 	if(source.convert_damage)
@@ -184,6 +231,39 @@
 	stored.notransform = FALSE
 	if(shape.mind)
 		shape.mind.transfer_to(stored)
+
+		// Restore languages to the carbon AFTER mind transfer back
+		var/datum/language_holder/restored_holder = stored.get_language_holder()
+		if(restored_holder && backup_understood_languages && backup_spoken_languages)
+			to_chat(stored, "DEBUG: About to restore languages. Clearing existing languages first.")
+
+			// Clear all existing languages
+			restored_holder.remove_all_languages()
+
+			// Restore all understood languages with their original sources
+			for(var/language_type in backup_understood_languages)
+				var/list/sources = backup_understood_languages[language_type]
+				to_chat(stored, "DEBUG: Restoring understood [language_type] with [sources.len] sources")
+				for(var/source_type in sources)
+					restored_holder.grant_language(language_type, TRUE, FALSE, source_type)
+
+			// Restore all spoken languages with their original sources
+			for(var/language_type in backup_spoken_languages)
+				var/list/sources = backup_spoken_languages[language_type]
+				to_chat(stored, "DEBUG: Restoring spoken [language_type] with [sources.len] sources")
+				for(var/source_type in sources)
+					restored_holder.grant_language(language_type, FALSE, TRUE, source_type)
+
+			// Restore selected language
+			if(backup_selected_language)
+				if(restored_holder.can_speak_language(backup_selected_language))
+					restored_holder.selected_language = backup_selected_language
+					to_chat(stored, "DEBUG: Restored selected language: [backup_selected_language]")
+				else
+					to_chat(stored, "DEBUG: Could not restore selected language [backup_selected_language] - not speakable")
+
+			to_chat(stored, "DEBUG: Language restoration complete. Final counts: [restored_holder.understood_languages.len] understood, [restored_holder.spoken_languages.len] spoken")
+
 	if(death)
 		stored.death()
 	else if(source.convert_damage)
@@ -192,19 +272,8 @@
 		var/dam_percentage = ((shape.health / shape.maxHealth)) // getting percentage of your current hp compared to max HP in shape form
 		var/percent_carbon = (stored.maxHealth * dam_percentage) //this will get the HP remaining left you have in carbon form at base
 		var/gross_damage = (stored.maxHealth - percent_carbon) //This will give you the relative percentage damage you'd take once transforming back
-/* EXAMPLE CALCULATION
-dama_percentage = ( 1 (current HP) / 100 (max hp) ) = 0.002
-percent_carbon = 100 * 0.002 = 0.2
-gross_damage = 100 - 0.2 = 99.75
-
-Result: you take at least 90 damage when you trasnform back
-*/
 		stored.apply_damage(gross_damage, source.convert_damage_type, forced = TRUE, wound_bonus=CANT_WOUND)
-
 //END OF TFN MODIFIED STUFF
-
-//	if(source.convert_damage)
-//		stored.blood_volume = shape.blood_volume;
 
 	// This guard is important because restore() can also be called on COMSIG_QDELETING for shape, as well as on death.
 	// This can happen in, for example, [/proc/wabbajack] where the mob hit is qdel'd.
