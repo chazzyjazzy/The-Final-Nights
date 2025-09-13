@@ -62,7 +62,6 @@
 	//clear confusion and dizziness from head trauma
 	owner.set_confusion(0)
 	owner.dizziness = 0
-	owner.eye_blurry = 0
 	owner.update_eye_blur()
 
 	//miscellaneous organ damage healing
