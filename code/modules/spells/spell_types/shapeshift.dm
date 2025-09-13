@@ -243,6 +243,7 @@
 dama_percentage = ( 1 (current HP) / 100 (max hp) ) = 0.002
 percent_carbon = 100 * 0.002 = 0.2
 gross_damage = 100 - 0.2 = 99.75
+
 Result: you take at least 90 damage when you trasnform back
 */
 		stored.apply_damage(gross_damage, source.convert_damage_type, forced = TRUE, wound_bonus=CANT_WOUND)
