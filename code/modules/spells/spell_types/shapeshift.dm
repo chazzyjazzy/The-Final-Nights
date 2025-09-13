@@ -127,47 +127,32 @@
 		CRASH("shapeshift holder created outside mob/living")
 	stored = caster
 
-	// Backup language data BEFORE moving the caster anywhere
-	var/datum/language_holder/original_holder = stored.get_language_holder()
+	// store language data
+	var/datum/language_holder/original_holder = stored.get_language_holder() //get_language_holder defaults to the mind language holder rather than the atom's
 	if(original_holder)
 		backup_understood_languages = list()
 		backup_spoken_languages = list()
 
-		// Deep copy understood languages with their sources
 		for(var/language in original_holder.understood_languages)
-			var/list/sources = original_holder.understood_languages[language]
-			backup_understood_languages[language] = sources.Copy()
+			backup_understood_languages += language
 
-		// Deep copy spoken languages with their sources
 		for(var/language in original_holder.spoken_languages)
-			var/list/sources = original_holder.spoken_languages[language]
-			backup_spoken_languages[language] = sources.Copy()
+			backup_spoken_languages += language
 
 		backup_selected_language = original_holder.selected_language
-
-		backup_selected_language = original_holder.selected_language
-	to_chat(stored, "DEBUG: Backed up [backup_understood_languages?.len || "NULL"] understood, [backup_spoken_languages?.len || "NULL"] spoken languages")
-
 
 	if(stored.mind)
 		stored.mind.transfer_to(shape)
 
-		// Restore languages AFTER mind transfer (update_atom_languages() will have cleared LANGUAGE_ATOM sources)
+		// Restore languages AFTER mind transfer (update_atom_languages() will have cleared all languages from the mind since it draws from the atom's language holder)
 		var/datum/language_holder/mind_holder = shape.mind?.get_language_holder()
 		if(mind_holder && backup_understood_languages && backup_spoken_languages)
-			// Restore all understood languages
 			for(var/language in backup_understood_languages)
-				var/list/sources = backup_understood_languages[language]
-				for(var/source_type in sources)
-					mind_holder.grant_language(language, TRUE, FALSE, source_type)
+				mind_holder.grant_language(language, TRUE, FALSE)
 
-			// Restore all spoken languages
 			for(var/language in backup_spoken_languages)
-				var/list/sources = backup_spoken_languages[language]
-				for(var/source_type in sources)
-					mind_holder.grant_language(language, FALSE, TRUE, source_type)
+				mind_holder.grant_language(language, FALSE, TRUE)
 
-			// Restore selected language if possible
 			if(backup_selected_language && mind_holder.can_speak_language(backup_selected_language))
 				mind_holder.selected_language = backup_selected_language
 
@@ -232,37 +217,19 @@
 	if(shape.mind)
 		shape.mind.transfer_to(stored)
 
-		// Restore languages to the carbon AFTER mind transfer back
-		var/datum/language_holder/restored_holder = stored.get_language_holder()
+		// transfer_to calls update_atom_languages(), and the atom language holder doesn't store our languages from quirks, so restore from backup list created in Initialize()
+		var/datum/language_holder/restored_holder = stored.get_language_holder() //defaults to the mind language holder, if it exists
 		if(restored_holder && backup_understood_languages && backup_spoken_languages)
-			to_chat(stored, "DEBUG: About to restore languages. Clearing existing languages first.")
-
-			// Clear all existing languages
 			restored_holder.remove_all_languages()
 
-			// Restore all understood languages with their original sources
 			for(var/language_type in backup_understood_languages)
-				var/list/sources = backup_understood_languages[language_type]
-				to_chat(stored, "DEBUG: Restoring understood [language_type] with [sources.len] sources")
-				for(var/source_type in sources)
-					restored_holder.grant_language(language_type, TRUE, FALSE, source_type)
+				restored_holder.grant_language(language_type, TRUE, FALSE)
 
-			// Restore all spoken languages with their original sources
 			for(var/language_type in backup_spoken_languages)
-				var/list/sources = backup_spoken_languages[language_type]
-				to_chat(stored, "DEBUG: Restoring spoken [language_type] with [sources.len] sources")
-				for(var/source_type in sources)
-					restored_holder.grant_language(language_type, FALSE, TRUE, source_type)
+				restored_holder.grant_language(language_type, FALSE, TRUE)
 
-			// Restore selected language
 			if(backup_selected_language)
-				if(restored_holder.can_speak_language(backup_selected_language))
-					restored_holder.selected_language = backup_selected_language
-					to_chat(stored, "DEBUG: Restored selected language: [backup_selected_language]")
-				else
-					to_chat(stored, "DEBUG: Could not restore selected language [backup_selected_language] - not speakable")
-
-			to_chat(stored, "DEBUG: Language restoration complete. Final counts: [restored_holder.understood_languages.len] understood, [restored_holder.spoken_languages.len] spoken")
+				restored_holder.selected_language = backup_selected_language
 
 	if(death)
 		stored.death()
