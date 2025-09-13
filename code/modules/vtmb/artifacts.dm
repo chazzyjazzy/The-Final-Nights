@@ -38,7 +38,7 @@
 
 /obj/item/vtm_artifact/proc/get_current_holder()
 
-	// Check if we're in a backpack being worn by someone
+	// artifacts only work if in a backpack
 	if(istype(loc, /obj/item/storage/backpack))
 		var/obj/item/storage/backpack/backpack = loc
 		if(ismob(backpack.loc))
@@ -50,11 +50,9 @@
 	if(owner == new_owner)
 		return
 
-	// Remove from old owner
 	if(owner)
 		remove_powers()
 
-	// Set new owner
 	owner = new_owner
 	update_owned_amount(1)
 	get_powers()
