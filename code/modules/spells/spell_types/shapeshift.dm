@@ -160,7 +160,6 @@
 				mind_holder.selected_language = backup_selected_language
 		//TFN EDIT ADDITION START - Fixes Simplemob Transformations Losing Languages
 
-
 	stored.forceMove(src)
 	stored.notransform = TRUE
 	if(source.convert_damage)
