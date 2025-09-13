@@ -127,6 +127,7 @@
 		CRASH("shapeshift holder created outside mob/living")
 	stored = caster
 
+	//TFN EDIT ADDITION START - Fixes Simplemob Transformations Losing Languages
 	// store language data
 	var/datum/language_holder/original_holder = stored.get_language_holder() //get_language_holder defaults to the mind language holder rather than the atom's
 	if(original_holder)
@@ -140,10 +141,12 @@
 			backup_spoken_languages += language
 
 		backup_selected_language = original_holder.selected_language
+	//TFN EDIT ADDITION START - Fixes Simplemob Transformations Losing Languages
 
 	if(stored.mind)
 		stored.mind.transfer_to(shape)
 
+		//TFN EDIT ADDITION START - Fixes Simplemob Transformations Losing Languages
 		// Bring stored languages after transfer_to (transfer_to calls update_atom_languages() which will have cleared all languages from the mind since it draws from the atom's language holder)
 		var/datum/language_holder/mind_holder = shape.mind?.get_language_holder()
 		if(mind_holder && backup_understood_languages && backup_spoken_languages)
@@ -155,6 +158,8 @@
 
 			if(backup_selected_language && mind_holder.can_speak_language(backup_selected_language))
 				mind_holder.selected_language = backup_selected_language
+		//TFN EDIT ADDITION START - Fixes Simplemob Transformations Losing Languages
+
 
 	stored.forceMove(src)
 	stored.notransform = TRUE
@@ -217,6 +222,7 @@
 	if(shape.mind)
 		shape.mind.transfer_to(stored)
 
+		//TFN EDIT ADDITION START - Fixes Simplemob Transformations Losing Languages
 		// transfer_to calls update_atom_languages(), and the atom language holder doesn't store our languages from quirks, so restore from backup list created in Initialize()
 		var/datum/language_holder/restored_holder = stored.get_language_holder() //defaults to the mind language holder, if it exists
 		if(restored_holder && backup_understood_languages && backup_spoken_languages)
@@ -230,6 +236,7 @@
 
 			if(backup_selected_language)
 				restored_holder.selected_language = backup_selected_language
+		//TFN EDIT ADDITION END - Fixes Simplemob Transformations Losing Languages
 
 	if(death)
 		stored.death()
