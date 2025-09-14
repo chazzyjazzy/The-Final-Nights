@@ -243,7 +243,7 @@
 	SIGNAL_HANDLER
 
 	if(prob(30))
-		attacker.emote("scream")
+		addtimer(CALLBACK(attacker, TYPE_PROC_REF(/mob, emote), "scream"), 1)
 		if(ishuman(attacker))
 			var/mob/living/carbon/human/H = attacker
 			H.electrocution_animation(40)
@@ -484,7 +484,7 @@
 		if(ishuman(attacker))
 			var/mob/living/carbon/human/H = attacker
 			H.electrocution_animation(60)
-		attacker.emote("me", EMOTE_VISIBLE, "is violently electrocuted!")
+		addtimer(CALLBACK(attacker, TYPE_PROC_REF(/mob, emote), "scream"), 1)
 		attacker.Stun(4 SECONDS)
 		attacker.electrocute_act(rand(10,20), owner, siemens_coeff = 1, flags = NONE)
 		var/datum/effect_system/spark_spread/spark_system = new
