@@ -1,3 +1,26 @@
+/obj/item/storage/backpack/Initialize()
+	. = ..()
+	RegisterSignal(src, COMSIG_ITEM_PICKUP, PROC_REF(on_backpack_pickup))
+	RegisterSignal(src, COMSIG_ITEM_DROPPED, PROC_REF(on_backpack_dropped))
+	RegisterSignal(src, COMSIG_MOVABLE_MOVED, PROC_REF(on_backpack_moved))
+
+/obj/item/storage/backpack/proc/on_backpack_pickup(datum/source, mob/user)
+	SIGNAL_HANDLER
+	notify_artifacts_of_change()
+
+/obj/item/storage/backpack/proc/on_backpack_dropped(datum/source, mob/user)
+	SIGNAL_HANDLER
+	addtimer(CALLBACK(src, PROC_REF(notify_artifacts_of_change)), 1)
+
+/obj/item/storage/backpack/proc/on_backpack_moved(datum/source, atom/old_loc, dir, forced)
+	SIGNAL_HANDLER
+	addtimer(CALLBACK(src, PROC_REF(notify_artifacts_of_change)), 1)
+
+/obj/item/storage/backpack/proc/notify_artifacts_of_change()
+	for(var/obj/item/vtm_artifact/artifact in contents)
+		if(artifact.identified)
+			artifact.check_ownership_change()
+
 /obj/item/vtm_artifact/Initialize()
 	. = ..()
 	RegisterSignal(src, COMSIG_ITEM_PICKUP, PROC_REF(on_pickup))
