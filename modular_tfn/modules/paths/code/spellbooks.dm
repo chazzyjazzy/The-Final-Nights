@@ -53,28 +53,27 @@
 			return
 		else
 			for(var/datum/action/discipline/D in user.actions)
-				if(D)
-					if(D.discipline)
-						//Checking if the discipline is the same as the path_type
-						if(D.discipline.type == path_type)
-							existing_path_discipline = D.discipline
-							is_knowing = TRUE
-							//Then we check if the level can be learned
-							if(path_level == existing_path_discipline.level)
-								// User already knows this level
-								to_chat(user, span_warning("You already know this book!"))
-								return
-							else if(path_level == existing_path_discipline.level + 1)
-								// The book's level is one higher than the user's current level
-								user.playsound_local(user, activate_sound, 50, FALSE)
-							else if (path_level > existing_path_discipline.level + 1)
-								// The book's level is too high for the user to learn
-								to_chat(user, span_warning("You must learn the previous book(s) first!"))
-								return
-							else if (path_level < existing_path_discipline.level)
-								// The book's level is lower than the user's current level
-								to_chat(user, span_warning("You already know a higher level of this path!"))
-								return
+				if(D.discipline)
+					//Checking if the discipline is the same as the path_type
+					if(D.discipline.type == path_type)
+						existing_path_discipline = D.discipline
+						is_knowing = TRUE
+						//Then we check if the level can be learned
+						if(path_level == existing_path_discipline.level)
+							// User already knows this level
+							to_chat(user, span_warning("You already know this book!"))
+							return
+						else if(path_level == existing_path_discipline.level + 1)
+							// The book's level is one higher than the user's current level
+							user.playsound_local(user, activate_sound, 50, FALSE)
+						else if (path_level > existing_path_discipline.level + 1)
+							// The book's level is too high for the user to learn
+							to_chat(user, span_warning("You must learn the previous book(s) first!"))
+							return
+						else if (path_level < existing_path_discipline.level)
+							// The book's level is lower than the user's current level
+							to_chat(user, span_warning("You already know a higher level of this path!"))
+							return
 			// If we reach here, the user does not know this path at all
 			if(path_level > 1 && !is_knowing)
 				to_chat(user, span_warning("You must know the first level of this path before you can learn higher levels!"))

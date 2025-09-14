@@ -1,6 +1,6 @@
 /datum/discipline/path
 	var/action_type = /datum/action/discipline/path
-	var/action_replaced = FALSE // Track if we've already done the replacement
+	var/action_replaced = FALSE
 	selectable = FALSE //cant buy it as a ghoul
 
 // Override post_gain to replace the action after the base system is done
