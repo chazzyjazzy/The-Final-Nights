@@ -45,7 +45,7 @@
 		var/obj/item/lighter/conjured/flame/candle/candle = candle_ref.resolve()
 		if(candle)
 			qdel(candle)
-	conjured_candles.Cut()
+	conjured_candles = list()
 
 //PALM OF FLAME - Level 2
 /datum/discipline_power/thaumaturgy/path/flames/two
