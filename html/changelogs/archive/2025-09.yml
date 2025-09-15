@@ -127,3 +127,41 @@
   darkincarnate:
   - rscadd: white heels, different shoes for endron
   - qol: tower employee timelock removed, garou added to cargo tech
+2025-09-12:
+  FalloutFalcon:
+  - bugfix: grill-able food can now be eaten
+  Knightscholar:
+  - rscadd: Added new emotes that can be done with *Say
+  - rscadd: Added hand kissing to *kiss
+  Kolibri-B:
+  - rscadd: Changes Temporis to be more TTRPG-accurate
+  - balance: Changes Temporis to be more TTRPG-accurate
+  - refactor: Refactors part of Temporis code
+  XeonMations:
+  - bugfix: Fixed paintings not saving at roundend
+  chazzyjazzy:
+  - bugfix: one player can no longer bring the global masquerade from 20 to 0 ending
+      the round.
+  - bugfix: the bloodhunt skull can once again fix breaches from previous rounds
+  - qol: toggleable disciplines now automatically untoggle when entering torpor
+  - bugfix: Blood of Potency is no longer virtually infinite
+  darkincarnate:
+  - rscdel: old endron lab
+  - map: relocated and expanded endron lab. x4 simplemob gimmick cells.
+2025-09-14:
+  SoreYew:
+  - refactor: Makes Sabbat Base an Interior Space
+  - qol: Adds to the Diablerist quirk text.
+  chazzyjazzy:
+  - balance: Reduces the effects of concussions as well as allows bloodheal to completely
+      cure the concussive effects.
+  - balance: The Sabbat Shovel no longer causes the emote "collapse" which extended
+      the stun from 3 seconds to about 8 seconds, an unintended effect.
+  - bugfix: Simplemob transformations no longer delete your character's languages
+2025-09-15:
+  SoreYew:
+  - map: Adds one ladder to the Malk haven
+  dwinters99 & Major00 (Paynt):
+  - rscadd: Eat Food merit
+  - balance: Vampires must now vomit to expel excess reagents if they do not have
+      the Eat Food merit.

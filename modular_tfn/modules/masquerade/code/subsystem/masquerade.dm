@@ -44,6 +44,8 @@ SUBSYSTEM_DEF(masquerade)
  * reason - Optional, the reason for the breach. For example,
  */
 /datum/controller/subsystem/masquerade/proc/masquerade_reinforce(atom/source, mob/living/player_breacher, reason)
+	if(!GLOB.canon_event)
+		return
 	. = FALSE
 	for(var/masquerade_breach as anything in masquerade_breachers)
 		var/breach_sources = masquerade_breach[2]
@@ -57,9 +59,9 @@ SUBSYSTEM_DEF(masquerade)
 			source_matches = (source == breach_sources)
 
 		if(source_matches)
-			if(!reason || (reason in masquerade_breach) || (reason == "Preferences"))
+			if(!reason || (reason in masquerade_breach) || (reason == MASQUERADE_REASON_PREFERENCES))
 				// Only require blood hunt skull for "Preferences" (round-persistent) breaches
-				if(breach_reasons == "Preferences" && !istype(source, /obj/item/blood_hunt))
+				if(breach_reasons == MASQUERADE_REASON_PREFERENCES && !istype(source, /obj/item/blood_hunt))
 					continue
 
 				masquerade_breachers -= list(masquerade_breach)
@@ -91,6 +93,8 @@ SUBSYSTEM_DEF(masquerade)
  * reason - The reason for the breach. For example,
  */
 /datum/controller/subsystem/masquerade/proc/masquerade_breach(atom/source, mob/living/player_breacher, reason)
+	if(!GLOB.canon_event)
+		return
 	var/pre_breach_score = player_breacher.masquerade_score
 	if(pre_breach_score == 0)
 		return
