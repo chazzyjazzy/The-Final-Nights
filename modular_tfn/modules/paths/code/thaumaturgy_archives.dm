@@ -8,17 +8,17 @@
 
 	prize_list = list(
 	// SPELLBOOKS
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level I)",	/obj/item/path_spellbook/lure_of_flames/level1,	90),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level II)",	/obj/item/path_spellbook/lure_of_flames/level2,	100),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level III)",	/obj/item/path_spellbook/lure_of_flames/level3,	110),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level IV)",	/obj/item/path_spellbook/lure_of_flames/level4,	120),
-	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level V)",	/obj/item/path_spellbook/lure_of_flames/level5,	130),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level I)",	/obj/item/path_spellbook/lure_of_flames/level1,	130),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level II)",	/obj/item/path_spellbook/lure_of_flames/level2,	180),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level III)",	/obj/item/path_spellbook/lure_of_flames/level3,	210),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level IV)",	/obj/item/path_spellbook/lure_of_flames/level4,	240),
+	new /datum/data/mining_equipment("Lure of Flames Spellbook (Level V)",	/obj/item/path_spellbook/lure_of_flames/level5,	270),
 
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level I)",	/obj/item/path_spellbook/levinbolt/level1,	90),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level II)",	/obj/item/path_spellbook/levinbolt/level2,	100),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level III)",	/obj/item/path_spellbook/levinbolt/level3,	110),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level IV)",	/obj/item/path_spellbook/levinbolt/level4,	120),
-	new /datum/data/mining_equipment("Levinbolt Spellbook (Level V)",	/obj/item/path_spellbook/levinbolt/level5, 130),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level I)",	/obj/item/path_spellbook/levinbolt/level1,	130),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level II)",	/obj/item/path_spellbook/levinbolt/level2,	180),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level III)",	/obj/item/path_spellbook/levinbolt/level3,	210),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level IV)",	/obj/item/path_spellbook/levinbolt/level4,	240),
+	new /datum/data/mining_equipment("Levinbolt Spellbook (Level V)",	/obj/item/path_spellbook/levinbolt/level5, 270),
 
 	// ARTIFACTS
 	// Lower tier artifacts

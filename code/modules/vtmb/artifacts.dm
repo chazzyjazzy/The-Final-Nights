@@ -173,7 +173,7 @@
 	true_name = "Weekapaug Thistle"
 	true_desc = "Increases combat defense."
 	icon_state = "w_thistle"
-	research_value = 20
+	research_value = 10
 
 /obj/item/vtm_artifact/weekapaug_thistle/get_powers()
 	..()
@@ -212,7 +212,7 @@
 	true_name = "Mummywrap Fetish"
 	true_desc = "Passive health regeneration."
 	icon_state = "m_fetish"
-	research_value = 15
+	research_value = 10
 
 	COOLDOWN_DECLARE(regen_cooldown)
 
@@ -255,7 +255,7 @@
 	true_name = "Galdjum"
 	true_desc = "Increases disciplines duration."
 	icon_state = "galdjum"
-	research_value = 15
+	research_value = 10
 
 /obj/item/vtm_artifact/galdjum/get_powers()
 	..()
@@ -305,14 +305,14 @@
 	true_name = "Heart of Eliza"
 	true_desc = "Melee damage boost."
 	icon_state = "h_eliza"
-	research_value = 50
+	research_value = 30
 
 /obj/item/vtm_artifact/heart_of_eliza/get_powers()
 	..()
 	var/mob/living/carbon/human/H = owner
 	if(H.dna)
 		// Base melee bonus of 0.5, with diminishing returns
-		var/melee_bonus = calculate_stacked_value(0.5)
+		var/melee_bonus = calculate_stacked_value(0.3)
 		H.dna.species.meleemod += melee_bonus
 
 		to_chat(owner, span_notice("Your melee damage increases by [melee_bonus] (you own [get_owned_amount()] hearts of eliza)."))
@@ -329,7 +329,7 @@
 	true_name = "Bloodstar"
 	true_desc = "Increases Bloodpower duration."
 	icon_state = "bloodstar"
-	research_value = 15
+	research_value = 10
 
 /obj/item/vtm_artifact/bloodstar/get_powers()
 	..()
@@ -371,7 +371,7 @@
 	true_name = "Key of Alamut"
 	true_desc = "Decreases incoming damage."
 	icon_state = "k_alamut"
-	research_value = 50
+	research_value = 30
 
 /obj/item/vtm_artifact/key_of_alamut/get_powers()
 	..()
@@ -408,7 +408,7 @@
 	true_desc = "Stores blood from every attack."
 	icon_state = "o_chalice"
 	var/stored_blood = 0
-	research_value = 50
+	research_value = 30
 
 /obj/item/vtm_artifact/odious_chalice/examine(mob/user)
 	. = ..()
@@ -472,7 +472,7 @@
 	icon_state = "bloodstone"
 	var/mob/living/carbon/human/bound_identifier // Who identified it first
 	var/datum/action/bloodstone_track/tracking_action
-	research_value = 50
+	research_value = 15
 
 
 /obj/item/vtm_artifact/bloodstone/identificate()

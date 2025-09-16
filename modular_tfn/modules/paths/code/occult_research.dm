@@ -2,9 +2,9 @@ SUBSYSTEM_DEF(occult_research)
 	name = "Occult Research"
 	flags = SS_BACKGROUND
 	wait = 60 SECONDS // How often to process research points
-	var/base_research_rate = 1.5 // Base points per tick
-	var/necromancy_bonus = 1
-	var/obtenebration_bonus = 1
+	var/base_research_rate = 0.5 // Base points per tick
+	var/necromancy_bonus = 0.5
+	var/obtenebration_bonus = 0.5
 	var/list/collected_blood = list()
 	COOLDOWN_DECLARE(research_notification_cooldown)
 
@@ -14,7 +14,7 @@ SUBSYSTEM_DEF(occult_research)
 			continue
 		if(H.stat >= HARD_CRIT)
 			continue
-		if(!HAS_TRAIT(H, TRAIT_THAUMATURGY_KNOWLEDGE) && !H.necromancy_knowledge)
+		if(!HAS_TRAIT(H, TRAIT_THAUMATURGY_KNOWLEDGE))
 			continue
 
 		process_research_points(H)

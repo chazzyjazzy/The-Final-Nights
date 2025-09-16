@@ -267,7 +267,7 @@
 			playsound(loc, 'code/modules/wod13/sounds/thaum.ogg', 50, FALSE)
 			// TFN ADDITION - Paths
 			if(ishuman(identifier))
-				identifier.research_points += 15
+				identifier.research_points += 5
 				to_chat(identifier, span_notice("You gain 15 research points for identifying the [VA.name]!"))
 			// TFN ADDITION - Paths
 			qdel(src)
