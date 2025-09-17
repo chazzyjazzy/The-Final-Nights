@@ -29,15 +29,16 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/one/activate()
 	. = ..()
-	owner.drop_all_held_items()
-	var/right_candle = new /obj/item/lighter/conjured/flame/candle(owner)
-	var/left_candle = new /obj/item/lighter/conjured/flame/candle(owner)
+	if(!.)
+		owner.drop_all_held_items()
+		var/right_candle = new /obj/item/lighter/conjured/flame/candle(owner)
+		var/left_candle = new /obj/item/lighter/conjured/flame/candle(owner)
 
-	owner.put_in_r_hand(right_candle)
-	owner.put_in_l_hand(left_candle)
+		owner.put_in_r_hand(right_candle)
+		owner.put_in_l_hand(left_candle)
 
-	conjured_candles += WEAKREF(right_candle)
-	conjured_candles += WEAKREF(left_candle)
+		conjured_candles += WEAKREF(right_candle)
+		conjured_candles += WEAKREF(left_candle)
 
 /datum/discipline_power/thaumaturgy/path/flames/one/deactivate()
 	. = ..()
@@ -68,16 +69,17 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/two/activate()
 	. = ..()
-	owner.drop_all_held_items()
+	if(!.)
+		owner.drop_all_held_items()
 
-	var/right_flame = new /obj/item/lighter/conjured/flame/palm_of_flame(owner)
-	var/left_flame = new /obj/item/lighter/conjured/flame/palm_of_flame(owner)
+		var/right_flame = new /obj/item/lighter/conjured/flame/palm_of_flame(owner)
+		var/left_flame = new /obj/item/lighter/conjured/flame/palm_of_flame(owner)
 
-	owner.put_in_r_hand(right_flame)
-	owner.put_in_l_hand(left_flame)
+		owner.put_in_r_hand(right_flame)
+		owner.put_in_l_hand(left_flame)
 
-	conjured_flames += WEAKREF(right_flame)
-	conjured_flames += WEAKREF(left_flame)
+		conjured_flames += WEAKREF(right_flame)
+		conjured_flames += WEAKREF(left_flame)
 
 /datum/discipline_power/thaumaturgy/path/flames/two/deactivate()
 	. = ..()
@@ -107,15 +109,16 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/three/activate(mob/living/target)
 	. = ..()
-	var/turf/start = get_turf(owner)
-	var/obj/projectile/flames/flamebolt/H = new(start)
-	H.firer = owner
-	H.damage = 20 + owner.thaum_damage_plus + success_count
-	H.preparePixelProjectile(target, start)
-	H.level = 3
-	H.fire(direct_target = target)
-	H.cruelty_multiplier = 2 // we dont want crits doing fucking 80 burn to vampires
-	to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
+	if(.)
+		var/turf/start = get_turf(owner)
+		var/obj/projectile/flames/flamebolt/H = new(start)
+		H.firer = owner
+		H.damage = 20 + owner.thaum_damage_plus + success_count
+		H.preparePixelProjectile(target, start)
+		H.level = 3
+		H.fire(direct_target = target)
+		H.cruelty_multiplier = 2 // we dont want crits doing fucking 80 burn to vampires
+		to_chat(target, span_danger("A bolt of searing flame flies toward you!"))
 
 //ENGULF - Level 4
 /datum/discipline_power/thaumaturgy/path/flames/four
@@ -137,17 +140,18 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/four/activate(mob/living/target)
 	. = ..()
-	if(!target)
-		return
+	if(!.)
+		if(!target)
+			return
 
-	var/damage_amount = 25 + owner.thaum_damage_plus + success_count
-	target.adjustFireLoss(damage_amount)
+		var/damage_amount = 25 + owner.thaum_damage_plus + success_count
+		target.adjustFireLoss(damage_amount)
 
-	target.adjust_fire_stacks(4 + success_count)
-	target.IgniteMob()
+		target.adjust_fire_stacks(4 + success_count)
+		target.IgniteMob()
 
-	to_chat(target, span_userdanger("You are engulfed in supernatural flames!"))
-	playsound(get_turf(target), effect_sound, 100, TRUE)
+		to_chat(target, span_userdanger("You are engulfed in supernatural flames!"))
+		playsound(get_turf(target), effect_sound, 100, TRUE)
 
 //INFERNO - Level 5
 /datum/discipline_power/thaumaturgy/path/flames/five
@@ -169,65 +173,66 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/five/activate(atom/target)
 	. = ..()
+	if(!.)
 
-	to_chat(owner, span_notice("You begin channeling a devastating firestorm..."))
+		to_chat(owner, span_notice("You begin channeling a devastating firestorm..."))
 
-	var/turf/center = get_turf(target)
+		var/turf/center = get_turf(target)
 
-	// minimum one tile away from the center, maximum 3 tiles away from the center
-	var/area_range = clamp(success_count, 1, 3)
+		// minimum one tile away from the center, maximum 3 tiles away from the center
+		var/area_range = clamp(success_count, 1, 3)
 
-	// create the inferno warning on all affected turfs in area_range from center
-	var/list/affected_turfs = list()
-	for(var/turf/T in range(area_range, center))
-		affected_turfs += T
-		new /obj/effect/temp_visual/inferno_warning(T)
-	owner.visible_message(span_warning("Sparks begin to fly and the temperature begins to climb... what could be happening?!"))
+		// create the inferno warning on all affected turfs in area_range from center
+		var/list/affected_turfs = list()
+		for(var/turf/T in range(area_range, center))
+			affected_turfs += T
+			new /obj/effect/temp_visual/inferno_warning(T)
+		owner.visible_message(span_warning("Sparks begin to fly and the temperature begins to climb... what could be happening?!"))
 
-	if(!do_after(owner, 2 SECONDS))
-		to_chat(owner, span_warning("Your firestorm casting was interrupted!"))
-		for(var/turf/T in affected_turfs) // delete all inferno warnings if casting was interrupted
+		if(!do_after(owner, 2 SECONDS))
+			to_chat(owner, span_warning("Your firestorm casting was interrupted!"))
+			for(var/turf/T in affected_turfs) // delete all inferno warnings if casting was interrupted
+				for(var/obj/effect/temp_visual/inferno_warning/W in T)
+					qdel(W)
+			return
+
+		// damage dealt to those standing in the zone is based on successes and so are the fire stacks
+		var/base_damage = 20 + (success_count * 5) + owner.thaum_damage_plus
+		var/fire_stacks_amount = 3 + success_count
+		var/ignite_chance = min(60 + (success_count * 10), 95) // 60% base, +10% per success, max 95%
+
+		// casting succeeded
+		for(var/turf/T in affected_turfs)
+			// remove inferno warning and insert the actual fire objects
 			for(var/obj/effect/temp_visual/inferno_warning/W in T)
 				qdel(W)
-		return
+			new /obj/effect/fire(T)
 
-	// damage dealt to those standing in the zone is based on successes and so are the fire stacks
-	var/base_damage = 20 + (success_count * 5) + owner.thaum_damage_plus
-	var/fire_stacks_amount = 3 + success_count
-	var/ignite_chance = min(60 + (success_count * 10), 95) // 60% base, +10% per success, max 95%
+			// Damage all mobs on each tile
+			for(var/mob/living/L in T)
+				if(L == owner) // Don't damage self - but caster still gets set on fire
+					continue
 
-	// casting succeeded
-	for(var/turf/T in affected_turfs)
-		// remove inferno warning and insert the actual fire objects
-		for(var/obj/effect/temp_visual/inferno_warning/W in T)
-			qdel(W)
-		new /obj/effect/fire(T)
+				L.adjustFireLoss(base_damage)
 
-		// Damage all mobs on each tile
-		for(var/mob/living/L in T)
-			if(L == owner) // Don't damage self - but caster still gets set on fire
-				continue
+				// Chance to ignite based on successes
+				if(prob(ignite_chance))
+					L.adjust_fire_stacks(fire_stacks_amount)
+					L.IgniteMob()
 
-			L.adjustFireLoss(base_damage)
+				to_chat(L, span_userdanger("You are caught in a supernatural firestorm!"))
 
-			// Chance to ignite based on successes
-			if(prob(ignite_chance))
-				L.adjust_fire_stacks(fire_stacks_amount)
-				L.IgniteMob()
+		playsound(center, effect_sound, 100, TRUE)
+		owner.visible_message(span_danger("[owner] unleashes a devastating firestorm!"))
 
-			to_chat(L, span_userdanger("You are caught in a supernatural firestorm!"))
-
-	playsound(center, effect_sound, 100, TRUE)
-	owner.visible_message(span_danger("[owner] unleashes a devastating firestorm!"))
-
-	// Show success-based feedback to caster
-	switch(success_count)
-		if(1)
-			to_chat(owner, span_bolddanger("Your firestorm burns with modest intensity."))
-		if(2)
-			to_chat(owner, span_bolddanger("Your firestorm rages with considerable power."))
-		if(3 to INFINITY)
-			to_chat(owner, span_bolddanger("Your firestorm burns with devastating supernatural fury!"))
+		// Show success-based feedback to caster
+		switch(success_count)
+			if(1)
+				to_chat(owner, span_bolddanger("Your firestorm burns with modest intensity."))
+			if(2)
+				to_chat(owner, span_bolddanger("Your firestorm rages with considerable power."))
+			if(3 to INFINITY)
+				to_chat(owner, span_bolddanger("Your firestorm burns with devastating supernatural fury!"))
 
 // Warning overlay object
 /obj/effect/temp_visual/inferno_warning
