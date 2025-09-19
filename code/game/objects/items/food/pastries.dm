@@ -778,7 +778,6 @@
 		for(var/atom/movable/part in parts_list)
 			qdel(part)
 	update_icon()
-	return
 
 /obj/item/food/pancakes/update_icon()
 	. = ..()
