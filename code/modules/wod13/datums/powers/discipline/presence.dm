@@ -82,11 +82,14 @@
 	multi_activate = FALSE
 	cooldown_length = 15 SECONDS
 	duration_length = 5 SECONDS
+	vitae_cost = 1
 	var/successes = 0
 	var/list/affected_targets = list()
 
 /datum/discipline_power/presence/awe/pre_activation_checks()
 	.=..()
+
+	//in place of charisma + performance
 	successes = SSroll.storyteller_roll(owner.get_total_social(), difficulty = 7, mobs_to_show_output = owner, numerical = TRUE)
 	if(successes > 0)
 		return TRUE
@@ -143,12 +146,15 @@
 	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
 	duration_length = 5 SECONDS
+	vitae_cost = 1 //no mention of literally any cost for using this
 	var/successes = 0
+
 
 /datum/discipline_power/presence/dread_gaze/pre_activation_checks(mob/living/target)
 	if(!presence_hearing_check(owner, target))
 		return FALSE
 
+	//in place of charisma + intimidation, difficulty equal to the victims wits + courage
 	successes = presence_check(owner, target)
 	if(successes > 0)
 		return TRUE
@@ -186,12 +192,14 @@
 	multi_activate = TRUE
 	cooldown_length = 3 MINUTES
 	duration_length = 5 SECONDS
+	vitae_cost = 1
 	var/successes = 0
 
 /datum/discipline_power/presence/entrancement/pre_activation_checks(mob/living/target)
 	if(!presence_hearing_check(owner, target))
 		return FALSE
 
+	//in place of appearance + empathy
 	successes = presence_check(owner, target)
 	if(successes > 0)
 		return TRUE
@@ -227,6 +235,7 @@
 	multi_activate = TRUE
 	cooldown_length = 20 MINUTES
 	duration_length = 5 SECONDS
+	vitae_cost = 1
 	var/successes = 0
 	var/mob/living/carbon/human/summon_target
 
@@ -244,6 +253,7 @@
 		to_chat(owner, span_warning("You cannot sense anyone by that name."))
 		return FALSE
 
+	//in place of charisma + subterfuge
 	successes = presence_check(owner, summon_target, 7)
 	if(successes > 0)
 		return TRUE
@@ -291,6 +301,7 @@
 	multi_activate = TRUE
 	cooldown_length = 12 MINUTES
 	duration_length = 3 MINUTES
+	vitae_cost = 1 //'but she must spend a willpower point' placeholder
 	var/list/affected_targets = list()
 
 /datum/discipline_power/presence/majesty/pre_activation_checks(mob/living/target)
@@ -299,13 +310,12 @@
 /datum/discipline_power/presence/majesty/activate(mob/living/carbon/human/target)
 	. = ..()
 	affected_targets = list()
-	var/owner_social = owner.get_total_social()
-
 	for(var/mob/living/carbon/human/hearer in get_hearers_in_view(range, owner))
 		if(hearer == owner)
 			continue
 
-		var/hearer_successes = SSroll.storyteller_roll(hearer.get_total_social(), difficulty = owner_social, mobs_to_show_output = owner, numerical = TRUE)
+		//'the victim must make a courage roll with a difficulty equal to the caster's charisma + intimidation to a maximum of 10' this is in place of that
+		var/hearer_successes = SSroll.storyteller_roll(hearer.get_total_social(), difficulty = owner.get_total_social(), mobs_to_show_output = hearer, numerical = TRUE)
 		hearer_successes = max(0, hearer_successes) // Ensure non-negative
 
 		apply_presence_overlay(hearer)

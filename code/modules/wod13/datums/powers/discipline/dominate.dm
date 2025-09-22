@@ -11,8 +11,8 @@
 /datum/discipline/dominate/post_gain()
 	. = ..()
 	if(level >= 5)
-		var/obj/effect/proc_holder/spell/voice_of_god/voice_of_domination = new(owner)
-		owner.mind.AddSpell(voice_of_domination)
+		//var/obj/effect/proc_holder/spell/voice_of_god/voice_of_domination = new(owner)
+		//owner.mind.AddSpell(voice_of_domination)
 		RegisterSignal(owner, COMSIG_MOB_EMOTE, PROC_REF(on_snap))
 
 /datum/discipline/dominate/proc/on_snap(atom/source, datum/emote/emote_args)
@@ -91,6 +91,8 @@
 		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
 		return FALSE
 
+	// ATTENTION : This rolling system is not lore accurate. According to Vampire v20, all Dominate powers are rolled the attacker's stats using the defenders current willpower points as a difficulty.
+	// This system serves a placeholder until satisfactory mechanics can be made for willpower. If we did not have this system, the max difficulty for all dominate attempts would be 5 (target.get_total_mentality())
 	mypower = SSroll.storyteller_roll(owner.get_total_social(), difficulty = base_difficulty, mobs_to_show_output = owner, numerical = TRUE)
 	theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = TRUE)
 
@@ -173,6 +175,7 @@
 		to_chat(owner, span_warning("Commands must be only ONE word!"))
 		return FALSE
 
+	// in place of manipulation + intimidation with the difficulty being the victims current willpower
 	if(dominate_check(owner, target, base_difficulty = 4))
 		return TRUE
 
@@ -221,6 +224,8 @@
 		dominate_succeeded = TRUE
 		successes_rolled = 5
 		return TRUE
+
+	// in place of manipulation + leadership with the difficulty being the victims current willpower
 
 	var/domination_result = dominate_check(owner, target, base_difficulty = 5)
 	if(domination_result > 0)
@@ -337,6 +342,7 @@
 		to_chat(owner, span_warning("You do not have enough blood to cast Dominate!"))
 		return FALSE
 
+	// in place of wits + subterfuge with the difficulty being the victims current willpower
 	if(dominate_check(owner, target, base_difficulty = 6))
 		return TRUE
 
@@ -388,6 +394,7 @@
 	if(HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
 		return TRUE
 
+	// in place of charisma + leadership with the difficulty being the victims current willpower
 	domination_succeeded = dominate_check(owner, target, base_difficulty = 6)
 	if(!domination_succeeded)
 		do_cooldown(cooldown_length)
@@ -444,6 +451,7 @@
 		to_chat(owner, span_warning("You do not have enough blood to cast Dominate!"))
 		return FALSE
 
+	// in place of charisma + intimidation with the difficulty being the victims current willpower
 	domination_succeeded = dominate_check(owner, target, base_difficulty = 7)
 	if(!domination_succeeded)
 		to_chat(owner, span_warning("[target] has resisted your domination!"))
@@ -458,7 +466,6 @@
 	target.dir = get_dir(target, owner)
 	to_chat(target, span_danger("Your body freezes as an overwhelming presence invades your mind..."))
 	to_chat(owner, span_warning("You begin weaving your consciousness into [target]'s mind..."))
-	owner.say("Submit to my will...")
 
 	if(!immobilize_target(target, 20 SECONDS))
 		to_chat(owner, span_warning("Your concentration was broken! The possession preparation failed."))
@@ -548,10 +555,6 @@
 			to_chat(owner, span_warning("Your prepared target is no longer viable for possession."))
 		Remove(owner)
 		qdel(src)
-		return
-
-	if(get_dist(owner, prepared_target) > source_power.range)
-		to_chat(owner, span_warning("[prepared_target] is too far away to possess."))
 		return
 
 	source_power.active_possession = new /datum/possession_controller(owner, prepared_target, source_power)
