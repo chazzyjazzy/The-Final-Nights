@@ -16,6 +16,7 @@
 	activate_sound = 'code/modules/wod13/sounds/presence_activate.ogg'
 	deactivate_sound = 'code/modules/wod13/sounds/presence_deactivate.ogg'
 
+//lets not have people be able to cast this through walls
 /datum/discipline_power/presence/proc/presence_hearing_check(mob/living/carbon/human/owner, mob/living/target)
 	var/list/hearers = get_hearers_in_view(8, owner)
 	if(!(target in hearers))
@@ -32,18 +33,22 @@
 		to_chat(owner, span_warning("A presence attempt has botched against this person and they may no longer have Presence used on them for the rest of the night."))
 		return 0
 
+	//is the difficulty pre-defined? if not, its probably their total mentality.
 	var/theirpower = difficulty || target.get_total_mentality()
 
+	//with most attribute rolls, social is a placeholder
 	var/successes = SSroll.storyteller_roll(owner.get_total_social(), difficulty = theirpower, mobs_to_show_output = owner, numerical = TRUE)
 
 	if((owner.generation - 3) >= target.generation)
 		return 0
 
+	//botch
 	if(successes < 0)
 		ADD_TRAIT(target, TRAIT_PRESENCE_IMMUNE, TRAIT_GENERIC)
 		to_chat(owner, span_warning("A presence attempt has botched against this person and they may no longer have Presence used on them for the rest of the night."))
 		return 0
 
+	//number of successes is rather critical for the efficacy of the power
 	return successes
 
 /datum/discipline_power/presence/proc/apply_presence_overlay(mob/living/carbon/target)
@@ -54,6 +59,7 @@
 	target.apply_overlay(MUTATIONS_LAYER)
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/presence_activate.ogg'))
 
+//used in awe - v20 book states that awe affects the targets of lowest willpower first if affecting multiple targets.
 /datum/discipline_power/presence/proc/sort_targets_by_mentality(list/targets)
 	var/list/sorted = list()
 	for(var/mob/living/carbon/target in targets)
@@ -71,6 +77,7 @@
 			sorted += target
 	return sorted
 
+//onscreen alert
 /atom/movable/screen/alert/entrancement
 	name = "Entranced"
 	desc = "You are completely entranced and compelled to serve."
@@ -115,7 +122,7 @@
 		to_chat(owner, span_warning("There is no one around to be awed by your presence."))
 		return
 
-	var/list/target_counts = list(1, 2, 6, 20, length(potential_targets))
+	var/list/target_counts = list(1, 2, 6, 20, length(potential_targets)) //v20 core rulebook presence -> awe
 	var/targets_to_affect = target_counts[clamp(successes, 1, 5)]
 
 	potential_targets = sort_targets_by_mentality(potential_targets)
@@ -151,7 +158,7 @@
 	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
 	duration_length = 5 SECONDS
-	vitae_cost = 1 //no mention of literally any cost for using this
+	vitae_cost = 1 //no mention of literally any cost for using this in v20
 	var/successes = 0
 
 
@@ -171,13 +178,14 @@
 	. = ..()
 	apply_presence_overlay(target)
 
-	if(successes <= 3)
+	if(successes <= 3) // already checked for above 0 in pre_activation
 		to_chat(target, span_userdanger("You are consumed with terror toward [owner]!"))
 		to_chat(owner, span_warning("You've struck terror into [target]'s heart with your dreadful gaze!"))
 	else
 		to_chat(target, span_userdanger("Overwhelming dread fills you! You must get away from [owner]!"))
 		to_chat(owner, span_warning("Your terrifying presence sends [target] fleeing in terror!"))
 
+		//v20's 'dread gaze' section states that with 3 or more successes targets will find themselves scratching at the walls or fleeing against their will because they are so terrified.
 		var/datum/cb = CALLBACK(target, TYPE_PROC_REF(/mob/living/carbon/human, step_away_caster), owner)
 		for(var/i in 1 to 30)
 			addtimer(cb, (i - 1) * target.total_multiplicative_slowdown())
@@ -195,7 +203,7 @@
 	target_type = TARGET_HUMAN
 	range = 7
 	multi_activate = TRUE
-	cooldown_length = 3 MINUTES
+	cooldown_length = 3 MINUTES //in reality this should be raised considering this is a 'one tap bloodbond' type ability? lmk in review i want to delete this comment
 	duration_length = 5 SECONDS
 	vitae_cost = 1
 	var/successes = 0
@@ -219,10 +227,11 @@
 		return
 	target.throw_alert("entrancement", /atom/movable/screen/alert/entrancement)
 	log_combat(owner, target, "Used Presence Entrancement")
+
 	apply_presence_overlay(target)
 	to_chat(target, span_hypnophrase("You find yourself becoming completely entraced by [owner]. You are now their willing servant."))
 	to_chat(target, span_info("You are now the willing servant of [owner]. You will seek to please them and fulfill their every desire, but this desire will fade soon."))
-	addtimer(CALLBACK(src, PROC_REF(end_entrancement), target), successes * 1 INGAME_HOURS)
+	addtimer(CALLBACK(src, PROC_REF(end_entrancement), target), successes * 1 INGAME_HOURS) // might be alot considering 5 successes is 5 ingame hours which is... most of a round.
 
 /datum/discipline_power/presence/entrancement/proc/end_entrancement(mob/living/carbon/human/target)
 	to_chat(target, span_hypnophrase("Your desire to fulfill [owner]'s every desire fades."))
@@ -240,7 +249,7 @@
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK
 	range = 7
 	multi_activate = TRUE
-	cooldown_length = 20 MINUTES
+	cooldown_length = 20 MINUTES //i can already see people using this ability to summon and kill upon arrival. this cooldown should help with that.
 	duration_length = 5 SECONDS
 	vitae_cost = 1
 	var/successes = 0
@@ -261,7 +270,8 @@
 		to_chat(owner, span_warning("You cannot sense anyone by that name."))
 		return FALSE
 
-	//in place of charisma + subterfuge
+	//in place of charisma + subterfuge -- this ability has a difficulty of 4 or 5 or something for people the summoner has met, and 8 for those they've only met briefly.
+	//i thought that was too low and the ability for the misuse of this disc caused me to raise it to 7 difficulty
 	successes = presence_check(owner, summon_target, 7)
 	if(successes > 0)
 		return TRUE
@@ -281,6 +291,7 @@
 	var/location_info = "[get_area_name(owner_turf)], X:[owner_turf.x] Y:[owner_turf.y] Z:[owner_turf.z]"
 	to_chat(summon_target, span_yellowteamradio("[owner] is summoning you to their location. [owner] is currently at [location_info]"))
 
+	//v20 presence -> 'summon' section for this flavortext
 	var/list/flavor_texts = list(
 		"You feel a faint pull towards [owner], approaching slowly and hesitantly.",
 		"You feel reluctantly compelled to seek out [owner], though obstacles easily deter you.",
@@ -324,7 +335,7 @@
 
 		//'the victim must make a courage roll with a difficulty equal to the caster's charisma + intimidation to a maximum of 10' this is in place of that
 		var/hearer_successes = SSroll.storyteller_roll(hearer.get_total_social(), difficulty = owner.get_total_social(), mobs_to_show_output = hearer, numerical = TRUE)
-		hearer_successes = max(0, hearer_successes) // Ensure non-negative
+		hearer_successes = max(0, hearer_successes)
 
 		apply_presence_overlay(hearer)
 		affected_targets[hearer] = hearer_successes

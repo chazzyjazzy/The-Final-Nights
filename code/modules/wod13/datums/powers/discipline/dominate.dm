@@ -1,4 +1,3 @@
-
 #define TRAIT_MESMERIZED "mesmerized"
 #define TRAIT_DOMINATE_IMMUNE "dominate_immune"
 
@@ -7,6 +6,7 @@
 	desc = "Suppresses will of your targets and forces them to obey you, if their will is not more powerful than yours."
 	icon_state = "dominate"
 	power_type = /datum/discipline_power/dominate
+
 
 /datum/discipline/dominate/post_gain()
 	. = ..()
@@ -17,6 +17,7 @@
 
 /datum/discipline/dominate/proc/on_snap(atom/source, datum/emote/emote_args)
 	SIGNAL_HANDLER
+
 	INVOKE_ASYNC(src, PROC_REF(handle_snap), source, emote_args)
 
 /datum/discipline/dominate/proc/handle_snap(atom/source, datum/emote/emote_args)
@@ -49,9 +50,11 @@
 				target.apply_status_effect(STATUS_EFFECT_AWE, owner)
 				to_chat(target, span_danger("HITHER"))
 
+
 /datum/discipline_power/dominate
 	name = "Dominate power name"
 	desc = "Dominate power description"
+
 	activate_sound = 'code/modules/wod13/sounds/dominate.ogg'
 	var/domination_succeeded = FALSE
 	var/mypower = 0
@@ -68,13 +71,15 @@
 	dominate_overlay.pixel_z = 2
 	dominate_target.overlays_standing[MUTATIONS_LAYER] = dominate_overlay
 	dominate_target.apply_overlay(MUTATIONS_LAYER)
+
+	//dominate compels the target to have their gaze absolutely entrapped by the dominator
 	dominate_target.face_atom(owner)
 	to_chat(dominate_target, span_danger("You find yourself completely entranced by the stare of [owner]. You can't bring yourself to look away, call for help, or even attempt resistance. Pray that someone comes to save you by dragging or pushing you away."))
 	owner.face_atom(dominate_target)
-	to_chat(dominate_target, span_info("If someone is using Dominate to compel you to do something you are personally uncomfortable with as a player, you are allowed to ignore it. Follow the spirit of the dominate - not just the letter!"))
 	addtimer(CALLBACK(dominate_target, TYPE_PROC_REF(/mob/living/carbon/human, post_dominate_checks), dominate_target), 2 SECONDS)
 	return TRUE
 
+//disallows casting dominate through walls
 /datum/discipline_power/dominate/proc/dominate_hearing_check(mob/living/carbon/human/owner, mob/living/target)
 	var/list/hearers = get_hearers_in_view(8, owner)
 	if(!(target in hearers))
@@ -83,36 +88,49 @@
 	to_chat(owner, span_info("[target] hears you clearly."))
 	return TRUE
 
+//dicerolling
 /datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/target, tiebreaker = FALSE, base_difficulty = 4)
 	if(!ishuman(target))
 		return FALSE
 
+	//someone has botched a dominate against this human
 	if(HAS_TRAIT(target, TRAIT_DOMINATE_IMMUNE))
 		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
 		return FALSE
 
-	// ATTENTION : This rolling system is not lore accurate. According to Vampire v20, all Dominate powers are rolled the attacker's stats using the defenders current willpower points as a difficulty.
+	// ATTENTION : This rolling system is not lore accurate. According to Vampire v20, all Dominate powers are rolled as the attacker's stats using the defenders current willpower as a difficulty.
 	// This system serves a placeholder until satisfactory mechanics can be made for willpower. If we did not have this system, the max difficulty for all dominate attempts would be 5 (target.get_total_mentality())
 	mypower = SSroll.storyteller_roll(owner.get_total_social(), difficulty = base_difficulty, mobs_to_show_output = owner, numerical = TRUE)
 	theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = TRUE)
 
+	//automatically succeed against my conditioned servant
 	var/mob/living/carbon/human/conditioner = target.conditioner?.resolve()
 	if(owner == conditioner)
 		return TRUE
 
+	//tremere have built-in safeguards to easily dominate their stone servitors
 	var/mob/living/carbon/human/human_target = target
 	if(human_target.clan?.name == CLAN_GARGOYLE)
 		theirpower -= 2
+
+	//wearing dark sunglasses makes it harder for dominators to capture the victim's gaze and raises difficulty -- v20 'Dominate' section titled 'Eye Contact'
+	if(human_target.glasses && istype(human_target.glasses, /obj/item/clothing/glasses/vampire/sun))
+		theirpower += 1
+
+	//if anyone else tries to dominate my conditioned servant its much harder for them but not for me
 	if(target.conditioned)
 		theirpower += 3
 
+	//i've botched so now this person is immune to dominate for the rest of the round
 	if(mypower < 0)
 		ADD_TRAIT(target, TRAIT_DOMINATE_IMMUNE, TRAIT_GENERIC)
 		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
 		return FALSE
 
+	//did we succeed or fail the contested roll
 	return (mypower > theirpower && owner.generation <= target.generation)
 
+//dominate involves capturing the victim's gaze, leaving them completely helpless as you hypnotically invade their mind.
 /datum/discipline_power/dominate/proc/immobilize_target(mob/living/target, duration = 5 SECONDS)
 	target.anchored = TRUE
 	ADD_TRAIT(target, TRAIT_IMMOBILIZED, TRAIT_GENERIC)
@@ -129,7 +147,8 @@
 	REMOVE_TRAIT(target, TRAIT_RESTRAINED, TRAIT_GENERIC)
 	target.anchored = FALSE
 
-/datum/discipline_power/dominate/proc/get_success_message(margin, target_name)
+//successes for dominate 1
+/datum/discipline_power/dominate/command/proc/get_success_message(margin, target_name)
 	switch(margin)
 		if(1)
 			return "mild vigor and short duration"
@@ -144,9 +163,11 @@
 		else
 			return "immediate and vigorous completion"
 
+//deprecated
 /datum/movespeed_modifier/dominate
 	multiplicative_slowdown = 5
 
+//status effects
 /atom/movable/screen/alert/mesmerize
 	name = "Mesmerized"
 	desc = "A hypnotic suggestion pulses through your mind."
@@ -157,13 +178,16 @@
 	desc = "Your mind has been broken and conditioned to obey."
 	icon_state = "hypnosis"
 
-// COMMAND
+//COMMAND
 /datum/discipline_power/dominate/command
 	name = "Command"
 	desc = "Speak one word and force others to obey."
+
 	level = 1
+
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_LIVING
+
 	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
 	duration_length = 3 SECONDS
@@ -174,14 +198,16 @@
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
 
-	to_chat(owner, span_info("Dominate 'Commands' may be only one word."))
 	custom_command = tgui_input_text(owner, "Dominate Command", "What is your command?", encode = FALSE)
 
-	if(!custom_command || !can_afford())
-		if(!can_afford())
-			to_chat(owner, span_warning("You do not have enough blood to cast Dominate!"))
+	if(!custom_command)
 		return FALSE
 
+	if(!can_afford())
+		to_chat(owner, span_warning("You do not have enough blood to cast Dominate!"))
+		return FALSE
+
+	//v20 Dominate 'Command' section
 	if(length(splittext(custom_command, " ")) > 1)
 		to_chat(owner, span_warning("Commands must be only ONE word!"))
 		return FALSE
@@ -199,6 +225,8 @@
 	to_chat(owner, span_warning("You've successfully dominated [target]'s mind!"))
 	log_combat(owner, target, "Dominated with Command: [custom_command]")
 	owner.say(custom_command)
+
+
 	to_chat(target, span_big("[custom_command]"))
 	var/last_margin = mypower - theirpower
 	var/vigor_text = get_success_message(last_margin, target.name)
@@ -209,13 +237,15 @@
 /datum/discipline_power/dominate/mesmerize
 	name = "Mesmerize"
 	desc = "Plant a hypnotic suggestion in a target's head that will repeatedly echo in their mind."
+
 	level = 2
+
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_LIVING
+
 	multi_activate = TRUE
-	cooldown_length = 15 SECONDS
+	cooldown_length = 30 SECONDS
 	range = 7
-	var/dominate_succeeded = FALSE
 	var/custom_message = ""
 	var/successes_rolled
 	var/mob/living/current_target
@@ -223,9 +253,12 @@
 	var/pulse_active = FALSE
 
 /datum/discipline_power/dominate/mesmerize/pre_activation_checks(mob/living/target)
-	if(!dominate_hearing_check(owner, target) || HAS_TRAIT(target, TRAIT_MESMERIZED))
-		if(HAS_TRAIT(target, TRAIT_MESMERIZED))
-			to_chat(owner, span_warning("[target] is already under a hypnotic suggestion!"))
+	if(!dominate_hearing_check(owner, target))
+		return FALSE
+
+	//you can't mesmerize someone already mesmerized
+	if(HAS_TRAIT(target, TRAIT_MESMERIZED))
+		to_chat(owner, span_warning("[target] is already under a hypnotic suggestion!"))
 		return FALSE
 
 	custom_message = tgui_input_text(owner, "Hypnotic Suggestion", "What hypnotic message will echo in their mind?", encode = FALSE)
@@ -233,41 +266,43 @@
 		return FALSE
 
 	if(HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
-		dominate_succeeded = TRUE
 		successes_rolled = 5
 		return TRUE
 
 	// in place of manipulation + leadership with the difficulty being the victims current willpower
-
 	var/domination_result = dominate_check(owner, target, base_difficulty = 5)
 	if(domination_result > 0)
-		dominate_succeeded = TRUE
 		successes_rolled = domination_result
 		return TRUE
 
-	dominate_succeeded = FALSE
 	successes_rolled = 0
 	do_cooldown(cooldown_length)
 	return FALSE
 
 /datum/discipline_power/dominate/mesmerize/activate(mob/living/target)
 	. = ..()
+	//if the target is attacked during the hypnotism, they are set free!
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!immobilize_target(target, 10 SECONDS))
 		to_chat(owner, span_warning("You have broken concentration with [target] while implanting your hypnosis!"))
 		return
 
 	target.throw_alert("mesmerize", /atom/movable/screen/alert/mesmerize)
+
+	//unregister the signal after the hypnotism is completed
 	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+
 	log_combat(owner, target, "Dominated with Mesmerize: [custom_message]")
 	to_chat(owner, span_warning("You've successfully planted a hypnotic suggestion in [target]'s mind!"))
-	to_chat(target, span_info("An urging, subconcious thought has entered your mind. Youre not sure how this happened - but it keeps pulsing, forcing your conscious thought to bend toward it."))
 	owner.say(custom_message)
+
+	to_chat(target, span_info("An urging, subconcious thought has entered your mind. Youre not sure how this happened - but it keeps pulsing, forcing your conscious thought to bend toward it."))
 	to_chat(target, span_hypnophrase(custom_message))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
-
 	current_target = target
 	ADD_TRAIT(target, TRAIT_MESMERIZED, TRAIT_GENERIC)
+
+	//allow the dominator to end the mesmerization pulses early if the target completes the directive, assuming its an objective rather than a hypnotic suggestion (which is allowed)
 	end_action = new(owner, src)
 	end_action.Grant(owner)
 	pulse_active = TRUE
@@ -276,6 +311,8 @@
 /datum/discipline_power/dominate/mesmerize/proc/start_mesmerization_cycle(mob/living/target)
 	if(!pulse_active)
 		return
+
+	//the message pangs in the victim's mind every couple minutes depending on successes rolled.
 	var/interval_minutes = max(1, 5 - successes_rolled)
 	var/interval_deciseconds = interval_minutes * 60 * 10
 	addtimer(CALLBACK(src, PROC_REF(mesmerization_pulse), target, interval_deciseconds, 1), interval_deciseconds)
@@ -290,6 +327,7 @@
 	to_chat(target, span_hypnophrase("<font size='4'><b>[custom_message]</b></font>"))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg', volume = 30))
 
+	//once its pulsed 5 times, end the mesmerization. we don't need people seeing 'shit yourself' every minute til roundend.
 	if(pulse_count >= 5)
 		REMOVE_TRAIT(target, TRAIT_MESMERIZED, TRAIT_GENERIC)
 		to_chat(target, span_notice("The hypnotic suggestion's pulsing fades, either taking root, or fading silently as your concious slowly returns to its natural state."))
@@ -299,6 +337,7 @@
 	if(pulse_active)
 		addtimer(CALLBACK(src, PROC_REF(mesmerization_pulse), target, interval, pulse_count + 1), interval)
 
+//for use in the /datum/action/vampire/end_mesmerization
 /datum/discipline_power/dominate/mesmerize/proc/force_end_mesmerization()
 	if(!current_target || !pulse_active)
 		return
@@ -342,7 +381,7 @@
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_LIVING
 	multi_activate = TRUE
-	cooldown_length = 15 SECONDS
+	cooldown_length = 1 MINUTES
 	duration_length = 3 SECONDS
 	range = 7
 	var/custom_memory = ""
@@ -372,19 +411,22 @@
 
 /datum/discipline_power/dominate/the_forgetful_mind/activate(mob/living/target)
 	. = ..()
+
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!immobilize_target(target, 10 SECONDS))
 		to_chat(owner, span_danger("Youve broken concentration with [target] and your Domination fails..."))
 		return
 	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+
 	log_combat(owner, target, "Dominated with The Forgetful Mind: [custom_memory]")
 	to_chat(owner, span_warning("You've successfully invaded [target]'s mind and altered their memories!"))
 	owner.say(custom_memory)
+
 	to_chat(target, span_hypnophrase(custom_memory))
-	//target.add_movespeed_modifier(/datum/movespeed_modifier/dominate)
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
 	SEND_SIGNAL(target, COMSIG_ALL_MASQUERADE_REINFORCE)
 
+	//find out how many successes for the flavortext memory_messages
 	var/last_margin = mypower - theirpower
 	var/list/memory_messages = list(
 		"A single memory is removed - and in its place is a void, as if you passed out. Echoes of the true memory may bubble up from time to time...",
@@ -401,19 +443,23 @@
 /datum/discipline_power/dominate/conditioning
 	name = "Conditioning"
 	desc = "Break a person's mind over time and bend them to your will."
+
 	level = 4
+
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_LIVING
+
 	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
 	duration_length = 6 SECONDS
 	range = 2
 
 /datum/discipline_power/dominate/conditioning/pre_activation_checks(mob/living/target)
+
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
 
-	if(HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
+	if (HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
 		return TRUE
 
 	// in place of charisma + leadership with the difficulty being the victims current willpower
@@ -424,6 +470,7 @@
 
 /datum/discipline_power/dominate/conditioning/activate(mob/living/target)
 	. = ..()
+
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!domination_succeeded)
 		if(!immobilize_target(target, 1 SECONDS))
@@ -431,12 +478,14 @@
 		to_chat(owner, span_warning("[target]'s mind has resisted your domination!"))
 		return
 	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+
 	target.anchored = TRUE
 	ADD_TRAIT(target, TRAIT_IMMOBILIZED, TRAIT_GENERIC)
 	ADD_TRAIT(target, TRAIT_RESTRAINED, TRAIT_GENERIC)
 	target.dir = get_dir(target, owner)
 	to_chat(target, span_danger("LOOK AT ME"))
-	owner.say("Look at me.")
+
+	owner.say("Look at me.") //v20 doesnt say that this is necessary. keeping it anyways so that people dont spam it on each other during meetings and every becomes each other's mindslave.
 
 	if(do_mob(owner, target, 20 SECONDS))
 		target.conditioned = TRUE
@@ -448,15 +497,19 @@
 
 	release_target(target)
 
-// POSSESSION (Condensed but maintaining all functionality)
+// POSSESSION
 /datum/discipline_power/dominate/possession
+	//problem with this that im going to be changing while its up for review -- what happens if a vampire posesses a mortal, then another vampire comes along to posess the same one? need to disallow that
 	name = "Possession"
 	desc = "Take full control of your target's mind and body."
+
 	level = 5
+
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_HUMAN
+
 	multi_activate = TRUE
-	cooldown_length = 15 SECONDS
+	cooldown_length = 5 MINUTES
 	range = 7
 	var/datum/possession_controller/active_possession
 
@@ -464,6 +517,7 @@
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
 
+	//v20 states that posession may not work on other Kindred as 'even the weakest Kindred mind can resist'. Extending this to Garou because players posessing Garous to insta-Crinos I think is griefing.
 	if(iskindred(target) || isgarou(target))
 		to_chat(owner, span_warning("You cannot possess [iskindred(target) ? "another kindred" : "a garou - the beast within resists"]!"))
 		return FALSE
@@ -490,9 +544,10 @@
 
 	target.dir = get_dir(target, owner)
 	to_chat(target, span_danger("Your body freezes as an overwhelming presence invades your mind..."))
+
 	to_chat(owner, span_warning("You begin weaving your consciousness into [target]'s mind..."))
 
-	if(!immobilize_target(target, 20 SECONDS))
+	if(!immobilize_target(target, 30 SECONDS))
 		to_chat(owner, span_warning("Your concentration was broken! The possession preparation failed."))
 		to_chat(target, span_notice("The oppressive mental presence suddenly withdraws."))
 		return
@@ -502,7 +557,7 @@
 	to_chat(target, span_danger("Your consciousness is violently displaced as another mind takes control!"))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
 
-// Keep existing possession controller and observer code as is since it's complex and working
+// datum to store variables during the body control
 /datum/possession_controller
 	var/mob/living/carbon/human/vampire_original
 	var/mob/living/carbon/human/mortal_body
@@ -521,6 +576,7 @@
 		qdel(src)
 		return
 
+	//move mortal_body into mortal_observer
 	mortal_observer = new(mortal_body, src)
 	mortal_observer.ckey = mortal_body.ckey
 	mortal_observer.name = mortal_body.real_name
@@ -528,12 +584,16 @@
 	if(mortal_body.mind)
 		mortal_observer.mind = mortal_body.mind
 
+	//move vampire into the mortal body
 	mortal_body.ckey = vampire_original.ckey
 	if(vampire_original.mind)
 		mortal_body.mind = vampire_original.mind
 
+	//vampire can exit the body whenever they like
 	var/datum/action/possession/end_possession/end_action = new(src)
 	end_action.Grant(mortal_body)
+
+	//vampire's body is helpless and vulnerable as they do this - in torpor.
 	vampire_original.SetUnconscious(999999)
 	vampire_original.visible_message(span_warning("[vampire_original]'s eyes roll back and they collapse into a catatonic state!"))
 	possession_active = TRUE
@@ -550,11 +610,13 @@
 	if(!forced)
 		to_chat(vampire_original, span_warning("You withdraw from [mortal_body.real_name]'s mind and return to your own body."))
 
+	//move the vampire back into the body
 	vampire_original.ckey = mortal_body.ckey
 	if(mortal_body.mind)
 		vampire_original.mind = mortal_body.mind
 	vampire_original.SetUnconscious(0)
 
+	//if they still exist lets move them back into their own body
 	if(mortal_observer?.ckey)
 		mortal_body.ckey = mortal_observer.ckey
 		if(mortal_observer.mind)
@@ -573,6 +635,7 @@
 	vampire_original.adjustBruteLoss(50)
 	vampire_original.visible_message(span_danger("[vampire_original] suddenly convulses violently and falls into what appears to be a coma!"))
 	to_chat(vampire_original, span_boldwarning("The psychic shock of your host's death sends you into torpor!"))
+	vampire_original.torpor()
 
 	if(mortal_observer)
 		to_chat(mortal_observer, span_boldwarning("Your body has died while you were displaced from it. You fade into oblivion..."))
@@ -592,6 +655,7 @@
 		source_power.active_possession = null
 	qdel(src)
 
+//the unfortunate mortal who was possessed
 /mob/living/possession_observer
 	name = "displaced consciousness"
 	real_name = "displaced consciousness"
@@ -640,6 +704,7 @@
 	controller.end_possession()
 	return TRUE
 
+//only in use in dementation 5 now
 /mob/living/carbon/human/proc/attack_myself_command()
 	if(!CheckFrenzyMove())
 		set_combat_mode(TRUE)
