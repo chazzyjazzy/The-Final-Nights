@@ -146,6 +146,18 @@
 /datum/movespeed_modifier/dominate
 	multiplicative_slowdown = 5
 
+/atom/movable/screen/alert/mesmerize
+	name = "Mesmerized"
+	desc = "A hypnotic suggestion pulses through your mind."
+	icon_state = "hypnosis"
+
+/atom/movable/screen/alert/conditioning
+	name = "Conditioned"
+	desc = "Your mind has been broken and conditioned to obey."
+	icon_state = "hypnosis"
+
+
+
 // COMMAND
 /datum/discipline_power/dominate/command
 	name = "Command"
@@ -186,6 +198,7 @@
 /datum/discipline_power/dominate/command/activate(mob/living/target)
 	. = ..()
 	to_chat(owner, span_warning("You've successfully dominated [target]'s mind!"))
+	log_combat(owner, target, "Dominated with Command: [custom_command]")
 	owner.say(custom_command)
 	to_chat(target, span_big("[custom_command]"))
 	var/last_margin = mypower - theirpower
@@ -244,6 +257,8 @@
 		to_chat(owner, span_warning("You have broken concentration with [target] while implanting your hypnosis!"))
 		return
 
+	target.throw_alert("mesmerize", /atom/movable/screen/alert/mesmerize)
+	log_combat(owner, target, "Dominated with Mesmerize: [custom_message]")
 	to_chat(owner, span_warning("You've successfully planted a hypnotic suggestion in [target]'s mind!"))
 	to_chat(target, span_info("An urging, subconcious thought has entered your mind. Youre not sure how this happened - but it keeps pulsing, forcing your conscious thought to bend toward it."))
 	owner.say(custom_message)
@@ -289,11 +304,13 @@
 	pulse_active = FALSE
 	REMOVE_TRAIT(current_target, TRAIT_MESMERIZED, TRAIT_GENERIC)
 	to_chat(current_target, span_notice("The hypnotic suggestion's pulsing fades, either taking root, or fading silently as your concious slowly returns to its natural state."))
+	current_target.clear_alert("mesmerize")
 	cleanup_mesmerization()
 
 /datum/discipline_power/dominate/mesmerize/proc/cleanup_mesmerization()
 	pulse_active = FALSE
 	current_target = null
+	current_target.clear_alert("mesmerize")
 	if(end_action)
 		end_action.Remove(owner)
 		end_action = null
@@ -356,6 +373,7 @@
 		to_chat(owner, span_danger("Youve broken concentration with [target] and your Domination fails..."))
 		return
 
+	log_combat(owner, target, "Dominated with The Forgetful Mind: [custom_memory]")
 	to_chat(owner, span_warning("You've successfully invaded [target]'s mind and altered their memories!"))
 	owner.say(custom_memory)
 	to_chat(target, span_hypnophrase(custom_memory))
@@ -419,6 +437,7 @@
 		target.conditioned = TRUE
 		target.conditioner = WEAKREF(owner)
 		target.additional_social -= 3
+		target.throw_alert("conditioning", /atom/movable/screen/alert/conditioning)
 		to_chat(target, span_hypnophrase("Your mind is filled with thoughts surrounding [owner]. Their every word and gesture carries immense weight to you."))
 		SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
 

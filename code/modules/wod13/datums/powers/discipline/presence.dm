@@ -71,6 +71,11 @@
 			sorted += target
 	return sorted
 
+/atom/movable/screen/alert/entrancement
+	name = "Entranced"
+	desc = "You are completely entranced and compelled to serve."
+	icon_state = "hypnosis"
+
 // AWE
 /datum/discipline_power/presence/awe
 	name = "Awe"
@@ -212,7 +217,8 @@
 	if(!.)
 		to_chat(owner, span_warning("[target] doesnt seem entranced by your words."))
 		return
-
+	target.throw_alert("entrancement", /atom/movable/screen/alert/entrancement)
+	log_combat(owner, target, "Used Presence Entrancement")
 	apply_presence_overlay(target)
 	to_chat(target, span_hypnophrase("You find yourself becoming completely entraced by [owner]. You are now their willing servant."))
 	to_chat(target, span_info("You are now the willing servant of [owner]. You will seek to please them and fulfill their every desire, but this desire will fade soon."))
@@ -220,6 +226,7 @@
 
 /datum/discipline_power/presence/entrancement/proc/end_entrancement(mob/living/carbon/human/target)
 	to_chat(target, span_hypnophrase("Your desire to fulfill [owner]'s every desire fades."))
+	target.clear_alert("entrancement")
 
 /datum/discipline_power/presence/entrancement/deactivate(mob/living/carbon/human/target)
 	. = ..()
