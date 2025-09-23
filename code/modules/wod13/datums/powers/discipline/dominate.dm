@@ -124,6 +124,7 @@
 	return FALSE
 
 /datum/discipline_power/dominate/proc/release_target(mob/living/target)
+	to_chat(target, span_danger("You feel your concentration become your own once more, able to look away from the commanding gaze."))
 	REMOVE_TRAIT(target, TRAIT_IMMOBILIZED, TRAIT_GENERIC)
 	REMOVE_TRAIT(target, TRAIT_RESTRAINED, TRAIT_GENERIC)
 	target.anchored = FALSE
@@ -155,8 +156,6 @@
 	name = "Conditioned"
 	desc = "Your mind has been broken and conditioned to obey."
 	icon_state = "hypnosis"
-
-
 
 // COMMAND
 /datum/discipline_power/dominate/command
@@ -253,11 +252,13 @@
 
 /datum/discipline_power/dominate/mesmerize/activate(mob/living/target)
 	. = ..()
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!immobilize_target(target, 10 SECONDS))
 		to_chat(owner, span_warning("You have broken concentration with [target] while implanting your hypnosis!"))
 		return
 
 	target.throw_alert("mesmerize", /atom/movable/screen/alert/mesmerize)
+	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
 	log_combat(owner, target, "Dominated with Mesmerize: [custom_message]")
 	to_chat(owner, span_warning("You've successfully planted a hypnotic suggestion in [target]'s mind!"))
 	to_chat(target, span_info("An urging, subconcious thought has entered your mind. Youre not sure how this happened - but it keeps pulsing, forcing your conscious thought to bend toward it."))
@@ -303,14 +304,16 @@
 		return
 	pulse_active = FALSE
 	REMOVE_TRAIT(current_target, TRAIT_MESMERIZED, TRAIT_GENERIC)
+	to_chat(current_target, span_hypnophrase("<font size='4'><b>[custom_message]</b></font>"))
 	to_chat(current_target, span_notice("The hypnotic suggestion's pulsing fades, either taking root, or fading silently as your concious slowly returns to its natural state."))
 	current_target.clear_alert("mesmerize")
 	cleanup_mesmerization()
 
 /datum/discipline_power/dominate/mesmerize/proc/cleanup_mesmerization()
 	pulse_active = FALSE
-	current_target = null
-	current_target.clear_alert("mesmerize")
+	if(current_target)
+		current_target.clear_alert("mesmerize")
+		current_target = null
 	if(end_action)
 		end_action.Remove(owner)
 		end_action = null
@@ -369,10 +372,11 @@
 
 /datum/discipline_power/dominate/the_forgetful_mind/activate(mob/living/target)
 	. = ..()
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!immobilize_target(target, 10 SECONDS))
 		to_chat(owner, span_danger("Youve broken concentration with [target] and your Domination fails..."))
 		return
-
+	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
 	log_combat(owner, target, "Dominated with The Forgetful Mind: [custom_memory]")
 	to_chat(owner, span_warning("You've successfully invaded [target]'s mind and altered their memories!"))
 	owner.say(custom_memory)
@@ -420,12 +424,13 @@
 
 /datum/discipline_power/dominate/conditioning/activate(mob/living/target)
 	. = ..()
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!domination_succeeded)
 		if(!immobilize_target(target, 1 SECONDS))
 			return
 		to_chat(owner, span_warning("[target]'s mind has resisted your domination!"))
 		return
-
+	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
 	target.anchored = TRUE
 	ADD_TRAIT(target, TRAIT_IMMOBILIZED, TRAIT_GENERIC)
 	ADD_TRAIT(target, TRAIT_RESTRAINED, TRAIT_GENERIC)
@@ -479,6 +484,7 @@
 
 /datum/discipline_power/dominate/possession/activate(mob/living/carbon/human/target)
 	. = ..()
+	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!domination_succeeded)
 		return
 
@@ -490,96 +496,11 @@
 		to_chat(owner, span_warning("Your concentration was broken! The possession preparation failed."))
 		to_chat(target, span_notice("The oppressive mental presence suddenly withdraws."))
 		return
-
-	var/datum/action/possession_trigger/trigger_action = new(target, src)
-	trigger_action.Grant(owner)
-	to_chat(owner, span_warning("You have prepared [target]'s mind for possession. You may now take control at will."))
-	to_chat(target, span_danger("Your mind feels vulnerable and exposed. Something terrible is about to happen..."))
+	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+	active_possession = new /datum/possession_controller(owner, target, src)
+	to_chat(owner, span_warning("You have seized control of [target]'s body!"))
+	to_chat(target, span_danger("Your consciousness is violently displaced as another mind takes control!"))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
-
-// AUTONOMIC MASTERY
-/datum/discipline_power/dominate/autonomic_mastery
-	name = "Autonomic Mastery"
-	desc = "Control the Autonomic Systems of a target."
-	level = 6
-	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
-	target_type = TARGET_HUMAN
-	cooldown_length = 15 SECONDS
-	range = 7
-
-/datum/discipline_power/dominate/autonomic_mastery/pre_activation_checks(mob/living/target)
-	if(!dominate_hearing_check(owner, target))
-		return FALSE
-
-	if(HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
-		return TRUE
-
-	domination_succeeded = dominate_check(owner, target, base_difficulty = 5)
-	if(!domination_succeeded)
-		do_cooldown(cooldown_length)
-	return domination_succeeded
-
-/datum/discipline_power/dominate/autonomic_mastery/activate(mob/living/carbon/human/target)
-	. = ..()
-	if(domination_succeeded)
-		to_chat(owner, span_warning("You've successfully dominated [target]'s bodily functions!"))
-		var/list/orders = list("Sleep", "Wake", "Heart Attack", "Revive")
-		var/order = tgui_input_list(owner, "Select a Command","Command Selection", orders)
-		if(!order)
-			return
-		switch(order)
-			if("Sleep")
-				owner.say("Sleep")
-				target.Sleeping(200)
-				to_chat(target, span_danger("You feel suddenly exhausted"))
-				SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
-			if("Wake")
-				owner.say("Wake")
-				target.SetSleeping(0)
-				to_chat(target, span_danger("You feel suddenly energetic"))
-				SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
-			if("Heart Attack")
-				owner.say("Die")
-				target.adjustStaminaLoss(60, FALSE)
-				target.set_heartattack(TRUE)
-				to_chat(target, span_danger("You feel a terrible pain in your chest!"))
-				SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
-			if("Revive")
-				owner.say("Live")
-				target.set_heartattack(FALSE)
-				to_chat(target, span_danger("You feel your heart pound!"))
-				target.revive(full_heal = FALSE, admin_revive = FALSE)
-				SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
-	else
-		to_chat(owner, span_warning("[target]'s mind has resisted your domination!"))
-		to_chat(target, span_warning("Your thoughts blur—[owner] tries to bend your will. You resist."))
-
-// Possession system (keeping existing complex logic but organized)
-/datum/action/possession_trigger
-	name = "Possess Target"
-	desc = "Take control of the prepared target's body."
-	button_icon_state = "possession_start"
-	check_flags = NONE
-	var/mob/living/carbon/human/prepared_target
-	var/datum/discipline_power/dominate/possession/source_power
-
-/datum/action/possession_trigger/New(mob/living/carbon/human/target, datum/discipline_power/dominate/possession/power)
-	prepared_target = target
-	source_power = power
-	..()
-
-/datum/action/possession_trigger/Trigger(trigger_flags)
-	if(!prepared_target || !source_power || QDELETED(prepared_target) || prepared_target.stat == DEAD)
-		if(!QDELETED(prepared_target) && prepared_target.stat == DEAD)
-			to_chat(owner, span_warning("Your prepared target is no longer viable for possession."))
-		Remove(owner)
-		qdel(src)
-		return
-
-	source_power.active_possession = new /datum/possession_controller(owner, prepared_target, source_power)
-	Remove(owner)
-	qdel(src)
-	return TRUE
 
 // Keep existing possession controller and observer code as is since it's complex and working
 /datum/possession_controller

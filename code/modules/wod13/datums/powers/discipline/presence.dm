@@ -250,6 +250,7 @@
 	var/summon_target_name = tgui_input_text(owner, "Summon Target:", "Summon Target")
 	if(!summon_target_name)
 		return FALSE
+	summon_target_name = sanitize_name(summon_target_name)
 
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
 		if(H.real_name == summon_target_name)
