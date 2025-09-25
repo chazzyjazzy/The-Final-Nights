@@ -513,13 +513,17 @@
 	range = 7
 	var/datum/possession_controller/active_possession
 
-/datum/discipline_power/dominate/possession/pre_activation_checks(mob/living/target)
+/datum/discipline_power/dominate/possession/pre_activation_checks(mob/living/carbon/human/target)
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
 
 	//v20 states that posession may not work on other Kindred as 'even the weakest Kindred mind can resist'. Extending this to Garou because players posessing Garous to insta-Crinos I think is griefing.
-	if(iskindred(target) || isgarou(target))
+	if(iskindred(target) || isgarou(target) || iscathayan(target))
 		to_chat(owner, span_warning("You cannot possess [iskindred(target) ? "another kindred" : "a garou - the beast within resists"]!"))
+		return FALSE
+
+	if(target.possessed)
+		to_chat(owner, span_warning("This mortal is already possessed!"))
 		return FALSE
 
 	if(HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
@@ -555,6 +559,7 @@
 	active_possession = new /datum/possession_controller(owner, target, src)
 	to_chat(owner, span_warning("You have seized control of [target]'s body!"))
 	to_chat(target, span_danger("Your consciousness is violently displaced as another mind takes control!"))
+	target.possessed = TRUE
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
 
 // datum to store variables during the body control
@@ -623,6 +628,7 @@
 			mortal_body.mind = mortal_observer.mind
 		to_chat(mortal_body, span_notice("Your consciousness returns to your own body as the foreign presence withdraws."))
 
+	mortal_body.possessed = FALSE
 	cleanup()
 
 /datum/possession_controller/proc/handle_death_during_possession()
