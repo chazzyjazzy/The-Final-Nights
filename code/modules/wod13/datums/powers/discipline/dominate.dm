@@ -11,8 +11,6 @@
 /datum/discipline/dominate/post_gain()
 	. = ..()
 	if(level >= 5)
-		//var/obj/effect/proc_holder/spell/voice_of_god/voice_of_domination = new(owner)
-		//owner.mind.AddSpell(voice_of_domination)
 		RegisterSignal(owner, COMSIG_MOB_EMOTE, PROC_REF(on_snap))
 
 /datum/discipline/dominate/proc/on_snap(atom/source, datum/emote/emote_args)
@@ -60,10 +58,8 @@
 	var/mypower = 0
 	var/theirpower = 0
 
-/datum/discipline_power/dominate/activate(mob/living/target)
+/datum/discipline_power/dominate/activate(mob/living/carbon/human/target)
 	. = ..()
-	if(!ishuman(target))
-		return TRUE
 
 	var/mob/living/carbon/human/dominate_target = target
 	dominate_target.remove_overlay(MUTATIONS_LAYER)
@@ -80,7 +76,7 @@
 	return TRUE
 
 //disallows casting dominate through walls
-/datum/discipline_power/dominate/proc/dominate_hearing_check(mob/living/carbon/human/owner, mob/living/target)
+/datum/discipline_power/dominate/proc/dominate_hearing_check(mob/living/carbon/human/owner, mob/living/carbon/human/target)
 	var/list/hearers = get_hearers_in_view(8, owner)
 	if(!(target in hearers))
 		to_chat(owner, span_warning("[target] cannot hear you — they are too far or behind an obstruction."))
@@ -89,9 +85,7 @@
 	return TRUE
 
 //dicerolling
-/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/target, tiebreaker = FALSE, base_difficulty = 4)
-	if(!ishuman(target))
-		return FALSE
+/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, tiebreaker = FALSE, base_difficulty = 4)
 
 	//someone has botched a dominate against this human
 	if(HAS_TRAIT(target, TRAIT_DOMINATE_IMMUNE))
@@ -131,7 +125,7 @@
 	return (mypower > theirpower && owner.generation <= target.generation)
 
 //dominate involves capturing the victim's gaze, leaving them completely helpless as you hypnotically invade their mind.
-/datum/discipline_power/dominate/proc/immobilize_target(mob/living/target, duration = 5 SECONDS)
+/datum/discipline_power/dominate/proc/immobilize_target(mob/living/carbon/human/target, duration = 5 SECONDS)
 	target.anchored = TRUE
 	ADD_TRAIT(target, TRAIT_IMMOBILIZED, TRAIT_GENERIC)
 	ADD_TRAIT(target, TRAIT_RESTRAINED, TRAIT_GENERIC)
@@ -141,7 +135,7 @@
 	release_target(target)
 	return FALSE
 
-/datum/discipline_power/dominate/proc/release_target(mob/living/target)
+/datum/discipline_power/dominate/proc/release_target(mob/living/carbon/human/target)
 	to_chat(target, span_danger("You feel your concentration become your own once more, able to look away from the commanding gaze."))
 	REMOVE_TRAIT(target, TRAIT_IMMOBILIZED, TRAIT_GENERIC)
 	REMOVE_TRAIT(target, TRAIT_RESTRAINED, TRAIT_GENERIC)
@@ -186,7 +180,7 @@
 	level = 1
 
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
-	target_type = TARGET_LIVING
+	target_type = TARGET_HUMAN
 
 	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
@@ -194,7 +188,7 @@
 	range = 7
 	var/custom_command = "FORGET ABOUT IT"
 
-/datum/discipline_power/dominate/command/pre_activation_checks(mob/living/target)
+/datum/discipline_power/dominate/command/pre_activation_checks(mob/living/carbon/human/target)
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
 
@@ -220,7 +214,7 @@
 	do_cooldown(TRUE)
 	return FALSE
 
-/datum/discipline_power/dominate/command/activate(mob/living/target)
+/datum/discipline_power/dominate/command/activate(mob/living/carbon/human/target)
 	. = ..()
 	to_chat(owner, span_warning("You've successfully dominated [target]'s mind!"))
 	log_combat(owner, target, "Dominated with Command: [custom_command]")
@@ -241,7 +235,7 @@
 	level = 2
 
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
-	target_type = TARGET_LIVING
+	target_type = TARGET_HUMAN
 
 	multi_activate = TRUE
 	cooldown_length = 30 SECONDS
@@ -252,7 +246,7 @@
 	var/datum/action/vampire/end_mesmerization/end_action
 	var/pulse_active = FALSE
 
-/datum/discipline_power/dominate/mesmerize/pre_activation_checks(mob/living/target)
+/datum/discipline_power/dominate/mesmerize/pre_activation_checks(mob/living/carbon/human/target)
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
 
@@ -279,7 +273,7 @@
 	do_cooldown(cooldown_length)
 	return FALSE
 
-/datum/discipline_power/dominate/mesmerize/activate(mob/living/target)
+/datum/discipline_power/dominate/mesmerize/activate(mob/living/carbon/human/target)
 	. = ..()
 	//if the target is attacked during the hypnotism, they are set free!
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
@@ -308,7 +302,7 @@
 	pulse_active = TRUE
 	start_mesmerization_cycle(target)
 
-/datum/discipline_power/dominate/mesmerize/proc/start_mesmerization_cycle(mob/living/target)
+/datum/discipline_power/dominate/mesmerize/proc/start_mesmerization_cycle(mob/living/carbon/human/target)
 	if(!pulse_active)
 		return
 
@@ -317,7 +311,7 @@
 	var/interval_deciseconds = interval_minutes * 60 * 10
 	addtimer(CALLBACK(src, PROC_REF(mesmerization_pulse), target, interval_deciseconds, 1), interval_deciseconds)
 
-/datum/discipline_power/dominate/mesmerize/proc/mesmerization_pulse(mob/living/target, interval, pulse_count)
+/datum/discipline_power/dominate/mesmerize/proc/mesmerization_pulse(mob/living/carbon/human/target, interval, pulse_count)
 	if(!pulse_active || !target || target.stat == DEAD)
 		if(target)
 			REMOVE_TRAIT(target, TRAIT_MESMERIZED, TRAIT_GENERIC)
@@ -379,14 +373,14 @@
 	desc = "Invade a person's mind and recreate their memories."
 	level = 3
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
-	target_type = TARGET_LIVING
+	target_type = TARGET_HUMAN
 	multi_activate = TRUE
 	cooldown_length = 1 MINUTES
 	duration_length = 3 SECONDS
 	range = 7
 	var/custom_memory = ""
 
-/datum/discipline_power/dominate/the_forgetful_mind/pre_activation_checks(mob/living/target)
+/datum/discipline_power/dominate/the_forgetful_mind/pre_activation_checks(mob/living/carbon/human/target)
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
 
@@ -409,7 +403,7 @@
 	do_cooldown(cooldown_length)
 	return FALSE
 
-/datum/discipline_power/dominate/the_forgetful_mind/activate(mob/living/target)
+/datum/discipline_power/dominate/the_forgetful_mind/activate(mob/living/carbon/human/target)
 	. = ..()
 
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
@@ -447,14 +441,14 @@
 	level = 4
 
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
-	target_type = TARGET_LIVING
+	target_type = TARGET_HUMAN
 
 	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
 	duration_length = 6 SECONDS
 	range = 2
 
-/datum/discipline_power/dominate/conditioning/pre_activation_checks(mob/living/target)
+/datum/discipline_power/dominate/conditioning/pre_activation_checks(mob/living/carbon/human/target)
 
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
@@ -468,7 +462,7 @@
 		do_cooldown(cooldown_length)
 	return domination_succeeded
 
-/datum/discipline_power/dominate/conditioning/activate(mob/living/target)
+/datum/discipline_power/dominate/conditioning/activate(mob/living/carbon/human/target)
 	. = ..()
 
 	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
@@ -738,7 +732,7 @@
 	cooldown_length = 15 SECONDS
 	range = 7
 
-/datum/discipline_power/dominate/autonomic_mastery/pre_activation_checks(mob/living/target)
+/datum/discipline_power/dominate/autonomic_mastery/pre_activation_checks(mob/living/carbon/human/target)
 
 	if(!dominate_hearing_check(owner, target))
 		return FALSE
