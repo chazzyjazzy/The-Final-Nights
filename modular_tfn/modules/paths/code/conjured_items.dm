@@ -53,14 +53,14 @@
 	desc = "From your finger sprouts out the small flame of a candle."
 	icon_state = "candle"
 	inhand_icon_state = "candle"
-	force = 5
+	force = 10
 
 /obj/item/lighter/conjured/flame/palm_of_flame
 	name = "hand of flame"
 	desc = "Your hand burns with supernatural fire."
 	icon_state = "flame"
 	inhand_icon_state = "flame"
-	force = 15
+	force = 25
 	fancy = FALSE
 
 // Levinbolt items

@@ -98,7 +98,9 @@
 	cooldown_length = 5 SECONDS
 	violates_masquerade = TRUE
 	target_type = TARGET_LIVING
-	range = 7
+	range = 10
+	var/range_successes
+	var/flames_range
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/flames/one,
@@ -107,9 +109,31 @@
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
 
+/datum/discipline_power/thaumaturgy/path/flames/three/pre_activation_checks(atom/target)
+	. = ..()
+	range_successes = SSroll.storyteller_roll(dice = owner.get_total_mentality(), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
+	switch(range_successes)
+		if(-INFINITY to 0)
+			to_chat(owner, "You fail to conjure flames anywhere further than your own hand.")
+			return FALSE
+		if(1)
+			flames_range = 2
+		if(2)
+			flames_range = 3
+		if(3)
+			flames_range = 5
+		if(4 to INFINITY)
+			flames_range = 12
+	to_chat(owner, span_cult("You have rolled [range_successes] successes and can conjure a flame [flames_range] tiles away."))
+
+	if (get_dist(owner, target) > flames_range)
+		to_chat(owner, span_warning("[target] is out of range!"))
+		return FALSE
+	..()
+
 /datum/discipline_power/thaumaturgy/path/flames/three/activate(mob/living/target)
 	. = ..()
-	if(.)
+	if(!.)
 		var/turf/start = get_turf(owner)
 		var/obj/projectile/flames/flamebolt/H = new(start)
 		H.firer = owner
@@ -129,7 +153,9 @@
 	cooldown_length = 10 SECONDS
 	violates_masquerade = TRUE
 	target_type = TARGET_LIVING
-	range = 7
+	range = 12
+	var/range_successes
+	var/flames_range
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/flames/one,
@@ -137,6 +163,29 @@
 		/datum/discipline_power/thaumaturgy/path/flames/three,
 		/datum/discipline_power/thaumaturgy/path/flames/five
 	)
+
+/datum/discipline_power/thaumaturgy/path/flames/four/pre_activation_checks(atom/target)
+	. = ..()
+	range_successes = SSroll.storyteller_roll(dice = owner.get_total_mentality(), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
+	switch(range_successes)
+		if(-INFINITY to 0)
+			to_chat(owner, "You fail to conjure flames anywhere further than your own hand.")
+			do_cooldown()
+			return FALSE
+		if(1)
+			flames_range = 2
+		if(2)
+			flames_range = 3
+		if(3)
+			flames_range = 5
+		if(4 to INFINITY)
+			flames_range = 12
+	to_chat(owner, span_cult("You have rolled [range_successes] successes and can conjure a flame [flames_range] tiles away."))
+
+	if (get_dist(owner, target) > flames_range)
+		to_chat(owner, span_warning("[target] is out of range!"))
+		return FALSE
+	..()
 
 /datum/discipline_power/thaumaturgy/path/flames/four/activate(mob/living/target)
 	. = ..()
@@ -159,10 +208,12 @@
 	desc = "Unleash a devastating storm of fire that affects multiple targets in an area."
 
 	level = 5
-	cooldown_length = 50 SECONDS
+	cooldown_length = 20 SECONDS
 	violates_masquerade = TRUE
 	target_type = TARGET_TURF | TARGET_LIVING
-	range = 10
+	range = 12
+	var/range_successes
+	var/flames_range
 
 	grouped_powers = list(
 		/datum/discipline_power/thaumaturgy/path/flames/one,
@@ -170,6 +221,28 @@
 		/datum/discipline_power/thaumaturgy/path/flames/three,
 		/datum/discipline_power/thaumaturgy/path/flames/four
 	)
+
+/datum/discipline_power/thaumaturgy/path/flames/five/pre_activation_checks(atom/target)
+	. = ..()
+	range_successes = SSroll.storyteller_roll(dice = owner.get_total_mentality(), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
+	switch(range_successes)
+		if(-INFINITY to 0)
+			to_chat(owner, "You fail to conjure flames anywhere further than your own hand.")
+			return FALSE
+		if(1)
+			flames_range = 2
+		if(2)
+			flames_range = 3
+		if(3)
+			flames_range = 5
+		if(4 to INFINITY)
+			flames_range = 12
+	to_chat(owner, span_cult("You have rolled [range_successes] successes and can conjure a flame [flames_range] tiles away."))
+
+	if (get_dist(owner, target) > flames_range)
+		to_chat(owner, span_warning("[target] is out of range!"))
+		return FALSE
+	..()
 
 /datum/discipline_power/thaumaturgy/path/flames/five/activate(atom/target)
 	. = ..()
@@ -180,7 +253,7 @@
 		var/turf/center = get_turf(target)
 
 		// minimum one tile away from the center, maximum 3 tiles away from the center
-		var/area_range = clamp(success_count, 1, 3)
+		var/area_range = clamp(success_count, 1, 4)
 
 		// create the inferno warning on all affected turfs in area_range from center
 		var/list/affected_turfs = list()
