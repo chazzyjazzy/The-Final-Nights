@@ -110,8 +110,6 @@
 
 /datum/discipline_power/thaumaturgy/path/levinbolt/one/activate()
 	. = ..()
-	if(!active)
-		return
 	if(!.)
 
 		//signal for counterattack
@@ -216,8 +214,7 @@
 /datum/discipline_power/thaumaturgy/path/levinbolt/three/activate()
 	. = ..()
 	if(!.)
-		if(!active)
-			return
+
 		//proc for counterattack
 		RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(power_array_counter))
 
