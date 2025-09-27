@@ -99,6 +99,15 @@ Dancer
 	allowed_species = list("Vampire", "Kuei-Jin")
 	excluded_clans = list(CLAN_NAGARAJA)
 
+/datum/quirk/baby_teeth
+	name = "Baby Teeth"
+	desc = "Your fangs have been pulled out and have not regrown normally or they did not grow at all."
+	mob_trait = TRAIT_BABY_TEETH
+	value = -4
+	gain_text = "<span class='warning'>You lost your fangs.</span>"
+	lose_text = "<span class='notice'>You regrow your fangs.</span>"
+	allowed_species = list("Vampire")
+
 /datum/quirk/lazy
 	name = "Lazy"
 	desc = "You do things much more slowly than others."
@@ -172,8 +181,7 @@ Dancer
 	allowed_species = list("Vampire", "Kuei-Jin")
 
 /datum/quirk/frenetic_aura/on_spawn()
-	var/mob/living/carbon/human/H = quirk_holder
-	H.clane.frenzymod += 1
+	ADD_TRAIT(quirk_holder, TRAIT_LONGER_FRENZY, "frenetic_aura")
 
 /datum/quirk/blush_of_health
 	name = "Blush of Health"
@@ -235,7 +243,7 @@ Dancer
 	for(var/datum/vtm_bank_account/account as anything in GLOB.bank_account_list)
 		if(debtor.bank_id != account.bank_id)
 			continue
-		if(debtor.clane?.name == CLAN_VENTRUE)
+		if(debtor.clan?.name == CLAN_VENTRUE)
 			account.balance = 5 // Extra loss of dignitas.
 		else
 			account.balance = floor(account.balance * 0.5)
@@ -267,14 +275,22 @@ Dancer
 	value = -1
 	gain_text = "<span class='warning'>You feel wrongness crawling beneath your skin.</span>"
 	lose_text = "<span class='notice'>You feel relief and warmth.</span>"
-	allowed_species = list("Werewolf")
+	allowed_species = list("Werewolf", "Human")
 	allowed_tribes = list("Galestalkers","Ronin", "Glass Walkers", "Ghost Council", "Hart Wardens", "Children of Gaia", "Bone Gnawers", "Get of Fenris", "Black Furies", "Silver Fangs", "Silent Striders", "Shadow Lords", "Red Talons", "Stargazers", "Corax")
+
+/datum/quirk/fair_glabro
+	name = "Fair Glabro"
+	desc = "Your Glabro Form is less bestial than others. Allowing you to use it in public"
+	mob_trait = TRAIT_FAIR_GLABRO
+	value = 4
+	allowed_species = list("Werewolf")
+	allowed_tribes = list("Galestalkers","Ronin", "Glass Walkers", "Ghost Council", "Hart Wardens", "Children of Gaia", "Bone Gnawers", "Get of Fenris", "Black Furies", "Silver Fangs", "Silent Striders", "Shadow Lords", "Red Talons", "Stargazers", "Black Spiral Dancers")
 
 /datum/quirk/illegal_identity
 	name = "Illegal Identity"
 	desc = "Illegal immigrant? Died legally? Born a wolf? The cops aren't happy."
 	mob_trait = TRAIT_ILLEGAL_IDENTITY
-	value = 0
+	value = -1
 	gain_text = "<span class='warning'>You feel legally unprepared.</span>"
 	lose_text = "<span class='notice'>You feel bureaucratically legitimate.</span>"
 
@@ -374,15 +390,15 @@ Dancer
 	gain_text = "<span class='notice'>You feel short.</span>"
 	lose_text = "<span class='notice'>You don't feel short anymore.</span>"
 
-/datum/quirk/dwarf/on_spawn()
-	var/mob/living/carbon/human/H = quirk_holder
-	if(H.age < 16)
-		to_chat(H, "<span class='userdanger'>You can't be a dwarf kid, looser!</span>")
-		return
+/datum/quirk/dwarf/add()
 	if(iswerewolf(quirk_holder))
 		return
-	H.AddElement(/datum/element/dwarfism, COMSIG_PARENT_PREQDELETED, src)
-	H.isdwarfy = TRUE
+	quirk_holder.AddElement(/datum/element/dwarfism, COMSIG_PREQDELETED, src)
+
+/datum/quirk/dwarf/remove()
+	if (!quirk_holder)
+		return
+	quirk_holder.RemoveElement(/datum/element/dwarfism)
 
 #define SHORT 4/5
 #define TALL 5/4
@@ -430,37 +446,6 @@ Dancer
 
 #undef SHORT
 #undef TALL
-
-
-/datum/element/children
-	element_flags = ELEMENT_DETACH_ON_HOST_DESTROY|ELEMENT_BESPOKE
-	argument_hash_start_idx = 2
-	var/comsig
-	var/list/attached_targets = list()
-
-/datum/element/children/Attach(datum/target, comsig, comsig_target)
-	. = ..()
-	if(!ishuman(target))
-		return ELEMENT_INCOMPATIBLE
-
-	src.comsig = comsig
-
-	var/mob/living/carbon/human/L = target
-	L.transform = L.transform.Scale(81/100, 81/100)
-	attached_targets[target] = comsig_target
-	RegisterSignal(target, comsig, PROC_REF(check_loss)) //Second arg of the signal will be checked against the comsig_target.
-
-/datum/element/children/proc/check_loss(mob/living/L, comsig_target)
-	if(attached_targets[L] == comsig_target)
-		Detach(L)
-
-/datum/element/children/Detach(mob/living/L)
-	. = ..()
-	if(QDELETED(L))
-		return
-	L.transform = L.transform.Scale(100/81, 100/81)
-	UnregisterSignal(L, comsig)
-	attached_targets -= L
 
 /datum/quirk/homosexual
 	name = "Homosexual"
@@ -594,6 +579,68 @@ Dancer
 	var/mob/living/carbon/H = quirk_holder
 	H.grant_language(/datum/language/greek)
 
+/datum/quirk/irish
+	name = "Irish"
+	desc = "You know the Irish language."
+	value = 1
+
+/datum/quirk/irish/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/irish)
+
+/datum/quirk/scottish
+	name = "Scottish"
+	desc = "You know the Scottish language."
+	value = 1
+
+/datum/quirk/scottish/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/scottish)
+
+/datum/quirk/welsh
+	name = "Welsh"
+	desc = "You know the Welsh language."
+	value = 1
+
+/datum/quirk/welsh/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/welsh)
+
+/datum/quirk/armenian
+	name = "Armenian"
+	desc = "You know the Armenian language."
+	value = 1
+
+/datum/quirk/armenian/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/armenian)
+
+/datum/quirk/farsi
+	name = "Farsi"
+	desc = "You know the Persian language."
+	value = 1
+
+/datum/quirk/farsi/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/farsi)
+
+/datum/quirk/korean
+	name = "Korean"
+	desc = "You know the Korean language."
+	value = 1
+
+/datum/quirk/korean/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/korean)
+
+/datum/quirk/tagalog
+	name = "Tagalog"
+	desc = "You know the Filipino language."
+	value = 1
+
+/datum/quirk/tagalog/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/tagalog)
 
 /datum/quirk/consumption
 	name = "Consumption"
@@ -627,13 +674,6 @@ Dancer
 	if(!H.equip_to_slot_if_possible(glasses, ITEM_SLOT_EYES, bypass_equip_delay_self = TRUE))
 		H.put_in_hands(glasses)
 
-/datum/quirk/masquerade
-	name = "Masquerade Violator"
-	desc = "You can't recover your masquerade at all."
-	value = -2
-	mob_trait = TRAIT_VIOLATOR
-	allowed_species = list("Vampire", "Ghoul", "Kuei-Jin")
-
 /datum/quirk/irongullet
 	name = "Iron Gullet"
 	desc = "You don't mind sucking up cold blood from corpses. Though there's rarely that much left."
@@ -657,7 +697,7 @@ Dancer
 	name = "Unbonding"
 	desc = "Your vitae, for one reason or another, doesn't produce blood bonds with anybody."
 	value = -1
-	mob_trait = TRAIT_UNBONDING
+	mob_trait = TRAIT_DEFICIENT_VITAE
 	gain_text = "<span class='notice'>Your blood feels vacant.</span>"
 	lose_text = "<span class='notice'>You feel like something that was missing just came back to you.</span>"
 	allowed_species = list("Vampire")
@@ -665,15 +705,27 @@ Dancer
 /datum/quirk/permafangs
 	name = "Permanent Fangs"
 	desc = "Your fangs do not retract, making it impossible for you to hide your true nature. While some mortals may think you’ve had your teeth filed or are wearing prosthetics, sooner or later you’re going to run into someone who knows what you truly are."
-	value = 0
+	value = -1
 	mob_trait = TRAIT_PERMAFANGS
 	gain_text = "<span class='notice'>Your fangs become stuck.</span>"
 	lose_text = "<span class='notice'>You feel your fangs retract again.</span>"
 	allowed_species = list("Vampire")
 
+/datum/quirk/unliving_hive
+	name = "(Un)living Hive"
+	desc = "You, for one reason or another, have a horrible infestation of insects living on your person. They might be able to help you out in combat, if you're able to command them. Otherwise, they'll just continue to make you itchy."
+	value = -1
+	mob_trait = TRAIT_UNLIVING_HIVE
+	gain_text = span_danger("You feel skittering across your skin.")
+	lose_text = span_notice("You feel an itch fade away.")
+
+/datum/quirk/unliving_hive/on_process(delta_time) //don't want it to be TOO annoying, but a few bug bites will happen.
+	if(prob(2))
+		quirk_holder.adjustBruteLoss(2, TRUE)
+
 /datum/quirk/diablerist
 	name = "Diablerist"
-	desc = "For one reason or another, you have committed Diablerie in your past, a great crime within Kindred society. <b>This is not a license to Diablerize without proper reason!</b>"
+	desc = "For one reason or another, you have very recently committed Diablerie in your past, a great crime within Kindred society. Your sin of the Amaranth is apparent to many Kindred, and will only fade in a year or two.  <b>This is not a license to Diablerize without proper reason! If you are found out, you can (and most likely will be) round removed. You have been warned.</b>"
 	value = 0
 	allowed_species = list("Vampire")
 
@@ -688,15 +740,15 @@ Dancer
 	gain_text = "<span class='notice'>You feel tall.</span>"
 	lose_text = "<span class='notice'>You don't feel tall anymore.</span>"
 
-/datum/quirk/tower/on_spawn()
-	var/mob/living/carbon/human/H = quirk_holder
-	if(H.age < 16)
-		to_chat(H, "<span class='userdanger'>You can't be a tall kid, looser!</span>")
-		return
+/datum/quirk/tower/add()
 	if(iswerewolf(quirk_holder))
 		return
-	H.AddElement(/datum/element/giantism, COMSIG_PARENT_PREQDELETED, src)
-	H.istower = TRUE
+	quirk_holder.AddElement(/datum/element/giantism, COMSIG_PREQDELETED, src)
+
+/datum/quirk/tower/remove()
+	if (!quirk_holder)
+		return
+	quirk_holder.RemoveElement(/datum/element/giantism)
 
 #define TALL 1.16
 #define SHORT 0.86206896551
@@ -748,5 +800,39 @@ Dancer
 	mob_trait = TRAIT_HARDENED_SOLES
 	value = 2
 
+/datum/quirk/thinblood
+	name = "Thinblood"
+	desc = "Your blood is a lot thinner than usual. You cannot bond, frenzy, or ash in the sun, and your disciplines take double the vitae cost. (Generations 14 and above only.)"
+	value = 0
+	gain_text = "<span class='notice'>Your blood feels thin.</span>"
+	lose_text = "<span class='notice'>Your blood feels potent again.</span>"
+	allowed_species = list("Vampire")
+	generation_minimum = 14
+
+/datum/quirk/thinblood/on_spawn()
+	ADD_TRAIT(quirk_holder, TRAIT_DEFICIENT_VITAE, THINBLOOD_TRAIT)
+	ADD_TRAIT(quirk_holder, TRAIT_NO_FRENZY, THINBLOOD_TRAIT)
+	ADD_TRAIT(quirk_holder, TRAIT_DOUBLE_VITAE_COST, THINBLOOD_TRAIT)
+	ADD_TRAIT(quirk_holder, TRAIT_NO_SUN_ASHING, THINBLOOD_TRAIT)
+
+/datum/quirk/thinblood/remove()
+	if(quirk_holder)
+		REMOVE_TRAIT(quirk_holder, TRAIT_DEFICIENT_VITAE, THINBLOOD_TRAIT)
+		REMOVE_TRAIT(quirk_holder, TRAIT_NO_FRENZY, THINBLOOD_TRAIT)
+		REMOVE_TRAIT(quirk_holder, TRAIT_DOUBLE_VITAE_COST, THINBLOOD_TRAIT)
+		REMOVE_TRAIT(quirk_holder, TRAIT_NO_SUN_ASHING, THINBLOOD_TRAIT)
+
 #undef SHORT
 #undef TALL
+
+/datum/quirk/kinfolk
+	name = "Kinfolk"
+	desc = "You are both related to, and possiblly accepted by a pack of werewolves, or other fera. You may know their customs, and are privy to secret signs which can identify you as a friend. Make no mistake, knowledge of this trait is a liability in the wrong hands, and you are open to consequences from enemies of the Fera."
+	value = 2
+	allowed_species = list("Human")
+	mob_trait = TRAIT_KINFOLK
+
+/datum/quirk/kinfolk/add()
+	var/mob/living/carbon/H = quirk_holder
+	H.grant_language(/datum/language/garou_tongue)
+	H.grant_language(/datum/language/primal_tongue, understood = TRUE, spoken = FALSE)

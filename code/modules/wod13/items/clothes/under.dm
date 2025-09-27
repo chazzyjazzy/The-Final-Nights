@@ -11,7 +11,10 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	body_worn = TRUE
 	fitted = NO_FEMALE_UNIFORM
-	cost = 10
+
+/obj/item/clothing/under/vampire/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 10, "undersuit", FALSE)
 
 /obj/item/clothing/under/vampire/brujah
 	name = "punk attire"
@@ -247,17 +250,7 @@
 /obj/item/clothing/under/vampire/homeless/female
 	icon_state = "homeless_f"
 
-//Police and Guards
-
-/obj/item/clothing/under/vampire/police
-	name = "police officer uniform"
-	desc = "The clothes of the boys in blue. Did you know that 44% of Cops have heard of Pentex? Google 44% of Cops for more information."
-	icon_state = "police"
-
-/obj/item/clothing/under/vampire/police/utility
-	name = "police fatigues"
-	desc = "The clothes of the boys in blue. Did you know that 44% of Cops have heard of Pentex? Google 44% of Cops for more information."
-	icon_state = "policeutil"
+//Guards
 
 /obj/item/clothing/under/vampire/guard
 	name = "security guard uniform"
@@ -452,7 +445,10 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	body_worn = TRUE
 	fitted = NO_FEMALE_UNIFORM
-	cost = 10
+
+/obj/item/clothing/under/pentex/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 10, "undersuit", FALSE)
 
 /obj/item/clothing/under/pentex/pentex_janitor
 	name = "Ardus Enterprises custodian jumpsuit"

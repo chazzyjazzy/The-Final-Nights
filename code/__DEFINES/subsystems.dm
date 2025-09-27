@@ -96,8 +96,11 @@
 #define INITIALIZE_IMMEDIATE(X) ##X/New(loc, ...){\
 	..();\
 	if(!(flags_1 & INITIALIZED_1)) {\
+		var/previous_initialized_value = SSatoms.initialized;\
+		SSatoms.initialized = INITIALIZATION_INNEW_MAPLOAD;\
 		args[1] = TRUE;\
-		SSatoms.InitAtom(src, args);\
+		SSatoms.InitAtom(src, FALSE, args);\
+		SSatoms.initialized = previous_initialized_value;\
 	}\
 }
 
@@ -138,6 +141,7 @@
 #define INIT_ORDER_DEFAULT			0
 #define INIT_ORDER_AIR				-1
 #define INIT_ORDER_PERSISTENCE		-2 //before assets because some assets take data from SSPersistence
+#define INIT_ORDER_PERSISTENT_PAINTINGS -3 // Assets relies on this
 #define INIT_ORDER_ASSETS			-4
 #define INIT_ORDER_ICON_SMOOTHING	-5
 #define INIT_ORDER_OVERLAY			-6
@@ -170,7 +174,6 @@
 #define FIRE_PRIORITY_PROCESS		25
 #define FIRE_PRIORITY_THROWING		25
 #define FIRE_PRIORITY_SPACEDRIFT	30
-#define FIRE_PRIORITY_FIELDS		30
 #define FIRE_PRIOTITY_SMOOTHING		35
 #define FIRE_PRIORITY_NETWORKS		40
 #define FIRE_PRIORITY_OBJ			40
@@ -189,6 +192,7 @@
 #define FIRE_PRIORITY_OVERLAYS		500
 #define FIRE_PRIORITY_EXPLOSIONS	666
 #define FIRE_PRIORITY_TIMER			700
+#define FIRE_PRIORITY_SOUND_LOOPS	800
 #define FIRE_PRIORITY_INPUT			1000 // This must always always be the max highest priority. Player input must never be lost.
 
 

@@ -6,7 +6,7 @@
 	plane = HUD_PLANE
 
 /atom/movable/screen/block/Click()
-	if(ishuman(usr) && !ispath(usr, /mob/living/simple_animal/werewolf))
+	if(ishuman(usr) && !ispath(usr, /mob/living/carbon/werewolf))
 		var/mob/living/carbon/human/BL = usr
 		BL.SwitchBlocking()
 	..()
@@ -36,22 +36,25 @@
 
 
 /mob/living/carbon/human/attack_hand(mob/living/carbon/human/user)
-	if(getStaminaLoss() >= 50 && blocking)
-		SwitchBlocking()
-	if(CheckFrenzyMove() && blocking)
-		SwitchBlocking()
+	if(HAS_TRAIT(src, TRAIT_PERFECT_DEFENCE))
+		playsound(src, 'sound/weapons/tap.ogg', 70, TRUE)
+		user.do_attack_animation(src)
+		visible_message(span_danger("[src] blocks the punch!"), span_danger("You block the punch!"))
 	if(user.combat_mode && HAS_TRAIT(src, TRAIT_ENHANCED_MELEE_DODGE))
 		playsound(src, 'sound/weapons/tap.ogg', 70, TRUE)
 		apply_damage(3, STAMINA)
 		user.do_attack_animation(src)
-		emote("flip")
-		visible_message("<span class='danger'>[src] dodges the punch!</span>", "<span class='danger'>You dodge the punch!</span>")
+		visible_message(span_danger("[src] dodges the punch!"), span_danger("You dodge the punch!"))
 		return
+	if(getStaminaLoss() >= 50 && blocking)
+		SwitchBlocking()
+	if(CheckFrenzyMove() && blocking)
+		SwitchBlocking()
 	if(user.combat_mode && blocking)
 		playsound(src, 'sound/weapons/tap.ogg', 70, TRUE)
 		apply_damage(10, STAMINA)
 		user.do_attack_animation(src)
-		visible_message("<span class='danger'>[src] blocks the punch!</span>", "<span class='danger'>You block the punch!</span>")
+		visible_message(span_danger("[src] blocks the punch!"), span_danger("You block the punch!"))
 		if(incapacitated(TRUE, TRUE) && blocking)
 			SwitchBlocking()
 		return

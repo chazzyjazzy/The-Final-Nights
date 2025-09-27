@@ -5,7 +5,10 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	var/quieted = FALSE
 	var/datum/weakref/owner = null
-	cost = 25
+
+/obj/item/melee/vampirearms/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 25, "melee", FALSE)
 
 /obj/item/melee/vampirearms/pickup(mob/living/user)
 	. = ..()
@@ -102,7 +105,6 @@
 	. = ..()
 	icon_state = "axetzi0"
 
-
 /obj/item/melee/vampirearms/katana
 	name = "katana"
 	desc = "An elegant weapon, its tiny edge is capable of cutting through flesh and bone with ease."
@@ -124,28 +126,40 @@
 	pixel_w = -8
 	resistance_flags = FIRE_PROOF
 	masquerade_violating = FALSE
-	cost = 250
 	is_iron = TRUE
+
+/obj/item/melee/vampirearms/katana/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 250, "katana", FALSE)
 
 /obj/item/melee/vampirearms/katana/fire
 	name = "burning katana"
 	icon_state = "firetana"
 	pixel_w = -8
-	cost = 0
+	force = 30
 	damtype = BURN
 	item_flags = DROPDEL
 	is_iron = FALSE
 	masquerade_violating = TRUE
 
+//Do not sell the magically summoned katanas for infinite cash
+/obj/item/melee/vampirearms/katana/fire/Initialize()
+	. = ..()
+	qdel(GetComponent(/datum/component/selling))
+
 /obj/item/melee/vampirearms/katana/blood
 	name = "bloody katana"
 	color = "#bb0000"
 	pixel_w = -8
-	cost = 0
+	force = 30
 	damtype = CLONE
 	item_flags = DROPDEL
 	is_iron = FALSE
 	masquerade_violating = TRUE
+
+/obj/item/melee/vampirearms/katana/blood/Initialize()
+	. = ..()
+	qdel(GetComponent(/datum/component/selling))
 
 /obj/item/melee/vampirearms/rapier
 	name = "rapier"
@@ -166,8 +180,11 @@
 	resistance_flags = FIRE_PROOF
 	masquerade_violating = FALSE
 	w_class = WEIGHT_CLASS_NORMAL
-	cost = 800
 	is_iron = TRUE
+
+/obj/item/melee/vampirearms/rapier/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 800, "rapier", FALSE)
 
 /obj/item/melee/vampirearms/machete
 	name = "machete"
@@ -190,7 +207,10 @@
 	pixel_w = -8
 	resistance_flags = FIRE_PROOF
 	masquerade_violating = FALSE
-	cost = 150
+
+/obj/item/melee/vampirearms/machete/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 150, "machete", FALSE)
 
 /obj/item/melee/vampirearms/sabre
 	name = "sabre"
@@ -212,11 +232,14 @@
 	resistance_flags = FIRE_PROOF
 	masquerade_violating = FALSE
 	is_iron = TRUE
-	cost = 1000
+
+/obj/item/melee/vampirearms/sabre/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 1000, "sabre", FALSE)
 
 /obj/item/melee/vampirearms/longsword
 	name = "longsword"
-	desc = "A classic weapon of the knight, the longsword is a versatile weapon that can be used for both cutting and thrusting."
+	desc = "A classic weapon of the nobility, the longsword is a versatile weapon that can be used for both cutting and thrusting."
 	icon = 'code/modules/wod13/weapons.dmi'
 	icon_state = "longsword"
 	flags_1 = CONDUCT_1
@@ -234,7 +257,10 @@
 	resistance_flags = FIRE_PROOF
 	masquerade_violating = FALSE
 	is_iron = TRUE
-	cost = 1800
+
+/obj/item/melee/vampirearms/longsword/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 1800, "longsword", FALSE)
 
 /obj/item/melee/vampirearms/longsword/keeper
 	name = "The Brother's Keeper"
@@ -283,7 +309,7 @@
 	component_type = /datum/component/storage/concrete/vtm/sheathe
 
 /obj/item/storage/belt/vampire/sheathe/longsword
-	desc = "An ornate sheath designed to hold a knight's blade."
+	desc = "An ornate sheath designed to hold a noble's blade."
 	icon_state = "longsword_sheathe-1"
 	worn_icon_state = "longsword_sheathe"
 
@@ -380,8 +406,11 @@
 	attack_verb_continuous = list("beats", "smacks")
 	attack_verb_simple = list("beat", "smack")
 	w_class = WEIGHT_CLASS_NORMAL
-	cost = 50
 	is_wood = TRUE
+
+/obj/item/melee/vampirearms/baseball/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 50, "baseball", FALSE)
 
 /obj/item/melee/vampirearms/baseball/attack(mob/living/target, mob/living/user)
 	. = ..()
@@ -468,7 +497,6 @@
 	masquerade_violating = TRUE
 	is_iron = FALSE
 
-
 /obj/item/melee/vampirearms/knife/gangrel/lasombra
 	name = "shadow tentacle"
 	force = 20
@@ -477,8 +505,6 @@
 	block_chance = 0
 	icon_state = "lasombra"
 	masquerade_violating = TRUE
-
-
 
 /obj/item/melee/touch_attack/werewolf
 	name = "\improper falling touch"
@@ -514,13 +540,13 @@
 			to_chat(user, "This particular wall feels reinforced too harshly by the veil to dissolve.")
 			return
 		twall.dismantle_wall(1,0)
-		if(user.CheckEyewitness(user, user, 7, FALSE))
-			user.adjust_veil(-2)
+		SEND_SIGNAL(user, COMSIG_MASQUERADE_VIOLATION)
 	return ..()
 
 /obj/item/melee/vampirearms/knife/gangrel/Initialize()
 	. = ..()
 	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
+	attack_speed = CLICK_CD_MELEE
 
 /obj/item/melee/vampirearms/chainsaw
 	name = "chainsaw"
@@ -651,10 +677,11 @@
 	. = ..()
 	if(HAS_TRAIT(user, TRAIT_PACIFISM))
 		return
-	if(!target.IsStun() && prob(25))
+	if(!target.IsStun() && prob(10))
 		visible_message("<span class='warning'>[user] bonks [src]'s head!</span>", "<span class='warning'>You bonk[target]'s head!</span>")
-		target.Stun(5)
-		target.drop_all_held_items()
+		if(user.mind && is_sabbatist(user))
+			target.Stun(3 SECONDS)
+			target.drop_all_held_items()
 
 /obj/item/melee/vampirearms/katana/kosa
 	name = "scythe"
@@ -925,6 +952,11 @@
 	bare_wound_bonus = 0
 	resistance_flags = FIRE_PROOF
 	masquerade_violating = TRUE
+
+/obj/item/melee/vampirearms/tzimisce/Initialize()
+	. = ..()
+	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
+	attack_speed = CLICK_CD_MELEE
 
 /obj/item/melee/vampirearms/tzimisce/shock/afterattack(atom/target, mob/living/carbon/user, proximity)
 	if(!proximity)

@@ -12,9 +12,6 @@
 
 /mob/living/proc/rollfrenzy(frenzyoverride = 0)
 	if(client)
-		var/mob/living/carbon/human/H
-		if(ishuman(src))
-			H = src
 		if(isgarou(src) || iswerewolf(src))
 			to_chat(src, "I'm full of <span class='danger'><b>ANGER</b></span>, and I'm about to flare up in <span class='danger'><b>RAGE</b></span>. Rolling...")
 		else if(iskindred(src))
@@ -24,40 +21,33 @@
 		else
 			to_chat(src, "I'm too <span class='danger'><b>AFRAID</b></span> to continue doing this. Rolling...")
 		SEND_SOUND(src, sound('code/modules/wod13/sounds/bloodneed.ogg', 0, 0, 50))
+
 		var/check
-		var/frenzydicepool = 1
-		var/frenzydiff = 4
 		if(iscathayan(src))
-			frenzydicepool = max(1, mind.dharma.Hun)
-			frenzydiff = max(frenzy_hardness, (mind.dharma.level*2)-max_demon_chi)
-		else if(iskindred(src))
-			frenzydicepool = max(1, round(H.morality_path.score/2))
-			frenzydiff = frenzy_hardness
-		else if(isgarou(src) || iswerewolf(src))
-			frenzydicepool = max(1, max(round(wisdom/2),renownrank))
-			frenzydiff = frenzy_hardness
-		if(frenzyoverride)
-			frenzydiff = frenzyoverride
-		check = SSroll.storyteller_roll(frenzydicepool, difficulty = frenzydiff, mobs_to_show_output = src)
+			check = SSroll.storyteller_roll(dice = max(1, mind.dharma.Hun), difficulty =  min(10, (mind.dharma.level*2)-max_demon_chi), mobs_to_show_output = src)
+		else if(ishuman(src))
+			var/mob/living/carbon/human/human_mob = src
+			check = SSroll.storyteller_roll(dice = max(1, round(human_mob.morality_path.score/2)), difficulty = min(frenzy_chance_boost, frenzy_hardness), mobs_to_show_output = src)
+		else
+			check = SSroll.storyteller_roll(dice = 4, difficulty = min(frenzy_chance_boost, frenzy_hardness), mobs_to_show_output = src)
+
+
+		// Modifier for frenzy duration
+		var/length_modifier = HAS_TRAIT(src, TRAIT_LONGER_FRENZY) ? 2 : 1
+
 		switch(check)
-			if(ROLL_FAILURE)
+			if (ROLL_BOTCH)
 				enter_frenzymod()
-				if(iskindred(src))
-					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 100*H.clane.frenzymod)
-					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
-				else
-					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 100)
-				frenzy_hardness = initial(src.frenzy_hardness)
-			if(ROLL_BOTCH)
+				addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 20 SECONDS * length_modifier)
+				frenzy_hardness = 1
+			if (ROLL_FAILURE)
 				enter_frenzymod()
-				if(iskindred(src))
-					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 200*H.clane.frenzymod)
-					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
-				else
-					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 200)
-				frenzy_hardness = initial(src.frenzy_hardness)
+				addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 10 SECONDS * length_modifier)
+				frenzy_hardness = 1
+			if (ROLL_SUCCESS)
+				frenzy_hardness = max(1, frenzy_hardness - 1)
 			else
-				frenzy_hardness = min(10, src.frenzy_hardness+1)
+				frenzy_hardness = min(10, frenzy_hardness + 1)
 
 /mob/living/proc/enter_frenzymod()
 	if (in_frenzy)
@@ -111,8 +101,7 @@
 		frenzy_target.emote("scream")
 		humie.add_bite_animation()
 	var/mob/living/carbon/human/vamp = src
-	if(CheckEyewitness(frenzy_target, vamp, 7, FALSE))
-		vamp.AdjustMasquerade(-1)
+	SEND_SIGNAL(frenzy_target, COMSIG_MASQUERADE_VIOLATION)
 	playsound(src, 'code/modules/wod13/sounds/drinkblood1.ogg', 50, TRUE)
 	frenzy_target?.visible_message(span_warning("<b>[src] bites [frenzy_target]'s neck!</b>"), span_warning("<b>[src] bites your neck!</b></span>"))
 	vamp.drinksomeblood(frenzy_target)
@@ -204,15 +193,8 @@
 
 /datum/species/kindred/spec_life(mob/living/carbon/human/H)
 	. = ..()
-	if(H.clane?.name == CLAN_BAALI)
-		if(istype(get_area(H), /area/vtm/church))
-			if(prob(25))
-				to_chat(H, "<span class='warning'>You don't belong here!</span>")
-				H.adjustFireLoss(20)
-				H.adjust_fire_stacks(6)
-				H.IgniteMob()
 	//FIRE FEAR
-	if(H.antifrenzy || HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
+	if(HAS_TRAIT(H, TRAIT_NO_FRENZY) || HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
 		return
 	var/fearstack = 0
 	for(var/obj/effect/fire/F in GLOB.fires_list)
@@ -234,49 +216,30 @@
 	if(!fearstack && H.has_status_effect(STATUS_EFFECT_FEAR))
 		H.remove_status_effect(STATUS_EFFECT_FEAR)
 
-	//masquerade violations due to unnatural appearances
-	if(H.is_face_visible() && H.clane?.violating_appearance)
-		switch(H.clane.alt_sprite)
-			if ("kiasyd")
-				//masquerade breach if eyes are uncovered, short range
-				if (!H.is_eyes_covered())
-					if (H.CheckEyewitness(H, H, 3, FALSE))
-						H.AdjustMasquerade(-1)
-			if ("rotten3")
-				//slightly less range than if fully decomposed
-				if (H.CheckEyewitness(H, H, 5, FALSE))
-					H.AdjustMasquerade(-1)
-			else
-				//gargoyles, nosferatu, skeletons, that kind of thing
-				if (H.CheckEyewitness(H, H, 7, FALSE))
-					H.AdjustMasquerade(-1)
+	// Masquerade violations due to unnatural appearances
+	if (H.is_face_visible())
+		// Gargoyles, nosferatu, skeletons, that kind of thing
+		if (HAS_TRAIT(H, TRAIT_MASQUERADE_VIOLATING_FACE))
+			SEND_SIGNAL(H, COMSIG_MASQUERADE_VIOLATION)
+		// Masquerade breach if eyes are uncovered, short range
+		else if (HAS_TRAIT(H, TRAIT_MASQUERADE_VIOLATING_EYES))
+			if (!H.is_eyes_covered())
+				SEND_SIGNAL(H, COMSIG_MASQUERADE_VIOLATION)
 
-	if(HAS_TRAIT(H, TRAIT_UNMASQUERADE))
-		if(H.CheckEyewitness(H, H, 7, FALSE))
-			H.AdjustMasquerade(-1)
-	if(HAS_TRAIT(H, TRAIT_NONMASQUERADE))
-		if(H.CheckEyewitness(H, H, 7, FALSE))
-			H.AdjustMasquerade(-1)
+	if (HAS_TRAIT(H, TRAIT_UNMASQUERADE))
+		SEND_SIGNAL(H, COMSIG_MASQUERADE_VIOLATION)
 
 	if(H.hearing_ghosts)
 		H.bloodpool = max(0, H.bloodpool-1)
 		to_chat(H, "<span class='warning'>Necromancy Vision reduces your blood points too sustain itself.</span>")
 
-	if(H.clane?.name == CLAN_TZIMISCE || H.clane?.name == CLAN_OLD_TZIMISCE)
-		var/datum/vampireclane/tzimisce/TZ = H.clane
+	if(H.clan?.name == CLAN_TZIMISCE || H.clan?.name == CLAN_OLD_TZIMISCE)
+		var/datum/vampire_clan/tzimisce/TZ = H.clan
 		if(TZ.heirl)
 			if(!(TZ.heirl in H.GetAllContents()))
 				if(prob(5))
 					to_chat(H, "<span class='warning'>You are missing your home soil...</span>")
 					H.bloodpool = max(0, H.bloodpool-1)
-	if(H.clane?.name == CLAN_KIASYD)
-		var/datum/vampireclane/kiasyd/kiasyd = H.clane
-		for(var/obj/item/I in H.contents)
-			if(I?.is_iron)
-				if (COOLDOWN_FINISHED(kiasyd, cold_iron_frenzy))
-					COOLDOWN_START(kiasyd, cold_iron_frenzy, 10 SECONDS)
-					H.rollfrenzy()
-					to_chat(H, "<span class='warning'>[I] is <b>COLD IRON</b>!")
 
 	if(H.key && (H.stat <= HARD_CRIT))
 		var/datum/preferences/P = GLOB.preferences_datums[ckey(H.key)]
@@ -285,19 +248,16 @@
 				P.path_score = H.morality_path.score
 				P.save_preferences()
 				P.save_character()
-			if(P.masquerade != H.masquerade)
-				P.masquerade = H.masquerade
-				P.save_preferences()
-				P.save_character()
-			if(!H.antifrenzy)
+			if(!HAS_TRAIT(H, TRAIT_NO_FRENZY))
 				if(P.path_score < 1)
 					H.enter_frenzymod()
 					to_chat(H, "<span class='userdanger'>You have lost control of the Beast within you, and it has taken your body. Be more [H.client.prefs.is_enlightened ? "Enlightened" : "humane"] next time.</span>")
 					H.ghostize(FALSE)
 					P.reason_of_death = "Lost control to the Beast ([time2text(world.timeofday, "YYYY-MM-DD hh:mm:ss")])."
 
-	if(H.clane && !H.antifrenzy && !HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
-		if(H.clane.name == CLAN_BANU_HAQIM)
+	// TODO: [Lucia] this needs to be a component
+	if(H.clan && !HAS_TRAIT(H, TRAIT_NO_FRENZY) && !HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
+		if(HAS_TRAIT(H, TRAIT_VITAE_ADDICTION))
 			if(H.mind)
 				if(H.mind.enslaved_to)
 					if(get_dist(H, H.mind.enslaved_to) > 10)
@@ -311,7 +271,7 @@
 			if(H.bloodpool > 1 || H.in_frenzy)
 				H.last_frenzy_check = world.time
 
-	if(!H.antifrenzy && !HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
+	if(!HAS_TRAIT(H, TRAIT_NO_FRENZY) && !HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
 		if(H.bloodpool <= 1 && !H.in_frenzy)
 			if((H.last_frenzy_check + 40 SECONDS) <= world.time)
 				H.last_frenzy_check = world.time

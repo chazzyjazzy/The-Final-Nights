@@ -18,6 +18,9 @@
 /mob/living/carbon/human/proc/drinksomeblood(mob/living/mob)
 	if(!mob)
 		return
+	if(HAS_TRAIT(src, TRAIT_BABY_TEETH))
+		to_chat(src, span_warning("Your fangs won't manage to pierce the skin let alone suck in their state."))
+		return FALSE
 	var/bloodgain = max(1, mob.bloodquality-1)
 	var/fumbled = FALSE
 	last_drinkblood_use = world.time
@@ -35,12 +38,17 @@
 	if(HAS_TRAIT(src, TRAIT_BLOODY_SUCKER))
 		src.emote("moan")
 		Immobilize(30, TRUE)
+//TFN EDIT START
+	if(isanimal(mob) && HAS_TRAIT(src, TRAIT_ANIMAL_SUCCULENCE))
+		bloodgain += 2
+	if(ishuman(mob) && HAS_TRAIT(src, TRAIT_QUICKEN_MORTAL_BLOOD))
+		bloodgain += 1
+//TFN EDIT FINISH
 	playsound_local(src, heartbeat, 75, 0, channel = CHANNEL_BLOOD, use_reverb = FALSE)
 	if(isnpc(mob))
 		var/mob/living/carbon/human/npc/NPC = mob
 		NPC.danger_source = null
 		mob.Stun(40) //NPCs don't get to resist
-
 	if(mob.bloodpool <= 1 && mob.maxbloodpool > 1)
 		to_chat(src, span_warning("You feel only a sliver of <b>BLOOD</b> in your victim."))
 		if(iskindred(mob) && iskindred(src))
@@ -60,8 +68,7 @@
 			to_chat(src, span_userdanger("YOU TRY TO COMMIT DIABLERIE ON [mob]."))
 
 	if(!HAS_TRAIT(src, TRAIT_BLOODY_LOVER))
-		if(CheckEyewitness(src, src, 7, FALSE))
-			AdjustMasquerade(-1)
+		SEND_SIGNAL(src, COMSIG_MASQUERADE_VIOLATION)
 	if(do_after(src, 30, target = mob, timed_action_flags = NONE, progress = FALSE))
 		mob.bloodpool = max(0, mob.bloodpool-1)
 		suckbar.icon_state = "[round(14*(mob.bloodpool/mob.maxbloodpool))]"
@@ -91,20 +98,18 @@
 				if(length(H.reagents.reagent_list))
 					if(prob(50))
 						H.reagents.trans_to(src, min(10, H.reagents.total_volume), transfered_by = mob, methods = VAMPIRE)
-		if(clane)
-			if(clane.name == CLAN_GIOVANNI)
-				mob.adjustBruteLoss(20, TRUE)
-			if(clane.name == CLAN_VENTRUE && mob.bloodquality < BLOOD_QUALITY_NORMAL)	//Ventrue can suck on normal people, but not homeless people and animals. BLOOD_QUALITY_LOV - 1, BLOOD_QUALITY_NORMAL - 2, BLOOD_QUALITY_HIGH - 3. Blue blood gives +1 to suction
-				to_chat(src, "<span class='warning'>You are too privileged to drink that awful <b>BLOOD</b>. Go get something better.</span>")
-				visible_message("<span class='danger'>[src] throws up!</span>", "<span class='userdanger'>You throw up!</span>")
-				playsound(get_turf(src), 'code/modules/wod13/sounds/vomit.ogg', 75, TRUE)
-				if(isturf(loc))
-					add_splatter_floor(loc)
-				stop_sound_channel(CHANNEL_BLOOD)
-				if(client)
-					client.images -= suckbar
-				qdel(suckbar)
-				return
+		if(HAS_TRAIT(src, TRAIT_PAINFUL_VAMPIRE_KISS))
+			mob.adjustBruteLoss(20, TRUE)
+		if(HAS_TRAIT(src, TRAIT_FEEDING_RESTRICTION) && mob.bloodquality < BLOOD_QUALITY_NORMAL)	//Ventrue can suck on normal people, but not homeless people and animals. BLOOD_QUALITY_LOV - 1, BLOOD_QUALITY_NORMAL - 2, BLOOD_QUALITY_HIGH - 3. Blue blood gives +1 to suction
+			to_chat(src, "<span class='warning'>You are too privileged to drink that awful <b>BLOOD</b>. Go get something better.</span>")
+			visible_message("<span class='danger'>[src] throws up!</span>", "<span class='userdanger'>You throw up!</span>")
+			if(isturf(loc))
+				add_splatter_floor(loc)
+			stop_sound_channel(CHANNEL_BLOOD)
+			if(client)
+				client.images -= suckbar
+			qdel(suckbar)
+			return
 		if(HAS_TRAIT(src, TRAIT_ORGANOVORE))
 			mob.adjustBruteLoss(20, TRUE) // sharp teeth
 			to_chat(src, span_warning("You can't drink this disgusting <b>BLOOD</b>. Go find something meatier!"))
@@ -117,7 +122,7 @@
 				client.images -= suckbar
 			qdel(suckbar)
 			return
-		if(clane.name == CLAN_SALUBRI_WARRIOR && (ishumanbasic(mob) || isghoul(mob))) //passes by if it's not a supernatural
+		if(clan.name == CLAN_SALUBRI_WARRIOR && (ishumanbasic(mob) || isghoul(mob))) //passes by if it's not a supernatural
 			if( (!HAS_TRAIT_FROM(mob, TRAIT_INCAPACITATED, STAMINA)) && mob.stat < SOFT_CRIT) //Needs to be KO'd to feed on
 				to_chat(src, span_warning("I HAVE NOT BESTED THIS ONE IN COMBAT!! I FEED ON WARRIORS, NOT CATTLE!!"))
 				stop_sound_channel(CHANNEL_BLOOD)
@@ -155,8 +160,10 @@
 					var/confirmation = tgui_alert(src, "Attempt to diablerize [mob]?", "Diablerize", buttons = list("Yes", "No"))
 					if(confirmation == "Yes")
 						SEND_SIGNAL(src, COMSIG_PATH_HIT, PATH_SCORE_DOWN, 0)
-						AdjustMasquerade(-1)
+						SEND_SIGNAL(src, COMSIG_MASQUERADE_VIOLATION)
 						if(do_after(src, 60 SECONDS, mob))
+							if(mob.has_status_effect(/datum/status_effect/blood_of_potency))
+								mob.remove_status_effect(/datum/status_effect/blood_of_potency)
 							if(K.generation >= generation)
 								message_admins("[ADMIN_LOOKUPFLW(src)] successfully Diablerized [ADMIN_LOOKUPFLW(mob)]")
 								log_attack("[key_name(src)] successfully Diablerized [key_name(mob)].")
@@ -217,7 +224,7 @@
 							to_chat(src, "<span class='userdanger'><b>POLICE ASSAULT IN PROGRESS</b></span>")
 					SEND_SOUND(src, sound('code/modules/wod13/sounds/feed_failed.ogg', 0, 0, 75))
 					to_chat(src, "<span class='warning'>This sad sacrifice for your own pleasure affects something deep in your mind.</span>")
-					AdjustMasquerade(-1)
+					SEND_SIGNAL(src, COMSIG_MASQUERADE_VIOLATION)
 					SEND_SIGNAL(src, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
 					mob.death()
 			if(!ishuman(mob))

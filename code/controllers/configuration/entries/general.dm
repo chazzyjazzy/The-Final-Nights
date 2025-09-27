@@ -77,30 +77,43 @@
 /// log usage of tools
 /datum/config_entry/flag/log_tools
 
-/datum/config_entry/flag/log_game	// log game events
+/// log game events
+/datum/config_entry/flag/log_game
 
-/datum/config_entry/flag/log_mecha	// log mech data
+/// log mech data
+/datum/config_entry/flag/log_mecha
 
-/datum/config_entry/flag/log_virus	// log virology data
+/// log virology data
+/datum/config_entry/flag/log_virus
 
+/// log assets
 /datum/config_entry/flag/log_asset
 
-/datum/config_entry/flag/log_vote	// log voting
+/// log voting
+/datum/config_entry/flag/log_vote
 
-/datum/config_entry/flag/log_whisper	// log client whisper
+/// log manual zone switching
+/datum/config_entry/flag/log_zone_switch
 
-/datum/config_entry/flag/log_subtle
+/// log client whisper
+/datum/config_entry/flag/log_whisper
 
-/datum/config_entry/flag/log_subtler
+/// log attack messages
+/datum/config_entry/flag/log_attack
 
-/datum/config_entry/flag/log_attack	// log attack messages
+/// log emotes
+/datum/config_entry/flag/log_emote
 
-/datum/config_entry/flag/log_emote	// log emotes
+/// log ghost polling
+/datum/config_entry/flag/log_ghost_poll
+	default = TRUE
+
 // TFN EDIT ADDITION START
 /datum/config_entry/flag/log_subtle  // TFN EDIT: log subtle emotes
 
 /datum/config_entry/flag/log_subtler  // TFN EDIT: log subtler emotes
 // TFN EDIT ADDITION END
+
 /datum/config_entry/flag/log_econ	// log economy actions
 
 /datum/config_entry/flag/log_traitor /// log traitor objectives
@@ -130,6 +143,8 @@
 /datum/config_entry/flag/log_job_debug	// log roundstart divide occupations debug information to a file
 
 /datum/config_entry/flag/log_shuttle // log shuttle related actions, ie shuttle computers, shuttle manipulator, emergency console
+
+/datum/config_entry/flag/log_timers_on_bucket_reset // logs all timers in buckets on automatic bucket reset (Useful for timer debugging)
 
 /datum/config_entry/flag/allow_admin_asaycolor //Allows admins with relevant permissions to have a personalized asay color
 
@@ -542,7 +557,16 @@
 
 /datum/config_entry/flag/auto_profile
 
-/datum/config_entry/string/centcom_ban_db	// URL for the CentCom Galactic Ban DB API
+/datum/config_entry/number/profiler_interval
+	default = 300 SECONDS
+
+/datum/config_entry/number/drift_dump_threshold
+	default = 4 SECONDS
+
+/datum/config_entry/number/drift_profile_delay
+	default = 15 SECONDS
+
+/datum/config_entry/string/centcom_ban_db // URL for the CentCom Galactic Ban DB API
 
 /datum/config_entry/string/centcom_source_whitelist
 
@@ -568,15 +592,27 @@
 
 /datum/config_entry/string/adminhelp_ahelp_link
 
+/// Enables sending certain actions to a Discord webhook for review
+/datum/config_entry/flag/discord_overwatch
+
+/datum/config_entry/string/discord_overwatch_webhook
+	protection = CONFIG_ENTRY_LOCKED | CONFIG_ENTRY_HIDDEN
+
+/datum/config_entry/flag/forbid_all_profiling
+
+/datum/config_entry/flag/forbid_admin_profiling
+
+/// If admins with +DEBUG can initialize byond-tracy midround.
+/datum/config_entry/flag/allow_tracy_start
+	protection = CONFIG_ENTRY_LOCKED
+
+/// If admins with +DEBUG can queue byond-tracy to run the next round.
+/datum/config_entry/flag/allow_tracy_queue
+	protection = CONFIG_ENTRY_LOCKED
+
 /**
  * Tgui ui_act payloads larger than 2kb are split into chunks a maximum of 1kb in size.
  * This flag represents the maximum chunk count the server is willing to receive.
  */
 /datum/config_entry/number/tgui_max_chunk_count
 	default = 32
-
-/// Enables sending certain actions to a Discord webhook for review
-/datum/config_entry/flag/discord_overwatch
-
-/datum/config_entry/string/discord_overwatch_webhook
-	protection = CONFIG_ENTRY_LOCKED | CONFIG_ENTRY_HIDDEN

@@ -365,7 +365,7 @@
 	grid_width = old_height
 	to_chat(user, span_notice("You flip the item for storage."))
 	return ..()
-	
+
 /mob/living/CtrlClick(mob/living/user)
 	if(!isliving(user) || !user.CanReach(src) || user.incapacitated())
 		return ..()

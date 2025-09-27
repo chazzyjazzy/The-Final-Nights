@@ -535,6 +535,60 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 
 	return dresscode
 
+/client/proc/cmd_admin_rejuvenate(mob/living/M in GLOB.mob_list)
+	set category = "Debug"
+	set name = "Rejuvenate"
+
+	if(!check_rights(R_ADMIN))
+		return
+
+	if(!mob)
+		return
+	if(!istype(M))
+		tgui_alert(usr,"Cannot revive a ghost")
+		return
+	M.revive(full_heal = TRUE, admin_revive = TRUE)
+
+	log_admin("[key_name(usr)] healed / revived [key_name(M)]")
+	var/msg = span_danger("Admin [key_name_admin(usr)] healed / revived [ADMIN_LOOKUPFLW(M)]!")
+	message_admins(msg)
+	admin_ticket_log(M, msg)
+	SSblackbox.record_feedback("tally", "admin_verb", 1, "Rejuvenate") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
+
+/client/proc/cmd_admin_delete(atom/A as obj|mob|turf in world)
+	set category = "Debug"
+	set name = "Delete"
+
+	if(!check_rights(R_SPAWN|R_DEBUG))
+		return
+
+	admin_delete(A)
+
+/client/proc/cmd_admin_check_contents(mob/living/M in GLOB.mob_list)
+	set category = "Debug"
+	set name = "Check Contents"
+
+	var/list/L = M.get_contents()
+	for(var/t in L)
+		to_chat(usr, "[t] [ADMIN_VV(t)] [ADMIN_TAG(t)]", confidential = TRUE)
+	SSblackbox.record_feedback("tally", "admin_verb", 1, "Check Contents") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
+
+/client/proc/modify_goals()
+	set category = "Debug"
+	set name = "Modify goals"
+
+	if(!check_rights(R_ADMIN))
+		return
+
+	holder.modify_goals()
+
+/datum/admins/proc/modify_goals()
+	var/dat = ""
+	for(var/datum/station_goal/S in SSticker.mode.station_goals)
+		dat += "[S.name] - <a href='?src=[REF(S)];[HrefToken()];announce=1'>Announce</a> | <a href='?src=[REF(S)];[HrefToken()];remove=1'>Remove</a><br>"
+	dat += "<br><a href='?src=[REF(src)];[HrefToken()];add_station_goal=1'>Add New Goal</a>"
+	usr << browse(dat, "window=goals;size=400x400")
+
 /client/proc/cmd_debug_mob_lists()
 	set category = "Debug"
 	set name = "Debug Mob Lists"
@@ -863,7 +917,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 	var/list/sorted = list()
 	for (var/source in per_source)
 		sorted += list(list("source" = source, "count" = per_source[source]))
-	sorted = sortTim(sorted, GLOBAL_PROC_REF(cmp_timer_data))
+	sortTim(sorted, GLOBAL_PROC_REF(cmp_timer_data))
 
 	// Now that everything is sorted, compile them into an HTML output
 	var/output = "<table border='1'>"
@@ -945,5 +999,66 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 			if(sprite.slot_flags & ITEM_SLOT_SUITSTORE)
 				actual_file_name = 'icons/mob/clothing/belt_mirror.dmi'
 				if(!(sprite.icon_state in icon_states(actual_file_name)))
-					to_chat(src, "<span class='warning'>ERROR sprites for [sprite.type]. Suit Storage slot.</span>", confidential = TRUE)
+					to_chat(src, span_warning("ERROR sprites for [sprite.type]. Suit Storage slot."), confidential = TRUE)
+#endif
+
+#ifndef OPENDREAM
+/client/proc/start_tracy()
+	set category = "Debug"
+	set name = "Run Tracy Now"
+	set desc = "Start running the byond-tracy profiler immediately."
+
+	if(!check_rights(R_DEBUG))
+		return
+
+	if(!CONFIG_GET(flag/allow_tracy_start))
+		to_chat(usr, span_warning("byond-tracy config disabled!"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+		return
+
+	if(!fexists(TRACY_DLL_PATH))
+		to_chat(usr, span_warning("byond-tracy not found!"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+		return
+
+	if(Tracy.enabled)
+		to_chat(usr, span_warning("byond-tracy is already running!"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+		return
+	else if(Tracy.error)
+		to_chat(usr, span_danger("byond-tracy failed to initialize during an earlier attempt: [Tracy.error]"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+		return
+	message_admins(span_adminnotice("[key_name_admin(usr)] is trying to start the byond-tracy profiler."))
+	log_admin("[key_name(usr)] is trying to start the byond-tracy profiler.")
+	if(!Tracy.enable("[usr.ckey]"))
+		var/error = Tracy.error || "N/A"
+		to_chat(usr, span_danger("byond-tracy failed to initialize: [error]"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+		message_admins(span_adminnotice("[key_name_admin(usr)] tried to start the byond-tracy profiler, but it failed to initialize ([error])"))
+		log_admin("[key_name(usr)] tried to start the byond-tracy profiler, but it failed to initialize ([error])")
+		return
+	to_chat(usr, span_notice("byond-tracy successfully started!"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+	message_admins(span_adminnotice("[key_name_admin(usr)] started the byond-tracy profiler."))
+	log_admin("[key_name(usr)] started the byond-tracy profiler.")
+	if(Tracy.trace_path)
+		rustg_file_write("[Tracy.trace_path]", "[GLOB.log_directory]/tracy.loc")
+
+/client/proc/queue_tracy()
+	set category = "Debug"
+	set name = "Toggle Tracy Next Round"
+	set desc = "Toggle running the byond-tracy profiler next round."
+
+	if(!check_rights(R_DEBUG))
+		return
+
+	if(!CONFIG_GET(flag/allow_tracy_queue))
+		to_chat(usr, span_warning("byond-tracy config disabled!"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+		return
+
+	if(!fexists(TRACY_DLL_PATH))
+		to_chat(usr, span_warning("byond-tracy not found!"), avoid_highlighting = TRUE, type = MESSAGE_TYPE_DEBUG, confidential = TRUE)
+		return
+
+	if(fexists(TRACY_ENABLE_PATH))
+		fdel(TRACY_ENABLE_PATH)
+	else
+		rustg_file_write("[usr.ckey]", TRACY_ENABLE_PATH)
+	message_admins(span_adminnotice("[key_name_admin(usr)] [fexists(TRACY_ENABLE_PATH) ? "enabled" : "disabled"] the byond-tracy profiler for next round."))
+	log_admin("[key_name(usr)] [fexists(TRACY_ENABLE_PATH) ? "enabled" : "disabled"] the byond-tracy profiler for next round.")
 #endif

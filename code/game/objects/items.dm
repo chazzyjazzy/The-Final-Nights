@@ -205,13 +205,9 @@ GLOBAL_VAR_INIT(embedpocalypse, FALSE) // if true, all items will be able to emb
 
 	var/canMouseDown = FALSE
 
-	//WoD13 vars start here :3
-
-	//lombard.dm VARIABLES
-	///Determines items sell price.
 	var/cost = 0
-	///Determines whether an item can be sold in the black market.
-	var/illegal = FALSE
+
+	//WoD13 vars start here :3
 
 	//gridventory.dm VARIABLES
 	///Width we occupy on the gridventory hud - Keep null to generate based on w_class
@@ -416,8 +412,6 @@ GLOBAL_VAR_INIT(embedpocalypse, FALSE) // if true, all items will be able to emb
 		return
 	if(anchored)
 		return
-	if(HAS_TRAIT(user, TRAIT_NO_HANDS))
-		return
 
 	. = TRUE
 
@@ -546,6 +540,7 @@ GLOBAL_VAR_INIT(embedpocalypse, FALSE) // if true, all items will be able to emb
 /obj/item/proc/pickup(mob/user)
 	SHOULD_CALL_PARENT(TRUE)
 	SEND_SIGNAL(src, COMSIG_ITEM_PICKUP, user)
+	SEND_SIGNAL(user, COMSIG_LIVING_PICKED_UP_ITEM, src)
 	item_flags |= IN_INVENTORY
 
 /// called when "found" in pockets and storage items. Returns 1 if the search should end.
@@ -947,13 +942,13 @@ GLOBAL_VAR_INIT(embedpocalypse, FALSE) // if true, all items will be able to emb
 	return TRUE
 
 /// Called before [obj/item/proc/use_tool] if there is a delay, or by [obj/item/proc/use_tool] if there isn't. Only ever used by welding tools and stacks, so it's not added on any other [obj/item/proc/use_tool] checks.
-/obj/item/proc/tool_start_check(mob/living/user, amount=0)
-	. = tool_use_check(user, amount)
+/obj/item/proc/tool_start_check(mob/living/user, amount=0, heat_required=0)
+	. = tool_use_check(user, amount, heat_required)
 	if(.)
 		SEND_SIGNAL(src, COMSIG_TOOL_START_USE, user)
 
 /// A check called by [/obj/item/proc/tool_start_check] once, and by use_tool on every tick of delay.
-/obj/item/proc/tool_use_check(mob/living/user, amount)
+/obj/item/proc/tool_use_check(mob/living/user, amount, heat_required)
 	return !amount
 
 /// Generic use proc. Depending on the item, it uses up fuel, charges, sheets, etc. Returns TRUE on success, FALSE on failure.
@@ -1201,6 +1196,16 @@ GLOBAL_VAR_INIT(embedpocalypse, FALSE) // if true, all items will be able to emb
 /obj/item/proc/on_offer_taken(mob/living/carbon/offerer, mob/living/carbon/taker)
 	if(SEND_SIGNAL(src, COMSIG_ITEM_OFFER_TAKEN, offerer, taker) & COMPONENT_OFFER_INTERRUPT)
 		return TRUE
+
+/// Common proc used by painting tools like spraycans and palettes that can access the entire 24 bits color space.
+/obj/item/proc/pick_painting_tool_color(mob/user, default_color)
+	var/chosen_color = input(user,"Pick new color", "[src]", default_color) as color|null
+	if(!chosen_color || QDELETED(src) || IS_DEAD_OR_INCAP(user) || !user.is_holding(src))
+		return
+	set_painting_tool_color(chosen_color)
+
+/obj/item/proc/set_painting_tool_color(chosen_color)
+	SEND_SIGNAL(src, COMSIG_PAINTING_TOOL_SET_COLOR, chosen_color)
 
 /**
  * Returns null if this object cannot be used to interact with physical writing mediums such as paper.

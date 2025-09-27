@@ -61,7 +61,6 @@
 	real_explosion_block = explosion_block
 	explosion_block = EXPLOSION_BLOCK_PROC
 
-	flags_1 |= ALLOW_DARK_PAINTS_1
 
 	RegisterSignal(src, COMSIG_OBJ_PAINTED, PROC_REF(on_painted))
 	AddComponent(/datum/component/simple_rotation, ROTATION_NEEDS_ROOM)
@@ -145,6 +144,13 @@
 	if(!can_be_reached(user))
 		return
 	. = ..()
+
+//TFN EDIT
+/obj/structure/window/attack_potence(mob/living/carbon/human/user, does_attack_animation = 0)
+	if(!can_be_reached(user))
+		return
+	. = ..()
+//TFN EDIT END
 
 /obj/structure/window/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
@@ -336,17 +342,12 @@
 /obj/structure/window/GetExplosionBlock()
 	return reinf && fulltile ? real_explosion_block : 0
 
-/obj/structure/window/spawner/east
-	dir = EAST
-
-/obj/structure/window/spawner/west
-	dir = WEST
-
-/obj/structure/window/spawner/north
-	dir = NORTH
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/spawner, 0)
 
 /obj/structure/window/unanchored
 	anchored = FALSE
+
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/unanchored/spawner, 0)
 
 /obj/structure/window/reinforced
 	name = "reinforced window"
@@ -437,18 +438,13 @@
 		if(RWINDOW_BARS_CUT)
 			. += "<span class='notice'>The main pane can be easily moved out of the way to reveal some <b>bolts</b> holding the frame in.</span>"
 
-/obj/structure/window/reinforced/spawner/east
-	dir = EAST
-
-/obj/structure/window/reinforced/spawner/west
-	dir = WEST
-
-/obj/structure/window/reinforced/spawner/north
-	dir = NORTH
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/reinforced/spawner, 0)
 
 /obj/structure/window/reinforced/unanchored
 	anchored = FALSE
 	state = WINDOW_OUT_OF_FRAME
+
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/reinforced/unanchored/spawner, 0)
 
 /obj/structure/window/plasma
 	name = "plasma window"
@@ -471,17 +467,12 @@
 	if (fulltile)
 		. += new /obj/item/shard/plasma(location)
 
-/obj/structure/window/plasma/spawner/east
-	dir = EAST
-
-/obj/structure/window/plasma/spawner/west
-	dir = WEST
-
-/obj/structure/window/plasma/spawner/north
-	dir = NORTH
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/plasma/spawner, 0)
 
 /obj/structure/window/plasma/unanchored
 	anchored = FALSE
+
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/plasma/unanchored/spawner, 0)
 
 /obj/structure/window/plasma/reinforced
 	name = "reinforced plasma window"
@@ -557,14 +548,7 @@
 		if(RWINDOW_BARS_CUT)
 			. += "<span class='notice'>The main pane can be easily moved out of the way to reveal some <b>bolts</b> holding the frame in.</span>"
 
-/obj/structure/window/plasma/reinforced/spawner/east
-	dir = EAST
-
-/obj/structure/window/plasma/reinforced/spawner/west
-	dir = WEST
-
-/obj/structure/window/plasma/reinforced/spawner/north
-	dir = NORTH
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/plasma/reinforced/spawner, 0)
 
 /obj/structure/window/plasma/reinforced/unanchored
 	anchored = FALSE
@@ -573,10 +557,14 @@
 /obj/structure/window/reinforced/tinted
 	name = "tinted window"
 	icon_state = "twindow"
-	opacity = TRUE
+
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/reinforced/tinted/spawner, 0)
+
 /obj/structure/window/reinforced/tinted/frosted
 	name = "frosted window"
 	icon_state = "fwindow"
+
+MAPPING_DIRECTIONAL_HELPERS(/obj/structure/window/reinforced/tinted/frosted/spawner, 0)
 
 /* Full Tile Windows (more atom_integrity) */
 

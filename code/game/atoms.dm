@@ -48,14 +48,10 @@
 	///overlays managed by [update_overlays][/atom/proc/update_overlays] to prevent removing overlays that weren't added by the same proc
 	var/list/managed_overlays
 
-	///Proximity monitor associated with this atom
-	var/datum/proximity_monitor/proximity_monitor
 	///Cooldown tick timer for buckle messages
 	var/buckle_message_cooldown = 0
 	///Last fingerprints to touch this atom
 	var/fingerprintslast
-
-	var/list/filter_data //For handling persistent filters
 
 	///Price of an item in a vending machine, overriding the base vending machine price. Define in terms of paycheck defines as opposed to raw numbers.
 	var/custom_price
@@ -164,7 +160,7 @@
  */
 /atom/New(loc, ...)
 	//atom creation method that preloads variables at creation
-	if(GLOB.use_preloader && (src.type == GLOB._preloader.target_path))//in case the instanciated atom is creating other atoms in New()
+	if(GLOB.use_preloader && (src.type == GLOB._preloader.target_path))//in case the instantiated atom is creating other atoms in New()
 		world.preloader_load(src)
 
 	if(datum_flags & DF_USE_TAG)
@@ -173,89 +169,9 @@
 	var/do_initialize = SSatoms.initialized
 	if(do_initialize != INITIALIZATION_INSSATOMS)
 		args[1] = do_initialize == INITIALIZATION_INNEW_MAPLOAD
-		if(SSatoms.InitAtom(src, args))
+		if(SSatoms.InitAtom(src, FALSE, args))
 			//we were deleted
 			return
-
-/**
- * The primary method that objects are setup in SS13 with
- *
- * we don't use New as we have better control over when this is called and we can choose
- * to delay calls or hook other logic in and so forth
- *
- * During roundstart map parsing, atoms are queued for intialization in the base atom/New(),
- * After the map has loaded, then Initalize is called on all atoms one by one. NB: this
- * is also true for loading map templates as well, so they don't Initalize until all objects
- * in the map file are parsed and present in the world
- *
- * If you're creating an object at any point after SSInit has run then this proc will be
- * immediately be called from New.
- *
- * mapload: This parameter is true if the atom being loaded is either being intialized during
- * the Atom subsystem intialization, or if the atom is being loaded from the map template.
- * If the item is being created at runtime any time after the Atom subsystem is intialized then
- * it's false.
- *
- * You must always call the parent of this proc, otherwise failures will occur as the item
- * will not be seen as initalized (this can lead to all sorts of strange behaviour, like
- * the item being completely unclickable)
- *
- * You must not sleep in this proc, or any subprocs
- *
- * Any parameters from new are passed through (excluding loc), naturally if you're loading from a map
- * there are no other arguments
- *
- * Must return an [initialization hint][INITIALIZE_HINT_NORMAL] or a runtime will occur.
- *
- * Note: the following functions don't call the base for optimization and must copypasta handling:
- * * [/turf/proc/Initialize]
- * * [/turf/open/space/proc/Initialize]
- */
-/atom/proc/Initialize(mapload, ...)
-	SHOULD_NOT_SLEEP(TRUE)
-	SHOULD_CALL_PARENT(TRUE)
-	if(flags_1 & INITIALIZED_1)
-		stack_trace("Warning: [src]([type]) initialized multiple times!")
-	flags_1 |= INITIALIZED_1
-
-	if(loc)
-		SEND_SIGNAL(loc, COMSIG_ATOM_CREATED, src) /// Sends a signal that the new atom `src`, has been created at `loc`
-
-	if(greyscale_config && greyscale_colors)
-		update_greyscale()
-
-	//atom color stuff
-	if(color)
-		add_atom_colour(color, FIXED_COLOUR_PRIORITY)
-
-	if (light_system == STATIC_LIGHT && light_power && light_range)
-		update_light()
-
-	if (length(smoothing_groups))
-		sortTim(smoothing_groups) //In case it's not properly ordered, let's avoid duplicate entries with the same values.
-		SET_BITFLAG_LIST(smoothing_groups)
-	if (length(canSmoothWith))
-		sortTim(canSmoothWith)
-		if(canSmoothWith[length(canSmoothWith)] > MAX_S_TURF) //If the last element is higher than the maximum turf-only value, then it must scan turf contents for smoothing targets.
-			smoothing_flags |= SMOOTH_OBJ
-		SET_BITFLAG_LIST(canSmoothWith)
-
-	// apply materials properly from the default custom_materials value
-	set_custom_materials(custom_materials)
-
-	if(uses_integrity)
-		if (islist(armor))
-			armor = getArmor(arglist(armor))
-		else if (!armor)
-			armor = getArmor()
-		else if (!istype(armor, /datum/armor))
-			stack_trace("Invalid type [armor.type] found in .armor during /atom Initialize()")
-		atom_integrity = max_integrity
-
-	ComponentInitialize()
-	InitializeAIController()
-
-	return INITIALIZE_HINT_NORMAL
 
 /**
  * Late Intialization, for code that should run after all atoms have run Intialization
@@ -424,6 +340,10 @@
 ///This atom has been hit by a hulkified mob in hulk mode (user)
 /atom/proc/attack_hulk(mob/living/carbon/human/user)
 	SEND_SIGNAL(src, COMSIG_ATOM_HULK_ATTACK, user)
+
+///This atom has been hit by a mob using Potence (user)
+/atom/proc/attack_potence(mob/living/carbon/human/user)
+	SEND_SIGNAL(src, COMSIG_ATOM_POTENCE_ATTACK, user)
 
 /**
  * Ensure a list of atoms/reagents exists inside this atom
@@ -594,7 +514,7 @@
  * Default behaviour is to get the name and icon of the object and it's reagents where
  * the [TRANSPARENT] flag is set on the reagents holder
  *
- * Produces a signal [COMSIG_PARENT_EXAMINE]
+ * Produces a signal [COMSIG_ATOM_EXAMINE]
  */
 /atom/proc/examine(mob/user)
 	var/examine_string = get_examine_string(user, thats = TRUE)
@@ -633,18 +553,18 @@
 			else
 				. += "<span class='danger'>It's empty.</span>"
 
-	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE, user, .)
+	SEND_SIGNAL(src, COMSIG_ATOM_EXAMINE, user, .)
 /**
  * Called when a mob examines (shift click or verb) this atom twice (or more) within EXAMINE_MORE_TIME (default 1.5 seconds)
  *
  * This is where you can put extra information on something that may be superfluous or not important in critical gameplay
  * moments, while allowing people to manually double-examine to take a closer look
  *
- * Produces a signal [COMSIG_PARENT_EXAMINE_MORE]
+ * Produces a signal [COMSIG_ATOM_EXAMINE_MORE]
  */
 /atom/proc/examine_more(mob/user)
 	. = list()
-	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE_MORE, user, .)
+	SEND_SIGNAL(src, COMSIG_ATOM_EXAMINE_MORE, user, .)
 	if(!LAZYLEN(.)) // lol ..length
 		return list("<span class='notice'><i>You examine [src] closer, but find nothing of interest...</i></span>")
 
@@ -797,13 +717,13 @@
 
 ///returns the mob's dna info as a list, to be inserted in an object's blood_DNA list
 /mob/living/proc/get_blood_dna_list()
-	if(get_blood_id() != /datum/reagent/blood)
+	if(!(get_blood_id() in typesof(/datum/reagent/blood))) //TFN EDIT, ORIGINAL: if(get_blood_id() != /datum/reagent/blood)
 		return
 	return list("ANIMAL DNA" = "Y-")
 
 ///Get the mobs dna list
 /mob/living/carbon/get_blood_dna_list()
-	if(get_blood_id() != /datum/reagent/blood)
+	if(!(get_blood_id() in typesof(/datum/reagent/blood))) //TFN EDIT, ORIGINAL: if(get_blood_id() != /datum/reagent/blood)
 		return
 	var/list/blood_dna = list()
 	if(dna)
@@ -1105,6 +1025,7 @@
 	VV_DROPDOWN_OPTION(VV_HK_TRIGGER_EXPLOSION, "Explosion")
 	VV_DROPDOWN_OPTION(VV_HK_RADIATE, "Radiate")
 	VV_DROPDOWN_OPTION(VV_HK_EDIT_FILTERS, "Edit Filters")
+	VV_DROPDOWN_OPTION(VV_HK_EDIT_COLOR_MATRIX, "Edit Color as Matrix")
 	VV_DROPDOWN_OPTION(VV_HK_ADD_AI, "Add AI controller")
 	if(greyscale_colors)
 		VV_DROPDOWN_OPTION(VV_HK_MODIFY_GREYSCALE, "Modify greyscale colors")
@@ -1189,6 +1110,10 @@
 	if(href_list[VV_HK_EDIT_FILTERS] && check_rights(R_VAREDIT))
 		var/client/C = usr.client
 		C?.open_filter_editor(src)
+
+	if(href_list[VV_HK_EDIT_COLOR_MATRIX] && check_rights(R_VAREDIT))
+		var/client/C = usr.client
+		C?.open_color_matrix_editor(src)
 
 /atom/vv_get_header()
 	. = ..()
@@ -1429,80 +1354,14 @@
 		return FALSE
 	return TRUE
 
-///Generate a tag for this atom
-/atom/proc/GenerateTag()
-	return
-
 ///Connect this atom to a shuttle
 /atom/proc/connect_to_shuttle(obj/docking_port/mobile/port, obj/docking_port/stationary/dock)
 	return
 
-/atom/proc/add_filter(name,priority,list/params)
-	LAZYINITLIST(filter_data)
-	var/list/p = params.Copy()
-	p["priority"] = priority
-	filter_data[name] = p
-	update_filters()
 
-/atom/proc/update_filters()
-	filters = null
-	filter_data = sortTim(filter_data, GLOBAL_PROC_REF(cmp_filter_data_priority), TRUE)
-	for(var/f in filter_data)
-		var/list/data = filter_data[f]
-		var/list/arguments = data.Copy()
-		arguments -= "priority"
-		filters += filter(arglist(arguments))
-	UNSETEMPTY(filter_data)
-
-/atom/proc/transition_filter(name, time, list/new_params, easing, loop)
-	var/filter = get_filter(name)
-	if(!filter)
-		return
-
-	var/list/old_filter_data = filter_data[name]
-
-	var/list/params = old_filter_data.Copy()
-	for(var/thing in new_params)
-		params[thing] = new_params[thing]
-
-	animate(filter, new_params, time = time, easing = easing, loop = loop)
-	for(var/param in params)
-		filter_data[name][param] = params[param]
-
-/atom/proc/change_filter_priority(name, new_priority)
-	if(!filter_data || !filter_data[name])
-		return
-
-	filter_data[name]["priority"] = new_priority
-	update_filters()
-
-/obj/item/update_filters()
-	. = ..()
-	for(var/X in actions)
-		var/datum/action/A = X
-		A.UpdateButtonIcon()
-
-/atom/proc/get_filter(name)
-	if(filter_data && filter_data[name])
-		return filters[filter_data.Find(name)]
-
-/atom/proc/remove_filter(name_or_names)
-	if(!filter_data)
-		return
-
-	var/list/names = islist(name_or_names) ? name_or_names : list(name_or_names)
-
-	for(var/name in names)
-		if(filter_data[name])
-			filter_data -= name
-	update_filters()
-
-/atom/proc/clear_filters()
-	filter_data = null
-	filters = null
-
-/atom/proc/intercept_zImpact(atom/movable/AM, levels = 1)
-	. |= SEND_SIGNAL(src, COMSIG_ATOM_INTERCEPT_Z_FALL, AM, levels)
+/atom/proc/intercept_zImpact(list/falling_movables, levels = 1)
+	SHOULD_CALL_PARENT(TRUE)
+	. |= SEND_SIGNAL(src, COMSIG_ATOM_INTERCEPT_Z_FALL, falling_movables, levels)
 
 /// Sets the custom materials for an item.
 /atom/proc/set_custom_materials(list/materials, multiplier = 1)

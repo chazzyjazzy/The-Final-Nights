@@ -15,8 +15,6 @@
 	punchdamagehigh = 20
 	dust_anim = "dust-h"
 	var/mob/living/carbon/human/master
-	var/changed_master = FALSE
-	var/last_vitae = 0
 	var/list/datum/discipline/disciplines = list()
 	selectable = TRUE
 
@@ -59,15 +57,15 @@
 		dat += "<BR>"
 		if(G.master)
 			dat += "My Regnant is [G.master.real_name], I should obey their wants.<BR>"
-			if(G.master.clane)
-				if(G.master.clane.name != CLAN_NONE)
-					dat += "Regnant's clan is [G.master.clane], maybe I can try some of it's disciplines..."
+			if(G.master.clan)
+				if(G.master.clan.name != CLAN_NONE)
+					dat += "Regnant's clan is [G.master.clan], maybe I can try some of it's disciplines..."
 		if(host.mind.special_role)
 			for(var/datum/antagonist/A in host.mind.antag_datums)
 				if(A.objectives)
 					dat += "[printobjectives(A.objectives)]<BR>"
 		var/masquerade_level = " followed the Masquerade Tradition perfectly."
-		switch(host.masquerade)
+		switch(host.masquerade_score)
 			if(4)
 				masquerade_level = " broke the Masquerade rule once."
 			if(3)
@@ -127,6 +125,7 @@
 	var/datum/discipline/bloodheal/giving_bloodheal = new(1)
 	C.give_discipline(giving_bloodheal)
 
+	C.set_clan(null)
 	C.generation = 13
 	C.bloodpool = 10
 	C.maxbloodpool = 10
@@ -234,8 +233,7 @@
 		button.color = "#970000"
 		animate(button, color = "#ffffff", time = 20, loop = 1)
 		if(length(H.all_wounds))
-			for(var/i in 1 to min(5, length(H.all_wounds)))
-				var/datum/wound/W = pick(H.all_wounds)
+			for(var/datum/wound/W as anything in H.all_wounds)
 				W.remove_wound()
 		H.adjustCloneLoss(-5, TRUE)
 		var/obj/item/organ/eyes/eyes = H.getorganslot(ORGAN_SLOT_EYES)
@@ -257,24 +255,13 @@
 /datum/species/ghoul/spec_life(mob/living/carbon/human/H)
 	. = ..()
 	if(HAS_TRAIT(H, TRAIT_UNMASQUERADE))
-		if(H.CheckEyewitness(H, H, 7, FALSE))
-			H.AdjustMasquerade(-1)
-	if(H.key && H.stat != DEAD)
-		var/datum/preferences/P = GLOB.preferences_datums[ckey(H.key)]
-		if(P)
-			if(P.masquerade != H.masquerade)
-				P.masquerade = H.masquerade
-				P.save_preferences()
-				P.save_character()
+		SEND_SIGNAL(H, COMSIG_MASQUERADE_VIOLATION)
 
 /datum/species/human/spec_life(mob/living/carbon/human/H)
 	. = ..()
-	if(HAS_TRAIT(H, TRAIT_UNMASQUERADE))
-		if(H.CheckEyewitness(H, H, 7, FALSE))
-			H.AdjustMasquerade(-1)
 
-	if((H.last_bloodpool_restore + 60 SECONDS) <= world.time)
-		H.last_bloodpool_restore = world.time
+	if(COOLDOWN_FINISHED(H, bloodpool_restore))
+		COOLDOWN_START(H, bloodpool_restore, 1 MINUTES)
 		H.bloodpool = min(H.maxbloodpool, H.bloodpool+1)
 
 
@@ -285,7 +272,7 @@
  * Arguments:
  * * searched_discipline - Name or typepath of the Discipline being searched for.
  */
-/datum/species/ghoul/proc/get_discipline(searched_discipline)
+/datum/species/ghoul/get_discipline(searched_discipline)
 	for(var/datum/discipline/discipline in disciplines)
 		if (ispath(searched_discipline, /datum/discipline))
 			if (istype(discipline, searched_discipline))

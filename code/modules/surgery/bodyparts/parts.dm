@@ -41,9 +41,6 @@
 	max_damage = 500
 	animal_origin = ALIEN_BODYPART
 
-/obj/item/bodypart/chest/crinos
-	max_damage = 600
-
 /obj/item/bodypart/chest/larva
 	icon = 'icons/mob/animal_parts.dmi'
 	icon_state = "larva_chest"
@@ -65,7 +62,7 @@
 	body_zone = BODY_ZONE_L_ARM
 	body_part = ARM_LEFT
 	aux_zone = BODY_ZONE_PRECISE_L_HAND
-	aux_layer = HANDS_PART_LAYER
+	aux_layer = BODYPARTS_HIGH_LAYER
 	body_damage_coeff = 0.75
 	held_index = 1
 	px_x = -6
@@ -149,9 +146,6 @@
 	max_damage = 100
 	animal_origin = ALIEN_BODYPART
 
-/obj/item/bodypart/l_arm/crinos
-	max_damage = 125
-
 /obj/item/bodypart/r_arm
 	name = "right arm"
 	desc = "Over 87% of humans are right handed. That figure is much lower \
@@ -163,7 +157,7 @@
 	body_zone = BODY_ZONE_R_ARM
 	body_part = ARM_RIGHT
 	aux_zone = BODY_ZONE_PRECISE_R_HAND
-	aux_layer = HANDS_PART_LAYER
+	aux_layer = BODYPARTS_HIGH_LAYER
 	body_damage_coeff = 0.75
 	held_index = 2
 	px_x = 6
@@ -249,9 +243,6 @@
 	can_be_disabled = FALSE
 	max_damage = 100
 	animal_origin = ALIEN_BODYPART
-
-/obj/item/bodypart/r_arm/crinos
-	max_damage = 125
 
 /obj/item/bodypart/l_leg
 	name = "left leg"
@@ -341,9 +332,6 @@
 	can_be_disabled = FALSE
 	max_damage = 100
 	animal_origin = ALIEN_BODYPART
-
-/obj/item/bodypart/l_leg/crinos
-	max_damage = 125
 
 /obj/item/bodypart/r_leg
 	name = "right leg"
@@ -435,6 +423,3 @@
 	can_be_disabled = FALSE
 	max_damage = 100
 	animal_origin = ALIEN_BODYPART
-
-/obj/item/bodypart/r_leg/crinos
-	max_damage = 125

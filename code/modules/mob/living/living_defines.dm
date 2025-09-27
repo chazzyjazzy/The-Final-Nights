@@ -2,7 +2,7 @@
 	see_invisible = SEE_INVISIBLE_LIVING
 	sight = 0
 	see_in_dark = 2
-	hud_possible = list(HEALTH_HUD,STATUS_HUD,ANTAG_HUD,NANITE_HUD,DIAG_NANITE_FULL_HUD,GLAND_HUD)
+	hud_possible = list(HEALTH_HUD,STATUS_HUD,ANTAG_HUD,NANITE_HUD,DIAG_NANITE_FULL_HUD,GLAND_HUD,SENSEWYRM_HUD) // TFN EDIT - Remakes the Theurge's "Sense Wyrm" gift - added ',SENSEWYRM_HUD)'
 
 	hud_type = /datum/hud/living
 
@@ -221,19 +221,17 @@
 
 	var/frenzy_chance_boost = 10
 
-	var/last_bloodpool_restore = 0
+	COOLDOWN_DECLARE(bloodpool_restore)
 
 	var/list/knowscontacts = null
 
 	var/mysticism_knowledge = FALSE
 
-	var/thaumaturgy_knowledge = FALSE
+	var/necromancy_knowledge = FALSE
 
 	var/elysium_checks = 0
 	var/bloodhunted = FALSE
-
 	var/hearing_ghosts = FALSE
-
 	var/stakeimmune = FALSE
 
 	var/last_vampire_ambience = 0
@@ -252,7 +250,6 @@
 	var/last_bloodpower_click = 0
 	var/last_drinkblood_click = 0
 	var/harm_focus = SOUTH
-	var/masquerade_votes = 0
 	var/list/voted_for = list()
 	var/true_real_name
 	var/died_already = FALSE
@@ -260,16 +257,12 @@
 	var/bloodpool = 5
 	var/maxbloodpool = 5
 	var/generation = 13
-	var/masquerade = 5
+	var/masquerade_score = 5
 	var/datum/weakref/conditioner
 	var/conditioned = FALSE
 	var/last_masquerade_violation = 0
 
 	var/obj/effect/overlay/gnosis
-
-	var/isdwarfy = FALSE
-	var/ischildren = FALSE
-	var/istower = FALSE
 
 	var/total_contracted = 0
 
@@ -292,6 +285,7 @@
 
 	//Garou stats
 	var/renownrank = 0
+	var/extra_gnosis = 0
 	var/wisdom = 0
 	var/honor = 0
 	var/glory = 0
@@ -304,7 +298,7 @@
 	var/inspired = FALSE
 	var/last_gnosis_buff = 0
 	var/last_rage_gain = 0
-	var/last_veil_restore = 0
+	COOLDOWN_DECLARE(veil_restore)
 
 	var/list/beastmaster = list()
 
@@ -318,3 +312,6 @@
 
 	//If we are currently leaning on something, and what that object is
 	var/atom/leaned_object
+
+	//List for icons created for obfuscated mobs
+	var/list/obf_icons // TFN ADDITION - Adding an Obfuscate Indicator

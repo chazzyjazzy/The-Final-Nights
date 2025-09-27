@@ -10,7 +10,10 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	armor = list(MELEE = 10, BULLET = 0, LASER = 10, ENERGY = 10, BOMB = 10, BIO = 0, RAD = 0, FIRE = 0, ACID = 10, WOUND = 10)
 	body_worn = TRUE
-	cost = 10
+
+/obj/item/clothing/head/vampire/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 10, "headwear", FALSE)
 
 /obj/item/clothing/head/vampire/malkav
 	name = "weirdo hat"
@@ -99,12 +102,6 @@
 	desc = "A happy-looking wizard hat."
 	icon_state = "wizardhat_yellow"
 
-/obj/item/clothing/head/vampire/police
-	name = "police hat"
-	desc = "Can look dangerous or sexy despite the circumstances. Provides some kind of protection."
-	icon_state = "law"
-	armor = list(MELEE = 20, BULLET = 20, LASER = 10, ENERGY = 10, BOMB = 10, BIO = 0, RAD = 0, FIRE = 0, ACID = 10, WOUND = 10)
-
 /obj/item/clothing/head/vampire/cowboy
 	name = "cowboy hat"
 	desc = "Looks cool anyway. Provides some kind of protection."
@@ -151,7 +148,6 @@
 	armor = list(MELEE = 40, BULLET = 40, LASER = 40, ENERGY = 40, BOMB = 20, BIO = 0, RAD = 0, FIRE = 20, ACID = 40, WOUND = 25)
 	max_heat_protection_temperature = ARMOR_MAX_TEMP_PROTECT
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
-//	clothing_traits = list(TRAIT_UNMASQUERADE)
 	masquerade_violating = TRUE
 
 /obj/item/clothing/head/vampire/helmet/egorium
@@ -182,7 +178,6 @@
 	dynamic_hair_suffix = ""
 	dynamic_fhair_suffix = ""
 	armor = list(MELEE = 60, BULLET = 60, LASER = 60, ENERGY = 60, BOMB = 40, BIO = 0, RAD = 0, FIRE = 20, ACID = 40, WOUND = 25)
-//	clothing_traits = list(TRAIT_UNMASQUERADE)
 	masquerade_violating = TRUE
 
 /obj/item/clothing/head/vampire/hardhat
@@ -205,7 +200,6 @@
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 	visor_flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 	w_class = WEIGHT_CLASS_BULKY
-//	clothing_traits = list(TRAIT_UNMASQUERADE)
 	masquerade_violating = TRUE
 
 /obj/item/clothing/head/vampire/bogatyr
@@ -221,7 +215,6 @@
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 	visor_flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 	w_class = WEIGHT_CLASS_BULKY
-//	clothing_traits = list(TRAIT_UNMASQUERADE)
 
 /obj/item/clothing/head/vampire/bahari_mask
 	name = "Dark mother's mask"
@@ -282,7 +275,10 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	armor = list(MELEE = 10, BULLET = 0, LASER = 10, ENERGY = 10, BOMB = 10, BIO = 0, RAD = 0, FIRE = 0, ACID = 10, WOUND = 10)
 	body_worn = TRUE
-	cost = 10
+
+/obj/item/clothing/head/pentex/Initialize()
+	. = ..()
+	AddComponent(/datum/component/selling, 10, "headwear", FALSE)
 
 /obj/item/clothing/head/pentex/pentex_yellowhardhat
 	name = "Endron hardhat"

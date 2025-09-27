@@ -103,7 +103,7 @@ GLOBAL_LIST_EMPTY(deletion_failures)
 
 #endif
 
-#ifdef LEGACY_REFERENCE_TRACKING
+#ifdef REFERENCE_TRACKING
 
 /datum/verb/legacy_find_refs()
 	set category = "Debug"
@@ -122,7 +122,7 @@ GLOBAL_LIST_EMPTY(deletion_failures)
 			running_find_references = null
 			//restart the garbage collector
 			SSgarbage.can_fire = TRUE
-			SSgarbage.next_fire = world.time + world.tick_lag
+			SSgarbage.update_nextfire(reset_time = TRUE)
 			return
 
 		if(!skip_alert && alert("Running this will lock everything up for about 5 minutes.  Would you like to begin the search?", "Find References", "Yes", "No") != "Yes")
@@ -155,7 +155,7 @@ GLOBAL_LIST_EMPTY(deletion_failures)
 
 	//restart the garbage collector
 	SSgarbage.can_fire = TRUE
-	SSgarbage.next_fire = world.time + world.tick_lag
+	SSgarbage.update_nextfire(reset_time = TRUE)
 
 
 /datum/verb/qdel_then_find_references()

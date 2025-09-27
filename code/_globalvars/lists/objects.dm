@@ -19,7 +19,7 @@ GLOBAL_LIST_EMPTY(mechpad_list)						//list of all /obj/machinery/mechpad
 GLOBAL_LIST(chemical_reactions_list)				//list of all /datum/chemical_reaction datums. Used during chemical reactions
 GLOBAL_LIST(chemical_reagents_list)				//list of all /datum/reagent datums indexed by reagent id. Used by chemistry stuff
 GLOBAL_LIST_EMPTY(tech_list)					//list of all /datum/tech datums indexed by id.
-GLOBAL_LIST_EMPTY(surgeries_list)				//list of all surgeries by name, associated with their path.
+GLOBAL_LIST_INIT(surgeries_list, init_surgeries()) //list of all surgeries by name, associated with their path.
 GLOBAL_LIST_EMPTY(crafting_recipes)				//list of all table craft recipes
 GLOBAL_LIST_EMPTY(rcd_list)					//list of Rapid Construction Devices.
 GLOBAL_LIST_EMPTY(apcs_list)					//list of all Area Power Controller machines, separate from machines for powernet speeeeeeed.
@@ -54,6 +54,7 @@ GLOBAL_LIST_EMPTY(published_number_names) //Names of published numbers.
 GLOBAL_LIST_EMPTY(bank_account_list)
 
 GLOBAL_LIST_EMPTY(masquerade_breakers_list)
+GLOBAL_LIST_EMPTY(veil_breakers_list)
 GLOBAL_LIST_EMPTY(masquerade_latejoin)
 
 GLOBAL_LIST_EMPTY(generators)
@@ -64,7 +65,6 @@ GLOBAL_LIST_EMPTY(respawn_timers)
 
 GLOBAL_LIST_EMPTY(police_radios)
 GLOBAL_LIST_EMPTY(cleanable_list)
-GLOBAL_LIST_EMPTY(malkavian_list)
 GLOBAL_LIST_EMPTY(stock_licenses)
 GLOBAL_LIST_EMPTY(npc_activities)
 GLOBAL_LIST_EMPTY(sabbatites)
@@ -75,5 +75,3 @@ GLOBAL_LIST_EMPTY(snow_suka)
 GLOBAL_LIST_EMPTY(beast_list)
 GLOBAL_LIST_EMPTY(weed_list)
 GLOBAL_LIST_EMPTY(zombie_list)
-
-GLOBAL_LIST_INIT(psychokids, list())

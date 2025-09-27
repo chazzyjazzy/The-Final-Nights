@@ -2,8 +2,6 @@
 	name = "tongue"
 	desc = "A fleshy muscle mostly used for lying."
 	icon_state = "tonguenormal"
-	illegal = TRUE
-	cost = 100
 	zone = BODY_ZONE_PRECISE_MOUTH
 	slot = ORGAN_SLOT_TONGUE
 	attack_verb_continuous = list("licks", "slobbers", "slaps", "frenches", "tongues")
@@ -33,12 +31,21 @@
 		/datum/language/cantonese,
 		/datum/language/greek,
 		/datum/language/garou_tongue,
-		/datum/language/primal_tongue
+		/datum/language/primal_tongue,
+	//TFN Languages - Adds Seven Languages, Armenian, Farsi, Korean, and Tagalog ported from Requiem.
+		/datum/language/irish,
+		/datum/language/scottish,
+		/datum/language/welsh,
+		/datum/language/armenian,
+		/datum/language/farsi,
+		/datum/language/korean,
+		/datum/language/tagalog
 	))
 
 /obj/item/organ/tongue/Initialize(mapload)
 	. = ..()
 	languages_possible = languages_possible_base
+	AddComponent(/datum/component/selling/organ, 100, "organ", TRUE, -1, 0)
 
 /obj/item/organ/tongue/proc/handle_speech(datum/source, list/speech_args)
 

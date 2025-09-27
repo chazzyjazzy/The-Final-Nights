@@ -9,9 +9,32 @@
 		diag_hud.add_to_hud(src)
 	faction += "[REF(src)]"
 	GLOB.mob_living_list += src
+	src.calculate_max_bloodpool()
 
+//TFN EDIT
+/mob/living/proc/calculate_max_bloodpool()
 	//recalculates maxbloodpool
-	maxbloodpool = 10 + ((13 - generation) * 3)
+	var/generation_blood_bonus
+	switch(generation) //7th gen and lower scale in a manner that's hard to make an effective formula for. These probably won't get used much, if at all, but who knows?
+		if(8 to HIGHEST_GENERATION_LIMIT)
+			generation_blood_bonus = 0
+		if(7)
+			generation_blood_bonus = 12
+			bloodquality += 1
+		if(6)
+			generation_blood_bonus = 39
+			bloodquality += 2
+		if(5)
+			generation_blood_bonus = 56
+			bloodquality += 3
+		if(4)
+			generation_blood_bonus = 93
+			bloodquality += 4
+		if(1 to 3)
+			generation_blood_bonus = INFINITY
+			bloodquality += 100
+	maxbloodpool = max(10 + (((13 - generation) * 3) + generation_blood_bonus), 10)
+//TFN EDIT END
 
 /mob/living/ComponentInitialize()
 	. = ..()
@@ -259,7 +282,7 @@
 		return FALSE
 	if(SEND_SIGNAL(AM, COMSIG_LIVING_TRYING_TO_PULL, src, force) & COMSIG_LIVING_CANCEL_PULL)
 		return FALSE
-	
+
 	AM.add_fingerprint(src)
 
 	// If we're pulling something then drop what we're currently pulling and pull this instead.
@@ -607,11 +630,10 @@
 //Recursive function to find everything a mob is holding. Really shitty proc tbh.
 /mob/living/get_contents()
 	var/list/ret = list()
-	ret |= contents						//add our contents
-	for(var/i in ret.Copy())			//iterate storage objects
-		var/atom/A = i
-		SEND_SIGNAL(A, COMSIG_TRY_STORAGE_RETURN_INVENTORY, ret)
-	for(var/obj/item/folder/F in ret.Copy())		//very snowflakey-ly iterate folders
+	ret |= contents //add our contents
+	for(var/atom/iter_atom as anything in ret.Copy()) //iterate storage objects
+		SEND_SIGNAL(iter_atom, COMSIG_TRY_STORAGE_RETURN_INVENTORY, ret)
+	for(var/obj/item/folder/F in ret.Copy()) //very snowflakey-ly iterate folders
 		ret |= F.contents
 	return ret
 

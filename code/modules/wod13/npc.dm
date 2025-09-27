@@ -59,8 +59,6 @@
 
 	var/spawned_backup_weapon = FALSE
 
-	var/ghoulificated = FALSE
-
 	var/staying = FALSE
 
 	var/lifespan = 0	//How many cycles. He'll be deleted if over than a ten thousand
@@ -73,6 +71,15 @@
 
 	var/list/drop_on_death_list = null
 
+
+
+/mob/living/carbon/human/npc/Initialize()
+	. = ..()
+	NPC_wyrm_taint() // Declaring wether this NPC has wyrm taint or not to "Sense Wyrm" users
+	// NPC humans get the area of effect, player humans dont. This is a fucky way of doing this.
+	qdel(GetComponent(/datum/component/violation_observer))
+	AddComponent(/datum/component/violation_observer, TRUE)
+
 /mob/living/carbon/human/npc/LateInitialize()
 	. = ..()
 	if(role_weapons_chances.Find(type))
@@ -83,7 +90,8 @@
 	if(!my_weapon && my_weapon_type)
 		my_weapon = new my_weapon_type(src)
 
-
+	if(!socialrole)
+		AssignSocialRole(pick(/datum/socialrole/usualmale, /datum/socialrole/usualfemale))
 
 	if(my_weapon)
 		has_weapon = TRUE
@@ -97,6 +105,7 @@
 		my_backup_weapon = new my_backup_weapon_type(src)
 		equip_to_appropriate_slot(my_backup_weapon)
 		register_sticky_item(my_backup_weapon)
+
 
 //====================Sticky Item Handling====================
 /mob/living/carbon/human/npc/proc/register_sticky_item(obj/item/my_item)
@@ -491,6 +500,10 @@
 		return
 	if(world.time <= last_annoy+50)
 		return
+	if(source && isliving(source))
+		var/mob/living/L = source
+		if(!L.ckey)
+			return
 	if(source)
 		spawn(rand(3, 7))
 			face_atom(source)
@@ -644,7 +657,7 @@
 					N.is_talking = FALSE
 					N.RealisticSay(pick(N.socialrole.answer_phrases))
 
-/mob/living/carbon/human/npc/proc/ghoulificate(mob/owner)
+/mob/living/carbon/human/npc/proc/npc_ghoulificate(mob/owner)
 	set waitfor = FALSE
 	var/list/mob/dead/observer/candidates = pollCandidatesForMob("Do you want to play as [owner]`s ghoul?", null, null, null, 50, src)
 	for(var/mob/dead/observer/G in GLOB.player_list)
@@ -653,17 +666,8 @@
 	if(LAZYLEN(candidates))
 		var/mob/dead/observer/C = pick(candidates)
 		key = C.key
-		ghoulificated = TRUE
-		set_species(/datum/species/ghoul)
-		if(mind)
-			if(mind.enslaved_to != owner && !HAS_TRAIT(owner, TRAIT_UNBONDING))
-				mind.enslave_mind_to_creator(owner)
-				to_chat(src, "<span class='userdanger'><b>AS PRECIOUS VITAE ENTER YOUR MOUTH, YOU NOW ARE IN THE BLOODBOND OF [owner]. SERVE YOUR REGNANT CORRECTLY, OR YOUR ACTIONS WILL NOT BE TOLERATED.</b></span>")
-				return TRUE
-			if(HAS_TRAIT(owner, TRAIT_UNBONDING))
-				to_chat(src, "<span class='danger'><i>Precious vitae enters your mouth, an addictive drug. You feel no loyalty, though, to the source; only the substance.</i></span>")
+		ghoulificate(owner)
 	return FALSE
-
 
 #undef BANDIT_TYPE_NPC
 #undef POLICE_TYPE_NPC

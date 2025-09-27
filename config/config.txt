@@ -442,6 +442,15 @@ DEFAULT_VIEW_SQUARE 15x15
 ## Enable automatic profiling - Byond 513.1506 and newer only.
 #AUTO_PROFILE
 
+## Determines the interval between each saved profiler snapshot (in deciseconds).
+#PROFILER_INTERVAL 3000
+
+## Threshold (in deciseconds) for real time between ticks before we start dumping profiles
+DRIFT_DUMP_THRESHOLD 40
+
+## How long to wait (in deciseconds) after a profile dump before logging another tickdrift sourced one
+DRIFT_PROFILE_DELAY 150
+
 ## Uncomment to enable global ban DB using the provided URL. The API should expect to receive a ckey at the end of the URL.
 ## More API details can be found here: https://centcom.melonmesa.com
 #CENTCOM_BAN_DB https://centcom.melonmesa.com/ban/search
@@ -495,12 +504,6 @@ URGENT_AHELP_COOLDOWN 300
 ## Add the ID of the role you want assigning here
 #DISCORD_ROLEID 000000000000000000
 
-## The path to export current .sav format files to json. If commented out, has no effect.
-## Assuming you're saving inside the directory where you have your .dme
-## Windows: directory\to\save\ | Linux: directory/to/save/
-## Don't forget the last path separator!
-#JSON_CONVERSION_PATH data\player_saves\json_saves\
-
 ## Tgui payloads larger than the 2kb limit for BYOND topic requests are split into roughly 1kb chunks and sent in sequence.
 ## This config option limits the maximum chunk count for which the server will accept a payload, default is 32
 TGUI_MAX_CHUNK_COUNT 32
@@ -510,3 +513,12 @@ TGUI_MAX_CHUNK_COUNT 32
 
 ## Sets the webhook URL for the Overwatch System
 #DISCORD_OVERWATCH_WEBHOOK https://discord.com/api/webhooks/XXX/XXX
+
+## Uncomment to block all attempts to profile, for performance reasons
+#FORBID_ALL_PROFILING
+
+## Uncomment to allow admins with +DEBUG to start the byond-tracy profiler during the round.
+#ALLOW_TRACY_START
+
+## Uncomment to allow admins with +DEBUG to queue the next round to run the byond-tracy profiler.
+#ALLOW_TRACY_QUEUE

@@ -43,14 +43,6 @@ SUBSYSTEM_DEF(bad_guys_party)
 /datum/controller/subsystem/bad_guys_party/proc/get_badguys(level)
 	if(setting)
 		switch(setting)
-			if("caitiff")
-				if(Next)
-					qdel(Next)
-				threat = min(100, threat+60)
-				max_candidates = 1
-				go_on_next_fire = TRUE
-				Next = new /datum/outfit/job/caitiff()
-				setting = null
 			if("sabbat")
 				if(Next)
 					qdel(Next)
@@ -68,41 +60,23 @@ SUBSYSTEM_DEF(bad_guys_party)
 				Next = new /datum/outfit/job/hunter()
 				setting = null
 	else if(setting == null)
-		switch(level)
-			if(1)
-				if(prob(20))
-					//caitiff
-					if(Next)
-						qdel(Next)
-					threat = min(100, threat+60)
-					max_candidates = 1
-					go_on_next_fire = TRUE
-					Next = new /datum/outfit/job/caitiff()
-				else
-					//sabbat
-					if(Next)
-						qdel(Next)
-					threat = min(100, threat+30)
-					max_candidates = 2
-					go_on_next_fire = TRUE
-					Next = new /datum/outfit/job/sabbatist()
-			if(2)
-				if(prob(30))
-					//sabbat
-					if(Next)
-						qdel(Next)
-					threat = min(100, threat+90)
-					max_candidates = 4
-					go_on_next_fire = TRUE
-					Next = new /datum/outfit/job/sabbatist()
-				else
-					//hunt
-					if(Next)
-						qdel(Next)
-					threat = min(100, threat+60)
-					max_candidates = 2
-					go_on_next_fire = TRUE
-					Next = new /datum/outfit/job/hunter()
+		// Randomly choose between sabbat and hunters only
+		if(prob(50))
+			// Sabbat
+			if(Next)
+				qdel(Next)
+			threat = min(100, threat+30)
+			max_candidates = 3
+			go_on_next_fire = TRUE
+			Next = new /datum/outfit/job/sabbatist()
+		else
+			// Hunters
+			if(Next)
+				qdel(Next)
+			threat = min(100, threat+60)
+			max_candidates = 5
+			go_on_next_fire = TRUE
+			Next = new /datum/outfit/job/hunter()
 
 /mob/dead/new_player/proc/ForceLateSpawn()
 	if(SSticker.late_join_disabled)
@@ -125,12 +99,12 @@ SUBSYSTEM_DEF(bad_guys_party)
 	character.client.init_verbs() // init verbs for the late join
 
 /datum/controller/subsystem/bad_guys_party/fire()
-	switch(SSmasquerade.total_level)
-		if(0 to 250)
+	switch(SSmasquerade.masquerade_level)
+		if(0 to 10)
 			wait = 3000
-		if(251 to 500)
+		if(11 to 19)
 			wait = 6000
-		if(501 to 1000)
+		if(20 to 25)
 			wait = 12000
 	if(!setted_up)
 		setup_occupations()
@@ -152,19 +126,16 @@ SUBSYSTEM_DEF(bad_guys_party)
 				go_on_next_fire = FALSE
 			return
 		else
-			if(SSmasquerade.total_level <= 500)
-				get_badguys(2)
-			else
-				switch(threat)
-					if(0 to 10)
-						//ANYONE
-						if(prob(100-threat))
-							get_badguys(rand(1, 3))
-					if(11 to 40)
-						//HUNT OR CAITIFF
-						if(prob(100-threat))
-							get_badguys(rand(1, 2))
-					if(41 to 70)
-						//CAITIFF ONLY
-						if(prob(100-threat))
-							get_badguys(1)
+			switch(threat)
+				if(0 to 10)
+					//ANYONE
+					if(prob(100-threat))
+						get_badguys(rand(1, 3))
+				if(11 to 40)
+					//HUNT OR CAITIFF
+					if(prob(100-threat))
+						get_badguys(rand(1, 2))
+				if(41 to 70)
+					//CAITIFF ONLY
+					if(prob(100-threat))
+						get_badguys(1)

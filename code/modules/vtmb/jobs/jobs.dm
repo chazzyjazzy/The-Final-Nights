@@ -83,11 +83,9 @@
 				if(H.mind)
 					if(H.mind.holy_role == HOLY_ROLE_PRIEST)
 						return
-		if(iskindred(H))
-			if(H.clane)
-				if(H.clane.name == CLAN_BAALI)
-					H.emote("scream")
-					H.pointed(user)
+		if (HAS_TRAIT(H, TRAIT_REPELLED_BY_HOLINESS))
+			H.emote("scream")
+			H.pointed(user)
 	M.show_message("<span class='warning'><b>GOD SEES YOU!</b></span>", MSG_AUDIBLE)
 	var/distance = max(0,get_dist(get_turf(src),T))
 
@@ -102,14 +100,13 @@
 		return
 	if(iskindred(target))
 		var/mob/living/carbon/human/H = target
-		if(H.clane)
-			if(H.clane.name == CLAN_BAALI)
-				last_detonated = world.time
-				var/turf/lightning_source = get_step(get_step(H, NORTH), NORTH)
-				lightning_source.Beam(H, icon_state="lightning[rand(1,12)]", time = 5)
-				H.adjustFireLoss(100)
-				H.electrocution_animation(50)
-				to_chat(H, "<span class='userdanger'>The God has punished you for your sins!</span>", confidential = TRUE)
+		if (HAS_TRAIT(H, TRAIT_REPELLED_BY_HOLINESS))
+			last_detonated = world.time
+			var/turf/lightning_source = get_step(get_step(H, NORTH), NORTH)
+			lightning_source.Beam(H, icon_state="lightning[rand(1,12)]", time = 5)
+			H.adjustFireLoss(100)
+			H.electrocution_animation(50)
+			to_chat(H, "<span class='userdanger'>The God has punished you for your sins!</span>", confidential = TRUE)
 
 /obj/item/card/id/prince
 	name = "leader badge"
@@ -168,9 +165,9 @@
 	desc = "A badge which shows social qualifications."
 
 /obj/item/card/id/bruiser
-	name = "bruiser badge"
-	id_type_name = "bruiser badge"
-	desc = "A badge which shows grit."
+	name = "member badge"
+	id_type_name = "member's badge"
+	desc = "The badge of a club member. United in purpose, the fists strike out."
 	icon = 'code/modules/wod13/items.dmi'
 	icon_state = "bruiser_badge"
 	inhand_icon_state = "card-id"
@@ -182,9 +179,9 @@
 	registered_name_is_public = FALSE
 
 /obj/item/card/id/sweeper
-	name = "sweeper badge"
-	id_type_name = "sweeper badge"
-	desc = "A badge which shows perspective."
+	name = "member badge"
+	id_type_name = "member's badge"
+	desc = "The badge of a club member. Collecting what is left to the margins, into one neat pile."
 	icon = 'code/modules/wod13/items.dmi'
 	icon_state = "sweeper_badge"
 	inhand_icon_state = "card-id"
@@ -196,9 +193,9 @@
 	registered_name_is_public = FALSE
 
 /obj/item/card/id/emissary
-	name = "emissary badge"
-	id_type_name = "emissary badge"
-	desc = "A badge which shows a favored voice, interlaced with gold thread."
+	name = "gold interwoven badge"
+	id_type_name = "gold interwoven badge"
+	desc = "The gold-interlaced badge of a club member. The pride of a loudmouth, or silver tongued swindler."
 	icon = 'code/modules/wod13/items.dmi'
 	icon_state = "emissary_badge"
 	inhand_icon_state = "card-id"
@@ -207,6 +204,20 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	worn_icon = 'code/modules/wod13/worn.dmi'
 	worn_icon_state = "emissary_badge"
+	registered_name_is_public = FALSE
+
+/obj/item/card/id/liaison
+	name = "promoter badge"
+	id_type_name = "promoter badge"
+	desc = "The gold-interlaced badge of a club member. The ties that bind, and unity despite difference."
+	icon = 'code/modules/wod13/items.dmi'
+	icon_state = "liaison_badge"
+	inhand_icon_state = "card-id"
+	lefthand_file = 'icons/mob/inhands/equipment/idcards_lefthand.dmi'
+	righthand_file = 'icons/mob/inhands/equipment/idcards_righthand.dmi'
+	onflooricon = 'code/modules/wod13/onfloor.dmi'
+	worn_icon = 'code/modules/wod13/worn.dmi'
+	worn_icon_state = "liaison_badge"
 	registered_name_is_public = FALSE
 
 /obj/item/card/id/baron
@@ -373,6 +384,10 @@
 	onflooricon = 'code/modules/wod13/onfloor.dmi'
 	worn_icon = 'code/modules/wod13/worn.dmi'
 	worn_icon_state = "id1"
+
+/obj/item/card/id/government/assistantdistrictattorney
+	name = "SFPD ADA Badge"
+	desc = "Sponsored by the Government. Assistant District Attorney. Watermarked with the seal of the District Attorney's Office."
 
 /obj/item/card/id/police/sergeant
 	name = "police sergeant badge"
@@ -547,31 +562,37 @@
 
 //ENDRON
 /obj/item/card/id/garou/spiral
-	icon_state = "id9"
-	worn_icon_state = "id9"
+	icon_state = "endronemployeeid"
+	worn_icon_state = "endronemployeeid"
 
 /obj/item/card/id/garou/spiral/lead
 	name = "Endron Branch Leader card"
+	icon_state = "endronexecutiveid"
+	worn_icon_state = "endronexecutiveid"
 	desc = "How bad can you possibly be?"
 
 /obj/item/card/id/garou/spiral/executive
 	name = "Endron Executive card"
+	icon_state = "endronexecutiveid"
+	worn_icon_state = "endronexecutiveid"
 	desc = "All the customers are buying."
 
 /obj/item/card/id/garou/spiral/affairs
 	name = "Endron Internal Affairs card"
+	icon_state = "endroniaaid"
+	worn_icon_state = "endronemployeeid"
 	desc = "And the Lawyers are denying."
 
 /obj/item/card/id/garou/spiral/secchief
 	name = "Endron Chief of Security badge"
-	icon_state = "id3"
-	worn_icon_state = "id3"
+	icon_state = "endronsecurityid"
+	worn_icon_state = "endronemployeeid"
 	desc = "Its not illegal if nobody finds out about it. Now if only Endron would pay for a single tank for you."
 
 /obj/item/card/id/garou/spiral/sec
 	name = "Endron Security Agent badge"
-	icon_state = "id3"
-	worn_icon_state = "id3"
+	icon_state = "endronsecurityid"
+	worn_icon_state = "endronemployeeid"
 	desc = "Corporate Security, a step above a mall cop. Better paid than a real cop."
 
 /obj/item/card/id/garou/spiral/employee

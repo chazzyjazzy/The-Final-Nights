@@ -1,4 +1,5 @@
 //config files
+#define CONFIG_DEF(X) /datum/config_entry/##X { resident_file = CURRENT_RESIDENT_FILE }; /datum/config_entry/##X
 #define CONFIG_GET(X) global.config.Get(/datum/config_entry/##X)
 #define CONFIG_SET(X, Y) global.config.Set(/datum/config_entry/##X, ##Y)
 
@@ -9,6 +10,9 @@
 #define CONFIG_ENTRY_LOCKED 1
 /// can't see value
 #define CONFIG_ENTRY_HIDDEN 2
+
+/// Force the config directory to be something other than "config"
+#define OVERRIDE_CONFIG_DIRECTORY_PARAMETER "config-directory"
 
 //Migrated from config_entry.dm due to widespread use outside of local file. Used for various config file associated chicanery
 #define VALUE_MODE_NUM 0

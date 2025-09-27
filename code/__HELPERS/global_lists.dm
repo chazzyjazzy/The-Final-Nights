@@ -2,13 +2,13 @@
 /////Initial Building/////
 //////////////////////////
 
-GLOBAL_LIST_EMPTY(clanes_list)	//>:3
+GLOBAL_LIST_EMPTY_TYPED(vampire_clans, /datum/vampire_clan)	//>:3
 GLOBAL_LIST_EMPTY(morality_list) // TFN EDIT: morality system
 GLOBAL_LIST_EMPTY(auspices_list)
 GLOBAL_LIST_EMPTY(tribes_list)
 GLOBAL_LIST_EMPTY(glyph_list)
 
-/proc/make_datum_references_lists()
+/proc/init_sprite_accessories()
 	//hair
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/hair, GLOB.hairstyles_list, GLOB.hairstyles_male_list, GLOB.hairstyles_female_list)
 	//facial hair
@@ -41,16 +41,17 @@ GLOBAL_LIST_EMPTY(glyph_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/moth_markings, GLOB.moth_markings_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/tails/monkey, GLOB.tails_list_monkey)
 
-	//Species
+/// Inits GLOB.species_list. Not using GLOBAL_LIST_INIT b/c it depends on GLOB.string_lists
+/proc/init_species_list()
 	for(var/spath in subtypesof(/datum/species))
 		var/datum/species/S = new spath()
 		GLOB.species_list[S.id] = spath
 	sort_list(GLOB.species_list, GLOBAL_PROC_REF(cmp_typepaths_asc))
 
-	for(var/spath in subtypesof(/datum/vampireclane))
-		var/datum/vampireclane/S = new spath()
-		GLOB.clanes_list[S.name] = spath
-	sort_list(GLOB.clanes_list, GLOBAL_PROC_REF(cmp_typepaths_asc))
+	for(var/clan_type in subtypesof(/datum/vampire_clan))
+		var/datum/vampire_clan/clan = new clan_type
+		GLOB.vampire_clans[clan_type] = clan
+	sort_list(GLOB.vampire_clans)
 
 	for(var/spath in subtypesof(/datum/garou_tribe))
 		var/datum/garou_tribe/S = new spath()
@@ -74,20 +75,30 @@ GLOBAL_LIST_EMPTY(glyph_list)
 	sort_list(GLOB.morality_list, GLOBAL_PROC_REF(cmp_typepaths_asc))
 	// TFN EDIT END
 
-	//Surgeries
+/// Inits GLOB.surgeries
+/proc/init_surgeries()
+	var/surgeries = list()
 	for(var/path in subtypesof(/datum/surgery))
-		GLOB.surgeries_list += new path()
-	sort_list(GLOB.surgeries_list, GLOBAL_PROC_REF(cmp_typepaths_asc))
+		surgeries += new path()
+	sort_list(surgeries, GLOBAL_PROC_REF(cmp_typepaths_asc))
+	return surgeries
 
+/// Hair Gradients - Initialise all /datum/sprite_accessory/hair_gradient into an list indexed by gradient-style name
+/proc/init_hair_gradients()
 	// Hair Gradients - Initialise all /datum/sprite_accessory/gradient into an list indexed by gradient-style name
 	for(var/path in subtypesof(/datum/sprite_accessory/gradient))
 		var/datum/sprite_accessory/gradient/H = new path()
 		GLOB.gradients_list[H.name] = H
 
-	// Keybindings
+/// Legacy procs that really should be replaced with proper _INIT macros
+/proc/make_datum_reference_lists()
+	// I tried to eliminate this proc but I couldn't untangle their init-order interdependencies -Dominion/Cyberboss
+	init_sprite_accessories()
+	init_species_list()
+	init_hair_gradients()
 	init_keybindings()
 
-	GLOB.emote_list = init_emote_list()
+	GLOB.emote_list = init_emote_list() // WHY DOES THIS NEED TO GO HERE? IT JUST INITS DATUMS
 
 	init_crafting_recipes(GLOB.crafting_recipes)
 

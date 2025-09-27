@@ -7,7 +7,7 @@
 		new /datum/data/mining_equipment("hunting rifle",	/obj/item/gun/ballistic/automatic/vampire/huntrifle, 2000),
 		new /datum/data/mining_equipment("fishing rod",		/obj/item/fishing_rod,	200),
 		new	/datum/data/mining_equipment("5.45 ammo",	/obj/item/ammo_box/vampire/c545,	1000),
-		new	/datum/data/mining_equipment(".45 ACP ammo",	/obj/item/ammo_box/vampire/c45acp,	2100),
+		new	/datum/data/mining_equipment(".45 ACP ammo",	/obj/item/ammo_box/vampire/c45acp,	700),
 		new /datum/data/mining_equipment("9mm ammo",	/obj/item/ammo_box/vampire/c9mm,	600),
 		new /datum/data/mining_equipment(".44 ammo",	/obj/item/ammo_box/vampire/c44,	800),
 		new /datum/data/mining_equipment("5.56 ammo",	/obj/item/ammo_box/vampire/c556,	2000),
@@ -23,5 +23,5 @@
 		new /datum/data/mining_equipment("machete", /obj/item/melee/vampirearms/machete, 500),
 		new /datum/data/mining_equipment("taser", /obj/item/melee/baton/handtaser, 250),
 		new /datum/data/mining_equipment("pepperspray", /obj/item/reagent_containers/spray/pepper, 200),
-		new /datum/data/mining_equipment("donut",	/obj/item/food/vampire/donut,	10)
+		new /datum/data/mining_equipment("donut",	/obj/item/food/donut/plain,	10)
 	)

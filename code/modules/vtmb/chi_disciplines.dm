@@ -170,8 +170,7 @@
 		caster.playsound_local(caster, activate_sound, 50, FALSE)
 
 	if(violates_masquerade)
-		if(caster.CheckEyewitness(target, caster, 7, TRUE))
-			caster.AdjustMasquerade(-1)
+		SEND_SIGNAL(caster, COMSIG_MASQUERADE_VIOLATION)
 
 	to_chat(caster, "<span class='notice'>You activate [src][(ranged && target) ? " on [target]" : ""].</span>")
 	log_attack("[key_name(caster)] casted level [src.level_casting] of the Discipline [src.name][target == caster ? "." : " on [key_name(target)]"]")
@@ -415,13 +414,13 @@
 			var/obj/item/melee/powerfist/stone/lefthand_stonefist = new (caster)
 			caster.put_in_r_hand(righthand_stonefist)
 			caster.put_in_l_hand(lefthand_stonefist)
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			spawn(delay+caster.discipline_time_plus)
 				if(caster)
 					caster.physiology.armor.melee -= 50
 					caster.physiology.armor.bullet -= 50
 					caster.remove_overlay(POTENCE_LAYER)
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 					if(righthand_stonefist)
 						qdel(righthand_stonefist)
 					if(lefthand_stonefist)
@@ -470,9 +469,9 @@
 			caster.physiology.armor.bullet += 25
 			caster.add_movespeed_modifier(/datum/movespeed_modifier/necroing)
 			var/initial_limbs_id = caster.dna.species.limbs_id
-			caster.dna.species.limbs_id = "rotten1"
+			caster.set_body_sprite("rotten1")
 			caster.update_body()
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			spawn(delay+caster.discipline_time_plus)
 				if(caster)
 					REMOVE_TRAIT(caster, TRAIT_NOSOFTCRIT, MAGIC_TRAIT)
@@ -482,11 +481,11 @@
 					caster.remove_movespeed_modifier(/datum/movespeed_modifier/necroing)
 					caster.dna.species.limbs_id = initial_limbs_id
 					caster.update_body()
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 		if(2)
 			var/initial_hair = caster.hairstyle
 			var/initial_facial = caster.facial_hairstyle
-			caster.unique_body_sprite = "nothing"
+			caster.set_body_sprite()
 			caster.hairstyle = "Bald"
 			caster.facial_hairstyle = "Shaved"
 			caster.update_body()
@@ -494,7 +493,7 @@
 				freezing_aura_loop(caster, delay + caster.discipline_time_plus)
 			spawn(delay+caster.discipline_time_plus)
 				if(caster)
-					caster.unique_body_sprite = null
+					caster.set_body_sprite()
 					caster.hairstyle = initial_hair
 					caster.facial_hairstyle = initial_facial
 					caster.update_body()
@@ -519,20 +518,20 @@
 			ADD_TRAIT(caster, TRAIT_NOHARDCRIT, MAGIC_TRAIT)
 			caster.physiology.armor.melee += 25
 			caster.physiology.armor.bullet += 25
-			caster.unique_body_sprite = "rotten1"
+			caster.set_body_sprite("rotten1")
 			caster.update_body()
 			caster.set_light(1.4,5,"#34D352")
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			spawn(delay+caster.discipline_time_plus)
 				if(caster)
 					REMOVE_TRAIT(caster, TRAIT_NOSOFTCRIT, MAGIC_TRAIT)
 					REMOVE_TRAIT(caster, TRAIT_NOHARDCRIT, MAGIC_TRAIT)
 					caster.physiology.armor.melee -= 25
 					caster.physiology.armor.bullet -= 25
-					caster.unique_body_sprite = null
+					caster.set_body_sprite()
 					caster.update_body()
 					caster.set_light(0)
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 
 /datum/chi_discipline/bone_shintai/proc/freezing_aura_loop(mob/living/carbon/human/caster, duration)
 	var/loop_started_time = world.time
@@ -744,9 +743,7 @@
 	if(firer)
 		chain = firer.Beam(src, icon_state = "arm")
 		if(iscathayan(firer))
-			var/mob/living/carbon/human/H = firer
-			if(H.CheckEyewitness(H, H, 7, FALSE))
-				H.AdjustMasquerade(-1)
+			SEND_SIGNAL(firer, COMSIG_MASQUERADE_VIOLATION)
 	..()
 
 /obj/projectile/flesh_shintai/on_hit(atom/target)
@@ -829,23 +826,23 @@
 			var/mutable_appearance/potence_overlay = mutable_appearance('code/modules/wod13/icons.dmi', "flesh_arms", -PROTEAN_LAYER)
 			caster.overlays_standing[PROTEAN_LAYER] = potence_overlay
 			caster.apply_overlay(PROTEAN_LAYER)
-			caster.dna.species.punchdamagelow += 20
-			caster.dna.species.punchdamagehigh += 20
-			caster.dna.species.meleemod += 1
+			caster.dna.species.punchdamagelow += 10
+			caster.dna.species.punchdamagehigh += 10
+			caster.dna.species.meleemod += 0.5
 			caster.dna.species.attack_sound = 'code/modules/wod13/sounds/heavypunch.ogg'
 			tackler = caster.AddComponent(/datum/component/tackler, stamina_cost=0, base_knockdown = 1 SECONDS, range = 2+level_casting, speed = 1, skill_mod = 0, min_distance = 0)
 			caster.potential = 4
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			spawn(delay+caster.discipline_time_plus)
 				if(caster)
 					caster.remove_overlay(PROTEAN_LAYER)
 					caster.potential = 0
-					caster.dna.species.punchdamagelow -= 20
-					caster.dna.species.punchdamagehigh -= 20
-					caster.dna.species.meleemod -= 1
+					caster.dna.species.punchdamagelow -= 10
+					caster.dna.species.punchdamagehigh -= 10
+					caster.dna.species.meleemod -= 0.5
 					caster.dna.species.attack_sound = initial(caster.dna.species.attack_sound)
 					qdel(tackler)
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 		if(3)
 			ADD_TRAIT(caster, TRAIT_HANDS_BLOCK_PROJECTILES, "flesh shintai 3")
 			to_chat(caster, "<span class='notice'>Your muscles relax and start moving unintentionally. You feel perfect at projectile evasion skills...</span>")
@@ -982,13 +979,13 @@
 			caster.apply_overlay(UNICORN_LAYER)
 			caster.physiology.armor.melee += mod
 			caster.physiology.armor.bullet += mod
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			spawn((delay)+caster.discipline_time_plus)
 				if(caster)
 					caster.physiology.armor.melee -= mod
 					caster.physiology.armor.bullet -= mod
 					caster.remove_overlay(UNICORN_LAYER)
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 					caster.playsound_local(caster.loc, 'code/modules/wod13/sounds/demonshintai_deactivate.ogg', 50, FALSE)
 		if("Tentacles")
 			var/mod = level_casting
@@ -998,7 +995,7 @@
 			caster.apply_overlay(UNICORN_LAYER)
 			ADD_TRAIT(caster, TRAIT_SHOCKIMMUNE, SPECIES_TRAIT)
 			ADD_TRAIT(caster, TRAIT_PASSTABLE, SPECIES_TRAIT)
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			if(mod > 1)
 				caster.add_movespeed_modifier(/datum/movespeed_modifier/tentacles1)
 				ADD_TRAIT(caster, TRAIT_PUSHIMMUNE, SPECIES_TRAIT)
@@ -1013,7 +1010,7 @@
 					caster.remove_overlay(UNICORN_LAYER)
 					REMOVE_TRAIT(caster, TRAIT_SHOCKIMMUNE, SPECIES_TRAIT)
 					REMOVE_TRAIT(caster, TRAIT_PASSTABLE, SPECIES_TRAIT)
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 					if(mod > 1)
 						caster.remove_movespeed_modifier(/datum/movespeed_modifier/tentacles1)
 						REMOVE_TRAIT(caster, TRAIT_PUSHIMMUNE, SPECIES_TRAIT)
@@ -1030,7 +1027,7 @@
 			var/mutable_appearance/potence_overlay = mutable_appearance('code/modules/wod13/icons.dmi', "demon", -UNICORN_LAYER)
 			caster.overlays_standing[UNICORN_LAYER] = potence_overlay
 			caster.apply_overlay(UNICORN_LAYER)
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			switch(mod)
 				if(1)
 					caster.add_movespeed_modifier(/datum/movespeed_modifier/demonform1)
@@ -1045,7 +1042,7 @@
 			spawn((delay)+caster.discipline_time_plus)
 				if(caster)
 					caster.remove_overlay(UNICORN_LAYER)
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 					switch(mod)
 						if(1)
 							caster.remove_movespeed_modifier(/datum/movespeed_modifier/demonform1)
@@ -1059,8 +1056,8 @@
 							caster.remove_movespeed_modifier(/datum/movespeed_modifier/demonform5)
 					caster.playsound_local(caster.loc, 'code/modules/wod13/sounds/demonshintai_deactivate.ogg', 50, FALSE)
 		if("Giant")
-			var/mod = level_casting*10
-			var/meleemod = level_casting*0.5
+			var/mod = level_casting*5
+			var/meleemod = level_casting*0.2
 			caster.remove_overlay(UNICORN_LAYER)
 			var/mutable_appearance/potence_overlay = mutable_appearance('code/modules/wod13/icons.dmi', "giant", -UNICORN_LAYER)
 			caster.overlays_standing[UNICORN_LAYER] = potence_overlay
@@ -1068,14 +1065,14 @@
 			caster.dna.species.punchdamagelow += mod
 			caster.dna.species.punchdamagehigh += mod
 			caster.dna.species.meleemod += meleemod
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			spawn((delay)+caster.discipline_time_plus)
 				if(caster)
 					caster.remove_overlay(UNICORN_LAYER)
 					caster.dna.species.punchdamagelow -= mod
 					caster.dna.species.punchdamagehigh -= mod
 					caster.dna.species.meleemod -= meleemod
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 					caster.playsound_local(caster.loc, 'code/modules/wod13/sounds/demonshintai_deactivate.ogg', 50, FALSE)
 		if("Foul")
 			caster.remove_overlay(UNICORN_LAYER)
@@ -1084,11 +1081,11 @@
 			caster.apply_overlay(UNICORN_LAYER)
 			spawn()
 				foul_aura_loop(caster, delay + caster.discipline_time_plus, level_casting)
-			ADD_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+			ADD_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 			spawn((delay)+caster.discipline_time_plus)
 				if(caster)
 					caster.remove_overlay(UNICORN_LAYER)
-					REMOVE_TRAIT(caster, TRAIT_NONMASQUERADE, TRAUMA_TRAIT)
+					REMOVE_TRAIT(caster, TRAIT_UNMASQUERADE, TRAUMA_TRAIT)
 					caster.playsound_local(caster.loc, 'code/modules/wod13/sounds/demonshintai_deactivate.ogg', 50, FALSE)
 
 /datum/chi_discipline/demon_shintai/proc/foul_aura_loop(mob/living/carbon/human/caster, duration, strength)
@@ -1556,8 +1553,7 @@
 		..()
 		return
 	human_target.electrocute_act(50, src, siemens_coeff = 1, flags = NONE)
-	if(user.CheckEyewitness(user, user, 7, FALSE))
-		user.AdjustMasquerade(-1)
+	SEND_SIGNAL(user, COMSIG_MASQUERADE_VIOLATION)
 	return ..()
 
 /obj/item/gun/magic/hook/storm_shintai
@@ -1599,9 +1595,7 @@
 	if(firer)
 		chain = firer.Beam(src, icon_state="lightning[rand(1,12)]")
 		if(iscathayan(firer))
-			var/mob/living/carbon/human/H = firer
-			if(H.CheckEyewitness(H, H, 7, FALSE))
-				H.AdjustMasquerade(-1)
+			SEND_SIGNAL(firer, COMSIG_MASQUERADE_VIOLATION)
 	..()
 
 /obj/projectile/storm_shintai/on_hit(atom/target)
@@ -2081,8 +2075,7 @@
 		door_item.throw_at(throw_target, rand(2, 4), 4, src)
 		qdel(target)
 	if(isliving(target))
-		if(user.CheckEyewitness(user, user, 7, FALSE))
-			user.AdjustMasquerade(-1)
+		SEND_SIGNAL(user, COMSIG_MASQUERADE_VIOLATION)
 		var/mob/living/target_mob = target
 		target_mob.adjustCloneLoss(20)
 		target_mob.AdjustKnockdown(2 SECONDS)

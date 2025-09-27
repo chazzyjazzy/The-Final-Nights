@@ -5,7 +5,7 @@
 //	You do not need to raise this if you are adding new values that have sane defaults.
 //	Only raise this value when changing the meaning/format/name/layout of an existing value
 //	where you would want the updater procs below to run
-#define SAVEFILE_VERSION_MAX	42
+#define SAVEFILE_VERSION_MAX	43
 
 /*
 SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Carn
@@ -86,7 +86,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 		if (!found_block_movement)
 			LAZYADD(key_bindings["Ctrl"], "block_movement")
-
 	if (current_version < 41)
 		LAZYADD(key_bindings["F"], "toggle_combat_mode")
 		LAZYADD(key_bindings["4"], "toggle_combat_mode")
@@ -97,6 +96,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(current_version < 40)
 		player_experience += true_experience
 		true_experience = 0
+	if (current_version < 43)
+		// Translate from misspelled clane name save to new clan typepath save
+		var/clan_name
+		READ_FILE(S["clane"], clan_name)
+		if (clan_name)
+			for (var/found_clan in GLOB.vampire_clans)
+				if (GLOB.vampire_clans[found_clan].name != clan_name)
+					continue
+				clan_name = found_clan
+
+			clan = GLOB.vampire_clans[clan_name]
+
+		// Translate from misspelled clane_accessory to new clan_accessory
+		READ_FILE(S["clane_accessory"], clan_accessory)
 
 /// checks through keybindings for outdated unbound keys and updates them
 /datum/preferences/proc/check_keybindings()
@@ -200,6 +213,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	READ_FILE(S["parallax"], parallax)
 	READ_FILE(S["ambientocclusion"], ambientocclusion)
 	READ_FILE(S["auto_fit_viewport"], auto_fit_viewport)
+	READ_FILE(S["vocal_sound"], vocal_sound) // TFN ADDITION - Vocal Sounds
 	READ_FILE(S["old_discipline"], old_discipline)
 	READ_FILE(S["widescreenpref"], widescreenpref)
 	READ_FILE(S["pixel_size"], pixel_size)
@@ -257,6 +271,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	parallax		= sanitize_integer(parallax, PARALLAX_INSANE, PARALLAX_DISABLE, null)
 	ambientocclusion	= sanitize_integer(ambientocclusion, FALSE, TRUE, initial(ambientocclusion))
 	auto_fit_viewport	= sanitize_integer(auto_fit_viewport, FALSE, TRUE, initial(auto_fit_viewport))
+	vocal_sound     = sanitize_integer(vocal_sound, FALSE, TRUE, initial(vocal_sound)) // TFN ADDITION - Vocal Sounds
 	old_discipline	= sanitize_integer(old_discipline, FALSE, TRUE, initial(old_discipline))
 	widescreenpref  = sanitize_integer(widescreenpref, FALSE, TRUE, initial(widescreenpref))
 	pixel_size		= sanitize_float(pixel_size, PIXEL_SCALING_AUTO, PIXEL_SCALING_3X, 0.5, initial(pixel_size))
@@ -340,6 +355,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["parallax"], parallax)
 	WRITE_FILE(S["ambientocclusion"], ambientocclusion)
 	WRITE_FILE(S["auto_fit_viewport"], auto_fit_viewport)
+	WRITE_FILE(S["vocal_sound"], vocal_sound) // TFN ADDITION - Vocal Sounds
 	WRITE_FILE(S["old_discipline"], old_discipline)
 	WRITE_FILE(S["widescreenpref"], widescreenpref)
 	WRITE_FILE(S["pixel_size"], pixel_size)
@@ -385,13 +401,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		if(newtype)
 			pref_species = new newtype
 
-
-	var/clane_id
-	READ_FILE(S["clane"], clane_id)
-	if(clane_id)
-		var/newtype = GLOB.clanes_list[clane_id]
-		if(newtype)
-			clane = new newtype
+	var/clan_type
+	READ_FILE(S["clan"], clan_type)
+	if (clan_type)
+		clan = GLOB.vampire_clans[clan_type]
 
 	var/path_id
 	READ_FILE(S["path"], path_id)
@@ -420,6 +433,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	READ_FILE(S["werewolf_hair"], werewolf_hair)
 	READ_FILE(S["werewolf_hair_color"], werewolf_hair_color)
 	READ_FILE(S["werewolf_eye_color"], werewolf_eye_color)
+	READ_FILE(S["werewolf_apparel"], werewolf_apparel)
 
 	//Character
 	READ_FILE(S["slotlocked"], slotlocked)
@@ -435,7 +449,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	READ_FILE(S["lockpicking"], lockpicking)
 	READ_FILE(S["athletics"], athletics)
 	READ_FILE(S["blood"], blood)
-	READ_FILE(S["archetype"], archetype)
 	READ_FILE(S["discipline1level"], discipline1level)
 	READ_FILE(S["discipline2level"], discipline2level)
 	READ_FILE(S["discipline3level"], discipline3level)
@@ -461,8 +474,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	READ_FILE(S["reason_of_death"], reason_of_death)
 	READ_FILE(S["generation"], generation)
 	READ_FILE(S["generation_bonus"], generation_bonus)
-	READ_FILE(S["masquerade"], masquerade)
+	READ_FILE(S["masquerade_score"], masquerade_score)
 	READ_FILE(S["renownrank"], renownrank)
+	READ_FILE(S["extra_gnosis"], extra_gnosis)
 	READ_FILE(S["honor"], honor)
 	READ_FILE(S["glory"], glory)
 	READ_FILE(S["wisdom"], wisdom)
@@ -487,7 +501,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	READ_FILE(S["backpack"], backpack)
 	READ_FILE(S["jumpsuit_style"], jumpsuit_style)
 	READ_FILE(S["uplink_loc"], uplink_spawn_loc)
-	READ_FILE(S["clane_accessory"], clane_accessory)
+	READ_FILE(S["clan_accessory"], clan_accessory)
+	READ_FILE(S["digitigrade_legs"], digitigrade_legs)
 	READ_FILE(S["playtime_reward_cloak"], playtime_reward_cloak)
 	READ_FILE(S["phobia"], phobia)
 	READ_FILE(S["randomise"],  randomise)
@@ -568,12 +583,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	werewolf_name = reject_bad_name(werewolf_name)
 	gender = sanitize_gender(gender)
 	body_type = sanitize_gender(body_type, FALSE, FALSE, gender)
-	body_model = sanitize_integer(body_model, 1, 3, initial(body_model))
+	body_model = sanitize_integer(body_model, SLIM_BODY_MODEL_NUMBER, FAT_BODY_MODEL_NUMBER, initial(body_model))
 	if(!real_name)
 		real_name = random_unique_name(gender)
-//	if(!clane)
-//		var/newtype = GLOB.clanes_list[CLAN_BRUJAH]
-//		clane = new newtype()
 
 	//Prevent Wighting upon joining a round
 	if(path_score <= 0)
@@ -612,9 +624,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_list)
 		undershirt 		= sanitize_inlist(undershirt, GLOB.undershirt_list)
 
-	archetype 		= sanitize_inlist(archetype, subtypesof(/datum/archetype))
-
-	breed			= sanitize_inlist(breed, list("Homid", "Lupus", "Metis"))
+	breed			= sanitize_inlist(breed, list(BREED_HOMID, BREED_LUPUS, BREED_METIS, BREED_CORVID))
 	werewolf_color	= sanitize_inlist(werewolf_color, list("black", "gray", "red", "white", "ginger", "brown"))
 	werewolf_scar	= sanitize_integer(werewolf_scar, 0, 7, initial(werewolf_scar))
 	werewolf_hair	= sanitize_integer(werewolf_hair, 0, 4, initial(werewolf_hair))
@@ -669,14 +679,15 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	friend				= sanitize_integer(friend, 0, 1, initial(friend))
 	enemy				= sanitize_integer(enemy, 0, 1, initial(enemy))
 	lover				= sanitize_integer(lover, 0, 1, initial(lover))
-	masquerade				= sanitize_integer(masquerade, 0, 5, initial(masquerade))
+	masquerade_score	= sanitize_integer(masquerade_score, 0, 5, initial(masquerade_score))
 	// TFN EDIT START: gen tweaks
-	generation				= sanitize_integer(generation, 7, 14, initial(generation))
+	generation				= sanitize_integer(generation, LOWEST_GENERATION_LIMIT, HIGHEST_GENERATION_LIMIT, initial(generation))
 	generation_bonus				= sanitize_integer(generation_bonus, 0, 5, initial(generation_bonus))
 	glory = sanitize_integer(glory, 0, 10, initial(glory))
 	wisdom = sanitize_integer(wisdom, 0, 10, initial(wisdom))
 	honor = sanitize_integer(honor, 0, 10, initial(honor))
 	renownrank = sanitize_integer(renownrank, 0, 5, initial(renownrank))
+	extra_gnosis = sanitize_integer(extra_gnosis, 0, 5, initial(extra_gnosis))
 	// TFN EDIT END
 	hair_color			= sanitize_hexcolor(hair_color)
 	facial_hair_color			= sanitize_hexcolor(facial_hair_color)
@@ -686,7 +697,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	backpack			= sanitize_inlist(backpack, GLOB.backpacklist, initial(backpack))
 	jumpsuit_style	= sanitize_inlist(jumpsuit_style, GLOB.jumpsuitlist, initial(jumpsuit_style))
 	uplink_spawn_loc = sanitize_inlist(uplink_spawn_loc, GLOB.uplink_spawn_loc_list, initial(uplink_spawn_loc))
-	clane_accessory = sanitize_inlist(clane_accessory, clane.accessories, null)
+	clan_accessory = sanitize_inlist(clan_accessory, clan.accessories, null)
 	playtime_reward_cloak = sanitize_integer(playtime_reward_cloak)
 	features["mcolor"]	= sanitize_hexcolor(features["mcolor"])
 	features["ethcolor"]	= sanitize_hexcolor(features["ethcolor"])
@@ -771,6 +782,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["werewolf_hair_color"], werewolf_hair_color)
 	WRITE_FILE(S["werewolf_eye_color"], werewolf_eye_color)
 	WRITE_FILE(S["auspice"]			, auspice.name)
+	WRITE_FILE(S["werewolf_apparel"]		, werewolf_apparel)
 
 	//Character
 	WRITE_FILE(S["slotlocked"]			, slotlocked)
@@ -785,7 +797,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["lockpicking"]		, lockpicking)
 	WRITE_FILE(S["athletics"]		, athletics)
 	WRITE_FILE(S["blood"]			, blood)
-	WRITE_FILE(S["archetype"]			, archetype)
 	WRITE_FILE(S["discipline1level"]			, discipline1level)
 	WRITE_FILE(S["discipline2level"]			, discipline2level)
 	WRITE_FILE(S["discipline3level"]			, discipline3level)
@@ -810,13 +821,14 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["lover_text"]			, lover_text)
 	WRITE_FILE(S["reason_of_death"]			, reason_of_death)
 	WRITE_FILE(S["renownrank"]			, renownrank)
+	WRITE_FILE(S["extra_gnosis"]			, extra_gnosis)
 	WRITE_FILE(S["honor"]			, honor)
 	WRITE_FILE(S["glory"]			, glory)
 	WRITE_FILE(S["wisdom"]			, wisdom)
-	WRITE_FILE(S["clane"]			, clane.name)
+	WRITE_FILE(S["clan"]			, clan.type)
 	WRITE_FILE(S["generation"]			, generation)
 	WRITE_FILE(S["generation_bonus"]			, generation_bonus)
-	WRITE_FILE(S["masquerade"]			, masquerade)
+	WRITE_FILE(S["masquerade_score"] , masquerade_score)
 	WRITE_FILE(S["real_name"]			, real_name)
 	WRITE_FILE(S["werewolf_name"]			, werewolf_name)
 	WRITE_FILE(S["gender"]			, gender)
@@ -838,7 +850,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["backpack"]			, backpack)
 	WRITE_FILE(S["jumpsuit_style"]			, jumpsuit_style)
 	WRITE_FILE(S["uplink_loc"]			, uplink_spawn_loc)
-	WRITE_FILE(S["clane_accessory"]			, clane_accessory)
+	WRITE_FILE(S["clan_accessory"]			, clan_accessory)
+	WRITE_FILE(S["digitigrade_legs"]           , digitigrade_legs)
 	WRITE_FILE(S["playtime_reward_cloak"]			, playtime_reward_cloak)
 	WRITE_FILE(S["randomise"]		, randomise)
 	WRITE_FILE(S["species"]			, pref_species.id)

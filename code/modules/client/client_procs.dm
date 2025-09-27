@@ -1,8 +1,8 @@
 	////////////
 	//SECURITY//
 	////////////
-#define UPLOAD_LIMIT		524288	//Restricts client uploads to the server to 0.5MB
-#define UPLOAD_LIMIT_ADMIN	2621440	//Restricts admin client uploads to the server to 2.5MB
+#define UPLOAD_LIMIT		2621440	//Restricts client uploads to the server to 2.5MB
+#define UPLOAD_LIMIT_ADMIN	10485760	//Restricts admin client uploads to the server to 10MB
 
 GLOBAL_LIST_INIT(blacklisted_builds, list(
 	"1407" = "bug preventing client display overrides from working leads to clients being able to see things/mobs they shouldn't be able to see",
@@ -492,6 +492,13 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 
 /client/Del()
 	if(!gc_destroyed)
+		gc_destroyed = world.time
+		if (!QDELING(src))
+			stack_trace("Client does not purport to be QDELING, this is going to cause bugs in other places!")
+
+		// Yes this is the same as what's found in qdel(). Yes it does need to be here
+		// Get off my back
+		SEND_SIGNAL(src, COMSIG_QDELETING, TRUE)
 		Destroy() //Clean up signals and timers.
 	return ..()
 
@@ -588,26 +595,6 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(!query_client_in_db.Execute())
 		qdel(query_client_in_db)
 		return
-	/*
-	//If we aren't an admin, and the flag is set
-	if(CONFIG_GET(flag/panic_bunker) && !holder && !GLOB.deadmins[ckey] && !bunker_bypass_check())
-		var/reject_message = "Failed Login: [key] - New account attempting to connect during panic bunker"
-		log_access(reject_message)
-		message_admins("<span class='adminnotice'>[reject_message]</span>")
-		var/message = CONFIG_GET(string/panic_bunker_message)
-		to_chat(src, message)
-		var/list/connectiontopic_a = params2list(connectiontopic)
-		var/list/panic_addr = CONFIG_GET(string/panic_server_address)
-		if(panic_addr && !connectiontopic_a["redirect"])
-			var/panic_name = CONFIG_GET(string/panic_server_name)
-			to_chat(src, "<span class='notice'>Sending you to [panic_name ? panic_name : panic_addr].</span>")
-			winset(src, null, "command=.options")
-			src << link("[panic_addr]?redirect=1")
-		qdel(query_client_in_db)
-		qdel(src)
-		return
-	// TFN EDIT END
-	*/
 
 	var/client_is_in_db = query_client_in_db.NextRow()
 	// TFN EDIT ADDITION START: code borrowed from bubberstation & skyrat
@@ -629,7 +616,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 			return
 	// TFN EDIT ADDITION END
 
-	if(!query_client_in_db.NextRow())
+	if(!client_is_in_db)
 		new_player = 1
 		account_join_date = findJoinDate()
 		var/datum/db_query/query_add_player = SSdbcore.NewQuery({"
@@ -673,6 +660,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 					)
 					if(!query_datediff.Execute())
 						qdel(query_datediff)
+						qdel(query_get_client_age)
 						return
 					if(query_datediff.NextRow())
 						account_age = text2num(query_datediff.item[1])
@@ -1147,6 +1135,12 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(holder)
 		holder.filteriffic = new /datum/filter_editor(in_atom)
 		holder.filteriffic.ui_interact(mob)
+
+///opens the particle editor UI for the in_atom object for this client
+/client/proc/open_particle_editor(atom/movable/in_atom)
+	if(holder)
+		holder.particle_test = new /datum/particle_editor(in_atom)
+		holder.particle_test.ui_interact(mob)
 
 /client/proc/set_right_click_menu_mode(shift_only)
 	if(shift_only)
