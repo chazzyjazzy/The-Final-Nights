@@ -295,7 +295,7 @@ GLOBAL_LIST_INIT(message_modes_stat_limits, list(
 
 	// Recompose message for AI hrefs, language incomprehension.
 	if(!thrown)
-		message = compose_message(speaker, message_language, raw_message, radio_freq, spans, message_mods) //TFN EDIT, REMOVAL
+		message = compose_message(speaker, message_language, raw_message, radio_freq, spans, message_mods)
 
 	//TFN EDIT END - Fixes Languages Bug
 
