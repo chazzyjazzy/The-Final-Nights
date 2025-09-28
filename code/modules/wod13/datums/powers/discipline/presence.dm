@@ -388,7 +388,6 @@
 		to_chat(owner, span_warning("[target]'s mind has resisted your attempt to sway!"))
 		to_chat(target, span_warning("An overwhelming aura radiates from [owner], compelling your love… but you steel your heart and turn away from their unnatural allure."))
 
-// Helper procs
 /mob/living/carbon/proc/walk_to_caster(mob/living/step_to)
 	walk(src, 0)
 	if(!CheckFrenzyMove())
