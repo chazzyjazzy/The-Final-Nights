@@ -554,6 +554,7 @@
 	to_chat(owner, span_warning("You have seized control of [target]'s body!"))
 	to_chat(target, span_danger("Your consciousness is violently displaced as another mind takes control!"))
 	target.possessed = TRUE
+	log_combat(owner, target, "Possessed via Dominate Possession")
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
 
 // datum to store variables during the body control
@@ -621,7 +622,7 @@
 		if(mortal_observer.mind)
 			mortal_body.mind = mortal_observer.mind
 		to_chat(mortal_body, span_notice("Your consciousness returns to your own body as the foreign presence withdraws."))
-
+	log_combat(vampire_original, mortal_body, "Has ended their Possession ")
 	mortal_body.possessed = FALSE
 	cleanup()
 
