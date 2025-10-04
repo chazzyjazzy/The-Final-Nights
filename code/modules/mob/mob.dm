@@ -474,8 +474,8 @@
 
 /mob/proc/run_examinate(atom/examinify)
 	if(ishuman(src))
-		var/mob/living/carbon/human/ueban = src
-		if(!do_after(src, max(1, 15-ueban.mentality*3), src))
+		var/mob/living/carbon/human/viewer = src
+		if(!do_after(src, max(1, 5 - viewer.st_get_stat(STAT_PERCEPTION)), src))
 			return
 
 	if(isturf(examinify) && !(sight & SEE_TURFS) && !(examinify in view(client ? client.view : world.view, src)))

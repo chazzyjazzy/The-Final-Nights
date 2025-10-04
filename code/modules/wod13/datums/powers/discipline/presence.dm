@@ -32,6 +32,8 @@
 	if(HAS_TRAIT(target, TRAIT_PRESENCE_IMMUNE))
 		to_chat(owner, span_warning("A presence attempt has botched against this person and they may no longer have Presence used on them for the rest of the night."))
 		return 0
+	var/mypower = SSroll.storyteller_roll(owner.st_get_stat(STAT_CHARISMA), difficulty = base_difficulty, mobs_to_show_output = owner, numerical = TRUE)
+	var/theirpower = SSroll.storyteller_roll(target.st_get_stat(STAT_PERMANENT_WILLPOWER), difficulty = 6, mobs_to_show_output = target, numerical = TRUE)
 
 	//is the difficulty pre-defined? if not, its probably their total mentality.
 	var/theirpower = difficulty || target.get_total_mentality()

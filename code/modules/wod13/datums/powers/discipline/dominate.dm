@@ -92,10 +92,9 @@
 		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
 		return FALSE
 
-	// ATTENTION : This rolling system is not lore accurate. According to Vampire v20, all Dominate powers are rolled as the attacker's stats using the defenders current willpower as a difficulty.
-	// This system serves a placeholder until satisfactory mechanics can be made for willpower. If we did not have this system, the max difficulty for all dominate attempts would be 5 (target.get_total_mentality())
-	mypower = SSroll.storyteller_roll(owner.get_total_social(), difficulty = base_difficulty, mobs_to_show_output = owner, numerical = TRUE)
-	theirpower = SSroll.storyteller_roll(target.get_total_mentality(), difficulty = 6, mobs_to_show_output = target, numerical = TRUE)
+	var/mypower = SSroll.storyteller_roll(owner.st_get_stat(STAT_CHARISMA), difficulty = base_difficulty, mobs_to_show_output = owner, numerical = TRUE)
+	var/theirpower = SSroll.storyteller_roll(target.st_get_stat(STAT_PERMANENT_WILLPOWER), difficulty = 6, mobs_to_show_output = target, numerical = TRUE)
+	var/mob/living/carbon/human/conditioner = target.conditioner?.resolve()
 
 	//automatically succeed against my conditioned servant
 	var/mob/living/carbon/human/conditioner = target.conditioner?.resolve()
@@ -484,7 +483,6 @@
 	if(do_mob(owner, target, 20 SECONDS))
 		target.conditioned = TRUE
 		target.conditioner = WEAKREF(owner)
-		target.additional_social -= 3
 		target.throw_alert("conditioning", /atom/movable/screen/alert/conditioning)
 		to_chat(target, span_hypnophrase("Your mind is filled with thoughts surrounding [owner]. Their every word and gesture carries immense weight to you."))
 		SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
