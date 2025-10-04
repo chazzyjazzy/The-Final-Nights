@@ -25,21 +25,18 @@
 	to_chat(owner, span_info("[target] hears you clearly."))
 	return TRUE
 
-/datum/discipline_power/presence/proc/presence_check(mob/living/carbon/human/owner, mob/living/target, difficulty)
+/datum/discipline_power/presence/proc/presence_check(mob/living/carbon/human/owner, mob/living/target, owner_stat, difficulty)
 	if(!ishuman(target))
 		return 0
 
 	if(HAS_TRAIT(target, TRAIT_PRESENCE_IMMUNE))
 		to_chat(owner, span_warning("A presence attempt has botched against this person and they may no longer have Presence used on them for the rest of the night."))
 		return 0
-	var/mypower = SSroll.storyteller_roll(owner.st_get_stat(STAT_CHARISMA), difficulty = base_difficulty, mobs_to_show_output = owner, numerical = TRUE)
-	var/theirpower = SSroll.storyteller_roll(target.st_get_stat(STAT_PERMANENT_WILLPOWER), difficulty = 6, mobs_to_show_output = target, numerical = TRUE)
 
-	//is the difficulty pre-defined? if not, its probably their total mentality.
-	var/theirpower = difficulty || target.get_total_mentality()
+	//is the difficulty pre-defined? if not, its probably their total willpower.
+	var/theirpower = difficulty || target.st_get_stat(STAT_PERMANENT_WILLPOWER)
 
-	//with most attribute rolls, social is a placeholder
-	var/successes = SSroll.storyteller_roll(owner.get_total_social(), difficulty = theirpower, mobs_to_show_output = owner, numerical = TRUE)
+	var/successes = SSroll.storyteller_roll(owner_stat, difficulty = theirpower, mobs_to_show_output = owner, numerical = TRUE)
 
 	if((owner.generation - 3) >= target.generation)
 		return 0
@@ -65,12 +62,12 @@
 /datum/discipline_power/presence/proc/sort_targets_by_mentality(list/targets)
 	var/list/sorted = list()
 	for(var/mob/living/carbon/target in targets)
-		var/target_mentality = target.get_total_mentality()
+		var/target_mentality = target.st_get_stat(STAT_PERMANENT_WILLPOWER)
 		var/inserted = FALSE
 
 		for(var/i = 1; i <= length(sorted); i++)
 			var/mob/living/carbon/existing = sorted[i]
-			if(target_mentality < existing.get_total_mentality())
+			if(target_mentality < existing.st_get_stat(STAT_PERMANENT_WILLPOWER))
 				sorted.Insert(i, target)
 				inserted = TRUE
 				break
@@ -103,8 +100,8 @@
 /datum/discipline_power/presence/awe/pre_activation_checks()
 	.=..()
 
-	//in place of charisma + performance
-	successes = SSroll.storyteller_roll(owner.get_total_social(), difficulty = 7, mobs_to_show_output = owner, numerical = TRUE)
+	//charisma + performance
+	successes = SSroll.storyteller_roll(owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_PERFORMANCE), difficulty = 7, mobs_to_show_output = owner, numerical = TRUE)
 	if(successes > 0)
 		return TRUE
 
@@ -168,8 +165,8 @@
 	if(!presence_hearing_check(owner, target))
 		return FALSE
 
-	//in place of charisma + intimidation, difficulty equal to the victims wits + courage
-	successes = presence_check(owner, target)
+	//charisma + intimidation, difficulty equal to the victims wits + courage
+	successes = presence_check(owner, target, owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_INTIMIDATION), difficulty = (target.st_get_stat(STAT_WITS) + target.st_get_stat(STAT_COURAGE)))
 	if(successes > 0)
 		return TRUE
 
@@ -215,7 +212,7 @@
 		return FALSE
 
 	//in place of appearance + empathy
-	successes = presence_check(owner, target)
+	successes = presence_check(owner, target, owner.st_get_stat(STAT_APPEARANCE) + owner.st_get_stat(STAT_EMPATHY))
 	if(successes > 0)
 		return TRUE
 
@@ -272,9 +269,9 @@
 		to_chat(owner, span_warning("You cannot sense anyone by that name."))
 		return FALSE
 
-	//in place of charisma + subterfuge -- this ability has a difficulty of 4 or 5 or something for people the summoner has met, and 8 for those they've only met briefly.
+	//this ability has a difficulty of 4 or 5 or something for people the summoner has met, and 8 for those they've only met briefly.
 	//i thought that was too low and the ability for the misuse of this disc caused me to raise it to 7 difficulty
-	successes = presence_check(owner, summon_target, 7)
+	successes = presence_check(owner, summon_target, owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_SUBTERFUGE), 7)
 	if(successes > 0)
 		return TRUE
 
@@ -335,8 +332,8 @@
 		if(hearer == owner)
 			continue
 
-		//'the victim must make a courage roll with a difficulty equal to the caster's charisma + intimidation to a maximum of 10' this is in place of that
-		var/hearer_successes = SSroll.storyteller_roll(hearer.get_total_social(), difficulty = owner.get_total_social(), mobs_to_show_output = hearer, numerical = TRUE)
+		//'the victim must make a courage roll with a difficulty equal to the caster's charisma + intimidation to a maximum of 10'
+		var/hearer_successes = SSroll.storyteller_roll(hearer.st_get_stat(STAT_COURAGE), difficulty = owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_INTIMIDATION), mobs_to_show_output = hearer, numerical = TRUE)
 		hearer_successes = max(0, hearer_successes)
 
 		apply_presence_overlay(hearer)

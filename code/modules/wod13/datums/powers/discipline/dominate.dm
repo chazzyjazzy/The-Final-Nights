@@ -85,16 +85,15 @@
 	return TRUE
 
 //dicerolling
-/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, tiebreaker = FALSE, base_difficulty = 4)
+/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, owner_stat, tiebreaker = FALSE, base_difficulty = 4)
 
 	//someone has botched a dominate against this human
 	if(HAS_TRAIT(target, TRAIT_DOMINATE_IMMUNE))
 		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
 		return FALSE
 
-	var/mypower = SSroll.storyteller_roll(owner.st_get_stat(STAT_CHARISMA), difficulty = base_difficulty, mobs_to_show_output = owner, numerical = TRUE)
-	var/theirpower = SSroll.storyteller_roll(target.st_get_stat(STAT_PERMANENT_WILLPOWER), difficulty = 6, mobs_to_show_output = target, numerical = TRUE)
-	var/mob/living/carbon/human/conditioner = target.conditioner?.resolve()
+	var/theirpower = target.st_get_stat(STAT_PERMANENT_WILLPOWER)
+	var/mypower = SSroll.storyteller_roll(owner_stat, difficulty = theirpower, mobs_to_show_output = owner, numerical = TRUE)
 
 	//automatically succeed against my conditioned servant
 	var/mob/living/carbon/human/conditioner = target.conditioner?.resolve()
@@ -206,7 +205,7 @@
 		return FALSE
 
 	// in place of manipulation + intimidation with the difficulty being the victims current willpower
-	if(dominate_check(owner, target, base_difficulty = 4))
+	if(dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_INTIMIDATION), base_difficulty = 4))
 		return TRUE
 
 	to_chat(owner, span_warning("[target] has resisted your domination!"))
@@ -263,7 +262,7 @@
 		return TRUE
 
 	// in place of manipulation + leadership with the difficulty being the victims current willpower
-	var/domination_result = dominate_check(owner, target, base_difficulty = 5)
+	var/domination_result = dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_LEADERSHIP))
 	if(domination_result > 0)
 		successes_rolled = domination_result
 		return TRUE
@@ -395,7 +394,7 @@
 		return FALSE
 
 	// in place of wits + subterfuge with the difficulty being the victims current willpower
-	if(dominate_check(owner, target, base_difficulty = 6))
+	if(dominate_check(owner, target, owner.st_get_stat(STAT_WITS) + owner.st_get_stat(STAT_SUBTERFUGE)))
 		return TRUE
 
 	to_chat(owner, span_warning("[target] has resisted your domination!"))
@@ -456,7 +455,7 @@
 		return TRUE
 
 	// in place of charisma + leadership with the difficulty being the victims current willpower
-	domination_succeeded = dominate_check(owner, target, base_difficulty = 6)
+	domination_succeeded = dominate_check(owner, target, owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_LEADERSHIP))
 	if(!domination_succeeded)
 		do_cooldown(cooldown_length)
 	return domination_succeeded
@@ -526,7 +525,7 @@
 		return FALSE
 
 	// in place of charisma + intimidation with the difficulty being the victims current willpower
-	domination_succeeded = dominate_check(owner, target, base_difficulty = 7)
+	domination_succeeded = dominate_check(owner, target, owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_INTIMIDATION))
 	if(!domination_succeeded)
 		to_chat(owner, span_warning("[target] has resisted your domination!"))
 		do_cooldown(cooldown_length)
