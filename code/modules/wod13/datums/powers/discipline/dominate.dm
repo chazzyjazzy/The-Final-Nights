@@ -271,7 +271,7 @@
 /datum/discipline_power/dominate/mesmerize/activate(mob/living/carbon/human/target)
 	. = ..()
 	//if the target is attacked during the hypnotism, they are set free!
-	RegisterSignal(owner, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
+	RegisterSignal(target, COMSIG_ATOM_ATTACKBY, PROC_REF(release_target))
 	if(!immobilize_target(target, 10 SECONDS))
 		to_chat(owner, span_warning("You have broken concentration with [target] while implanting your hypnosis!"))
 		return
@@ -279,7 +279,7 @@
 	target.throw_alert("mesmerize", /atom/movable/screen/alert/mesmerize)
 
 	//unregister the signal after the hypnotism is completed
-	UnregisterSignal(owner, COMSIG_ATOM_ATTACKBY)
+	UnregisterSignal(target, COMSIG_ATOM_ATTACKBY)
 
 	log_combat(owner, target, "Dominated with Mesmerize: [custom_message]")
 	to_chat(owner, span_warning("You've successfully planted a hypnotic suggestion in [target]'s mind!"))
