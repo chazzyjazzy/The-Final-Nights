@@ -52,4 +52,5 @@
 /mob/living/proc/st_recalculate_stats(stat_path, bypass = FALSE)
 	if(storyteller_stat_holder.is_health_affecting(stat_path) || bypass)
 		recalculate_max_health()
-	add_or_update_variable_movespeed_modifier(/datum/movespeed_modifier/dexterity, multiplicative_slowdown = -(st_get_stat(STAT_DEXTERITY) / 20))
+	if(storyteller_stat_holder.is_speed_affecting(stat_path) || bypass)
+		add_or_update_variable_movespeed_modifier(/datum/movespeed_modifier/dexterity, multiplicative_slowdown = -(st_get_stat(STAT_DEXTERITY) / 20))

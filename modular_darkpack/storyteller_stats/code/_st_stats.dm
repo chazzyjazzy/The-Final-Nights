@@ -18,6 +18,9 @@
 	//if a stat affects the willpower pool, recalculate the hp of the mob when changed.
 	var/affects_willpower = FALSE
 
+	//If a stat affects the player's speed, such as dexterity.
+	var/affects_speed = FALSE
+
 	/// A dictionary of modifiers to this attribute.
 	var/list/modifiers = list()
 

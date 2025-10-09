@@ -1146,7 +1146,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 		if(1) // Attributes
 			var/datum/st_stat/freebie_stat = storyteller_stat_holder.get_stat_datum(STAT_FREEBIE_POINTS)
-			dat += "<center><h3>Freebie points left: [freebie_stat.points]</h3></center>"
+			dat += "<center><h3>Freebie points left: [freebie_stat.points]</h3>"
+			dat += "<a href='byond://?_src_=prefs;preference=attributes;task=reset_stats'>Reset Stats</a><br></center>"
 			dat += "<hr>"
 
 			dat += "<table align='center' width='100%'>"
@@ -2083,14 +2084,15 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		var/datum/st_stat/freebie_stat = storyteller_stat_holder.get_stat_datum(STAT_FREEBIE_POINTS)
 		var/datum/st_stat/chosen_stat = text2path(href_list["stat"])
 		var/freebie_point_usage = 0
-		if(chosen_stat.type == STAT_PERMANENT_WILLPOWER)
-			freebie_point_usage = 1
-		if(chosen_stat.type in subtypesof(STAT_VIRTUE))
-			freebie_point_usage = 2
-		if(chosen_stat.type in subtypesof(STAT_ABILITY))
-			freebie_point_usage = 2
-		if(chosen_stat.type in subtypesof(STAT_ATTRIBUTE))
-			freebie_point_usage = 5
+		if(chosen_stat)
+			if(chosen_stat.type == STAT_PERMANENT_WILLPOWER)
+				freebie_point_usage = 1
+			if(chosen_stat.type in subtypesof(STAT_VIRTUE))
+				freebie_point_usage = 2
+			if(chosen_stat.type in subtypesof(STAT_ABILITY))
+				freebie_point_usage = 2
+			if(chosen_stat.type in subtypesof(STAT_ATTRIBUTE))
+				freebie_point_usage = 5
 
 		switch(href_list["task"])
 			if("increase_stat")
@@ -2125,6 +2127,10 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					decrease_base_type_stat.points += 1
 				else
 					freebie_stat.points += freebie_point_usage
+
+			if("reset_stats")
+				storyteller_stat_holder = null
+				storyteller_stat_holder = new()
 
 
 	// TFN ADDITION END
