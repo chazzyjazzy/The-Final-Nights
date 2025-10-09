@@ -591,7 +591,7 @@
 	end_action.Grant(mortal_body)
 
 	//vampire's body is helpless and vulnerable as they do this - in torpor.
-	vampire_original.SetUnconscious(999999)
+	vampire_original.toggle_resting()
 	vampire_original.visible_message(span_warning("[vampire_original]'s eyes roll back and they collapse into a catatonic state!"))
 	possession_active = TRUE
 
@@ -629,7 +629,6 @@
 	if(mortal_body.mind)
 		vampire_original.mind = mortal_body.mind
 
-	vampire_original.SetUnconscious(999999)
 	vampire_original.adjustBruteLoss(50)
 	vampire_original.visible_message(span_danger("[vampire_original] suddenly convulses violently and falls into what appears to be a coma!"))
 	to_chat(vampire_original, span_boldwarning("The psychic shock of your host's death sends you into torpor!"))
