@@ -211,7 +211,6 @@
 	if(!presence_hearing_check(owner, target))
 		return FALSE
 
-	//in place of appearance + empathy
 	successes = presence_check(owner, target, owner.st_get_stat(STAT_APPEARANCE) + owner.st_get_stat(STAT_EMPATHY))
 	if(successes > 0)
 		return TRUE

@@ -119,8 +119,8 @@
 		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
 		return FALSE
 
-	//did we succeed or fail the contested roll
-	return (mypower > theirpower && owner.generation <= target.generation)
+	//did we succeed or fail the roll
+	return ((mypower > 0) && owner.generation <= target.generation)
 
 //dominate involves capturing the victim's gaze, leaving them completely helpless as you hypnotically invade their mind.
 /datum/discipline_power/dominate/proc/immobilize_target(mob/living/carbon/human/target, duration = 5 SECONDS)
@@ -204,7 +204,6 @@
 		to_chat(owner, span_warning("Commands must be only ONE word!"))
 		return FALSE
 
-	// in place of manipulation + intimidation with the difficulty being the victims current willpower
 	if(dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_INTIMIDATION), base_difficulty = 4))
 		return TRUE
 
@@ -240,8 +239,8 @@
 	range = 7
 	var/custom_message = ""
 	var/successes_rolled
-	var/mob/living/current_target
-	var/datum/action/vampire/end_mesmerization/end_action
+	var/datum/weakref/current_target_ref
+	var/datum/weakref/end_action_ref
 	var/pulse_active = FALSE
 
 /datum/discipline_power/dominate/mesmerize/pre_activation_checks(mob/living/carbon/human/target)
@@ -261,10 +260,8 @@
 		successes_rolled = 5
 		return TRUE
 
-	// in place of manipulation + leadership with the difficulty being the victims current willpower
-	var/domination_result = dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_LEADERSHIP))
-	if(domination_result > 0)
-		successes_rolled = domination_result
+	if(dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_LEADERSHIP)))
+		successes_rolled = mypower
 		return TRUE
 
 	successes_rolled = 0
@@ -291,12 +288,13 @@
 	to_chat(target, span_info("An urging, subconcious thought has entered your mind. Youre not sure how this happened - but it keeps pulsing, forcing your conscious thought to bend toward it."))
 	to_chat(target, span_hypnophrase(custom_message))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
-	current_target = target
+	current_target_ref = WEAKREF(target)
 	ADD_TRAIT(target, TRAIT_MESMERIZED, TRAIT_GENERIC)
 
 	//allow the dominator to end the mesmerization pulses early if the target completes the directive, assuming its an objective rather than a hypnotic suggestion (which is allowed)
-	end_action = new(owner, src)
+	var/datum/action/vampire/end_mesmerization/end_action = new(owner, src)
 	end_action.Grant(owner)
+	end_action_ref = WEAKREF(end_action)
 	pulse_active = TRUE
 	start_mesmerization_cycle(target)
 
@@ -331,6 +329,7 @@
 
 //for use in the /datum/action/vampire/end_mesmerization
 /datum/discipline_power/dominate/mesmerize/proc/force_end_mesmerization()
+	var/mob/living/carbon/human/current_target = current_target_ref?.resolve()
 	if(!current_target || !pulse_active)
 		return
 	pulse_active = FALSE
@@ -341,13 +340,15 @@
 	cleanup_mesmerization()
 
 /datum/discipline_power/dominate/mesmerize/proc/cleanup_mesmerization()
+	var/mob/living/carbon/human/current_target = current_target_ref?.resolve()
 	pulse_active = FALSE
 	if(current_target)
 		current_target.clear_alert("mesmerize")
-		current_target = null
-	if(end_action)
-		end_action.Remove(owner)
-		end_action = null
+	current_target_ref = null
+	var/datum/action/vampire/end_mesmerization/action = end_action_ref?.resolve()
+	if(action)
+		action.Remove(owner)
+	end_action_ref = null
 
 /datum/action/vampire/end_mesmerization
 	name = "End Mesmerization"
@@ -393,7 +394,6 @@
 		to_chat(owner, span_warning("You do not have enough blood to cast Dominate!"))
 		return FALSE
 
-	// in place of wits + subterfuge with the difficulty being the victims current willpower
 	if(dominate_check(owner, target, owner.st_get_stat(STAT_WITS) + owner.st_get_stat(STAT_SUBTERFUGE)))
 		return TRUE
 
@@ -454,7 +454,6 @@
 	if (HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
 		return TRUE
 
-	// in place of charisma + leadership with the difficulty being the victims current willpower
 	domination_succeeded = dominate_check(owner, target, owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_LEADERSHIP))
 	if(!domination_succeeded)
 		do_cooldown(cooldown_length)
@@ -524,7 +523,6 @@
 		to_chat(owner, span_warning("You do not have enough blood to cast Dominate!"))
 		return FALSE
 
-	// in place of charisma + intimidation with the difficulty being the victims current willpower
 	domination_succeeded = dominate_check(owner, target, owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_INTIMIDATION))
 	if(!domination_succeeded)
 		to_chat(owner, span_warning("[target] has resisted your domination!"))
