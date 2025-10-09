@@ -70,6 +70,12 @@
 		return FALSE
 	return A.affects_health_pool
 
+/datum/storyteller_stats/proc/is_speed_affecting(stat_path)
+	var/datum/st_stat/A = get_stat_datum(stat_path)
+	if(!A)
+		return FALSE
+	return A.affects_speed
+
 /datum/storyteller_stats/proc/is_willpower_affecting(stat_path)
 	var/datum/st_stat/A = get_stat_datum(stat_path)
 	return A.affects_willpower

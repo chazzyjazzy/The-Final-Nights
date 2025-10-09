@@ -7,6 +7,7 @@
 /datum/st_stat/attribute/dexterity
 	name = "Dexterity"
 	description = "Affects your speed and melee weapon accuracy."
+	affects_speed = TRUE
 
 /datum/st_stat/attribute/stamina
 	name = "Stamina"
