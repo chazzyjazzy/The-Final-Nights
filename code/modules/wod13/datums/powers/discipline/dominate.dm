@@ -1,12 +1,11 @@
 #define TRAIT_MESMERIZED "mesmerized"
-#define TRAIT_DOMINATE_IMMUNE "dominate_immune"
 
 /datum/discipline/dominate
 	name = "Dominate"
 	desc = "Suppresses will of your targets and forces them to obey you, if their will is not more powerful than yours."
 	icon_state = "dominate"
 	power_type = /datum/discipline_power/dominate
-
+	var/list/botched_targets = list()
 
 /datum/discipline/dominate/post_gain()
 	. = ..()
@@ -86,10 +85,11 @@
 
 //dicerolling
 /datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, owner_stat, tiebreaker = FALSE, base_difficulty = 4)
+	var/datum/discipline/dominate/parent_disc = discipline
 
 	//someone has botched a dominate against this human
-	if(HAS_TRAIT(target, TRAIT_DOMINATE_IMMUNE))
-		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
+	if(parent_disc && (target in parent_disc.botched_targets))
+		to_chat(owner, span_warning("Your previous botched attempt has made [target] resistant to your Dominate for the rest of the night."))
 		return FALSE
 
 	var/theirpower = target.st_get_stat(STAT_PERMANENT_WILLPOWER)
@@ -115,8 +115,8 @@
 
 	//i've botched so now this person is immune to dominate for the rest of the round
 	if(mypower < 0)
-		ADD_TRAIT(target, TRAIT_DOMINATE_IMMUNE, TRAIT_GENERIC)
-		to_chat(owner, span_warning("A Dominate attempt has botched against this person and they may no longer be Dominated for the rest of the night."))
+		parent_disc.botched_targets += target
+		to_chat(owner, span_warning("Your Dominate attempt has botched! [target] is now resistant to your Dominate for the rest of the night."))
 		return FALSE
 
 	//did we succeed or fail the roll
@@ -508,8 +508,8 @@
 		return FALSE
 
 	//v20 states that posession may not work on other Kindred as 'even the weakest Kindred mind can resist'. Extending this to Garou because players posessing Garous to insta-Crinos I think is griefing.
-	if(iskindred(target) || isgarou(target) || iscathayan(target))
-		to_chat(owner, span_warning("You cannot possess [iskindred(target) ? "another kindred" : "a garou - the beast within resists"]!"))
+	if(iskindred(target) || isgarou(target) || iscathayan(target) || (target.dna.species.name == "mannequin"))
+		to_chat(owner, span_warning("You cannot possess [iskindred(target) ? "another kindred" : "this creature - the beast within resists"]!"))
 		return FALSE
 
 	if(target.possessed)
