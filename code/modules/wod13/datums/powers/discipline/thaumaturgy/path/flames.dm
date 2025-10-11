@@ -111,7 +111,7 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/three/pre_activation_checks(atom/target)
 	. = ..()
-	range_successes = SSroll.storyteller_roll(dice = owner.get_total_mentality(), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
+	range_successes = SSroll.storyteller_roll(dice = owner.st_get_stat(STAT_PERMANENT_WILLPOWER), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
 	switch(range_successes)
 		if(-INFINITY to 0)
 			to_chat(owner, "You fail to conjure flames anywhere further than your own hand.")
@@ -166,7 +166,7 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/four/pre_activation_checks(atom/target)
 	. = ..()
-	range_successes = SSroll.storyteller_roll(dice = owner.get_total_mentality(), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
+	range_successes = SSroll.storyteller_roll(dice = owner.st_get_stat(STAT_PERMANENT_WILLPOWER), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
 	switch(range_successes)
 		if(-INFINITY to 0)
 			to_chat(owner, "You fail to conjure flames anywhere further than your own hand.")
@@ -224,7 +224,7 @@
 
 /datum/discipline_power/thaumaturgy/path/flames/five/pre_activation_checks(atom/target)
 	. = ..()
-	range_successes = SSroll.storyteller_roll(dice = owner.get_total_mentality(), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
+	range_successes = SSroll.storyteller_roll(dice = owner.st_get_stat(STAT_PERMANENT_WILLPOWER), difficulty = (level + 3), numerical = TRUE, mobs_to_show_output = owner, force_chat_result = TRUE)
 	switch(range_successes)
 		if(-INFINITY to 0)
 			to_chat(owner, "You fail to conjure flames anywhere further than your own hand.")
