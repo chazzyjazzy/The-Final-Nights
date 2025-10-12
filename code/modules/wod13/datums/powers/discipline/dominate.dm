@@ -84,7 +84,7 @@
 	return TRUE
 
 //dicerolling
-/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, owner_stat, tiebreaker = FALSE)
+/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, owner_stat, tiebreaker = FALSE, numerical = FALSE)
 	var/datum/discipline/dominate/parent_disc = discipline
 
 	//someone has botched a dominate against this human
@@ -118,6 +118,9 @@
 		parent_disc.botched_targets += target
 		to_chat(owner, span_warning("Your Dominate attempt has botched! [target] is now resistant to your Dominate for the rest of the night."))
 		return FALSE
+
+	if(numerical)
+		return mypower
 
 	//did we succeed or fail the roll
 	return ((mypower > 0) && owner.generation <= target.generation)
@@ -180,10 +183,10 @@
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_HUMAN
 
-	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
 	duration_length = 3 SECONDS
 	range = 7
+	var/successes
 	var/custom_command = "FORGET ABOUT IT"
 
 /datum/discipline_power/dominate/command/pre_activation_checks(mob/living/carbon/human/target)
@@ -204,7 +207,8 @@
 		to_chat(owner, span_warning("Commands must be only ONE word!"))
 		return FALSE
 
-	if(dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_INTIMIDATION)))
+	successes = dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_INTIMIDATION), numerical = TRUE)
+	if(successes > 0)
 		return TRUE
 
 	to_chat(owner, span_warning("[target] has resisted your domination!"))
@@ -219,9 +223,8 @@
 
 
 	to_chat(target, span_big("[custom_command]"))
-	var/last_margin = mypower - theirpower
-	var/vigor_text = get_success_message(last_margin, target.name)
-	to_chat(target, span_warning("[owner] has successfully dominated your mind with [last_margin] successes. You feel compelled to [custom_command] with [vigor_text]."))
+	var/vigor_text = get_success_message(successes, target.name)
+	to_chat(target, span_warning("[owner] has successfully dominated your mind with [successes] successes. You feel compelled to [custom_command] with [vigor_text]."))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/dominate.ogg'))
 
 // MESMERIZE
@@ -234,11 +237,10 @@
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_HUMAN
 
-	multi_activate = TRUE
 	cooldown_length = 30 SECONDS
 	range = 7
 	var/custom_message = ""
-	var/successes_rolled
+	var/pulse_interval
 	var/datum/weakref/current_target_ref
 	var/datum/weakref/end_action_ref
 	var/pulse_active = FALSE
@@ -252,19 +254,24 @@
 		to_chat(owner, span_warning("[target] is already under a hypnotic suggestion!"))
 		return FALSE
 
+	if(pulse_active)
+		to_chat(owner, span_warning("You already have an active mesmerization!"))
+		return FALSE
+
 	custom_message = tgui_input_text(owner, "Hypnotic Suggestion", "What hypnotic message will echo in their mind?", encode = FALSE)
 	if(!custom_message)
 		return FALSE
 
 	if(HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
-		successes_rolled = 5
+		pulse_interval = 5
 		return TRUE
 
-	if(dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_LEADERSHIP)))
-		successes_rolled = mypower
+	var/successes = dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_LEADERSHIP), numerical = TRUE)
+	if(successes > 0)
+		pulse_interval = successes
 		return TRUE
 
-	successes_rolled = 0
+	pulse_interval = 0
 	do_cooldown(cooldown_length)
 	return FALSE
 
@@ -303,7 +310,7 @@
 		return
 
 	//the message pangs in the victim's mind every couple minutes depending on successes rolled.
-	var/interval_minutes = max(1, 5 - successes_rolled)
+	var/interval_minutes = max(1, 5 - pulse_interval)
 	var/interval_deciseconds = interval_minutes * 60 * 10
 	addtimer(CALLBACK(src, PROC_REF(mesmerization_pulse), target, interval_deciseconds, 1), interval_deciseconds)
 
@@ -373,11 +380,11 @@
 	level = 3
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_HUMAN
-	multi_activate = TRUE
 	cooldown_length = 1 MINUTES
 	duration_length = 3 SECONDS
 	range = 7
 	var/custom_memory = ""
+	var/successes
 
 /datum/discipline_power/dominate/the_forgetful_mind/pre_activation_checks(mob/living/carbon/human/target)
 	if(!dominate_hearing_check(owner, target))
@@ -394,7 +401,8 @@
 		to_chat(owner, span_warning("You do not have enough blood to cast Dominate!"))
 		return FALSE
 
-	if(dominate_check(owner, target, owner.st_get_stat(STAT_WITS) + owner.st_get_stat(STAT_SUBTERFUGE)))
+	successes = dominate_check(owner, target, owner.st_get_stat(STAT_WITS) + owner.st_get_stat(STAT_SUBTERFUGE), numerical = TRUE)
+	if(successes > 0)
 		return TRUE
 
 	to_chat(owner, span_warning("[target] has resisted your domination!"))
@@ -419,7 +427,6 @@
 	SEND_SIGNAL(target, COMSIG_ALL_MASQUERADE_REINFORCE)
 
 	//find out how many successes for the flavortext memory_messages
-	var/last_margin = mypower - theirpower
 	var/list/memory_messages = list(
 		"A single memory is removed - and in its place is a void, as if you passed out. Echoes of the true memory may bubble up from time to time...",
 		"The words of [owner] are quickly forgotten as they permanently remove entire parts of your memory - never to return.",
@@ -428,8 +435,8 @@
 		"Your willpower collapses as [owner] reaches deep into your mind, reconstructing, altering, or perhaps even permanently removing entire periods of your life.",
 		"Your memory state is totally at the mercy of [owner] as your willpower completely collapses."
 	)
-	var/message_index = clamp(last_margin, 1, 6)
-	to_chat(target, span_warning("[owner] has successfully dominated your mind with [last_margin] success[last_margin == 1 ? "" : "es"]. [memory_messages[message_index]]"))
+	var/message_index = clamp(successes, 1, 6)
+	to_chat(target, span_warning("[owner] has successfully dominated your mind with [successes] success[successes == 1 ? "" : "es"]. [memory_messages[message_index]]"))
 
 // CONDITIONING
 /datum/discipline_power/dominate/conditioning
@@ -441,7 +448,6 @@
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_HUMAN
 
-	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
 	duration_length = 6 SECONDS
 	range = 2
@@ -498,7 +504,6 @@
 	check_flags = DISC_CHECK_CAPABLE|DISC_CHECK_SPEAK|DISC_CHECK_SEE
 	target_type = TARGET_HUMAN
 
-	multi_activate = TRUE
 	cooldown_length = 5 MINUTES
 	range = 7
 	var/datum/possession_controller/active_possession
