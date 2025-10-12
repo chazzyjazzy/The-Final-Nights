@@ -84,7 +84,7 @@
 	return TRUE
 
 //dicerolling
-/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, owner_stat, tiebreaker = FALSE, base_difficulty = 4)
+/datum/discipline_power/dominate/proc/dominate_check(mob/living/carbon/human/owner, mob/living/carbon/human/target, owner_stat, tiebreaker = FALSE)
 	var/datum/discipline/dominate/parent_disc = discipline
 
 	//someone has botched a dominate against this human
@@ -204,7 +204,7 @@
 		to_chat(owner, span_warning("Commands must be only ONE word!"))
 		return FALSE
 
-	if(dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_INTIMIDATION), base_difficulty = 4))
+	if(dominate_check(owner, target, owner.st_get_stat(STAT_MANIPULATION) + owner.st_get_stat(STAT_INTIMIDATION)))
 		return TRUE
 
 	to_chat(owner, span_warning("[target] has resisted your domination!"))
@@ -735,7 +735,7 @@
 	if (HAS_TRAIT(target, TRAIT_CANNOT_RESIST_MIND_CONTROL))
 		return TRUE
 
-	domination_succeeded = dominate_check(owner, target, base_difficulty = 5)
+	domination_succeeded = dominate_check(owner, target)
 	if(domination_succeeded)
 		return TRUE
 	else
