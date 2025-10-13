@@ -5,7 +5,7 @@
 	icon = 'icons/mob/human.dmi'
 	icon_state = "human_basic"
 	appearance_flags = KEEP_TOGETHER|TILE_BOUND|PIXEL_SCALE|LONG_GLIDE
-	hud_possible = list(HEALTH_HUD,STATUS_HUD,ID_HUD,WANTED_HUD,IMPLOYAL_HUD,IMPCHEM_HUD,IMPTRACK_HUD, NANITE_HUD, DIAG_NANITE_FULL_HUD,ANTAG_HUD,GLAND_HUD,SENTIENT_DISEASE_HUD,FAN_HUD)
+	hud_possible = list(HEALTH_HUD,STATUS_HUD,ID_HUD,WANTED_HUD,IMPLOYAL_HUD,IMPCHEM_HUD,IMPTRACK_HUD, NANITE_HUD, DIAG_NANITE_FULL_HUD,ANTAG_HUD,GLAND_HUD,SENTIENT_DISEASE_HUD,FAN_HUD,SENSEWYRM_HUD) // TFN EDIT - Remakes the Theurge's "Sense Wyrm" gift - added ',SENSEWYRM_HUD)'
 	hud_type = /datum/hud/human
 	can_buckle = TRUE
 	buckle_lying = 0
@@ -38,6 +38,9 @@
 	var/age = 30
 	///Character's chronological age
 	var/chronological_age = 30
+
+	/// Which body type to use
+	var/physique = MALE
 
 	var/underwear = "Nude"	//Which underwear the player wants
 	var/underwear_color = "#000000"

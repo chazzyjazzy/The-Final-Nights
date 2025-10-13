@@ -76,7 +76,7 @@
 /datum/discipline_power/necromancy/ethereal_horde/activate()
 	. = ..()
 
-	var/limit = 2 + owner.social + owner.more_companions - 1
+	var/limit = 2 + owner.st_get_stat(STAT_LEADERSHIP)
 	var/diff = limit - length(owner.beastmaster)
 	if(diff <= 0)
 		to_chat(owner, span_warning("The vitae cools - you cannot extend your will to any more followers."))
@@ -92,12 +92,12 @@
 	var/mob/living/simple_animal/hostile/beastmaster/giovanni_zombie/zombie1 = new /mob/living/simple_animal/hostile/beastmaster/giovanni_zombie/level1(owner.loc)
 	zombie1.my_creator = owner
 	owner.beastmaster |= zombie1
-	zombie1.beastmaster = owner
+	zombie1.beastmaster_owner = owner
 	if(diff != 1)
 		var/mob/living/simple_animal/hostile/beastmaster/giovanni_zombie/zombie2 = new /mob/living/simple_animal/hostile/beastmaster/giovanni_zombie/level1(owner.loc)
 		zombie2.my_creator = owner
 		owner.beastmaster |= zombie2
-		zombie2.beastmaster = owner
+		zombie2.beastmaster_owner = owner
 
 
 //ASHES TO ASHES
@@ -231,7 +231,7 @@
 
 /datum/discipline_power/necromancy/shambling_horde/activate(mob/living/target)
 	. = ..()
-	var/limit = 2 + owner.social + owner.more_companions - 1
+	var/limit = 2 + owner.st_get_stat(STAT_LEADERSHIP)
 	var/diff = limit - length(owner.beastmaster)
 	if (target.stat == DEAD)
 		if(diff <= 0)
@@ -322,7 +322,7 @@
 		var/ritual = tgui_input_list(owner, "Choose rune to draw:", "Necromancy", rune_names)
 		if(!ritual)
 			return
-		if(do_after(H, 3 SECONDS * max(1, 5 - H.mentality), H))
+		if(do_after(H, 3 SECONDS * max(1, 5 - H.st_get_stat(STAT_OCCULT)), H))
 			var/ritual_type = rune_names[ritual]
 			new ritual_type(H.loc)
 			H.bloodpool = max(H.bloodpool - 2, 0)
@@ -338,7 +338,7 @@
 		var/ritual = tgui_input_list(owner, "Choose rune to draw:", "necroritualism", list("???"))
 		if(!ritual)
 			return
-		if(do_after(H, 30*max(1, 5-H.mentality), H))
+		if(do_after(H, 30*max(1, 5-H.st_get_stat(STAT_OCCULT)), H))
 			var/rune = pick(rune_names)
 			new rune(H.loc)
 			H.bloodpool = max(H.bloodpool - 2, 0)

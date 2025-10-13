@@ -11,6 +11,8 @@
 	var/check_flags = DISC_CHECK_CONSCIOUS | DISC_CHECK_CAPABLE
 	/// How many blood points this power costs to activate
 	var/vitae_cost = 1
+	/// How many willpower points this power costs to activate
+	var/willpower_cost = 0
 	/// Bitflags determining what types of entities this power is allowed to target. NONE if self-targeting only.
 	var/target_type = NONE
 	/// How many tiles away this power can be used from.
@@ -49,6 +51,8 @@
 	var/list/grouped_powers
 	/// Group this Discipline belongs to. Only one discipline of a group may be active at a time. No cooldown is shared.
 	var/power_group = DISCIPLINE_POWER_GROUP_NONE
+	/// If the power has custom logging, for example Melpominee.
+	var/custom_logging = FALSE
 
 	/* NOT MEANT TO BE OVERRIDDEN */
 	/// Timer(s) tracking the duration of the power. Can have multiple if multi_activate is true.
@@ -124,7 +128,15 @@
  * this power's vitae cost.
  */
 /datum/discipline_power/proc/can_afford()
-	return (owner.bloodpool >= (HAS_TRAIT(owner, TRAIT_DOUBLE_VITAE_COST) ? vitae_cost*2 : vitae_cost))
+	var/can_afford = TRUE
+	if(vitae_cost)
+		if(!(owner.bloodpool >= (HAS_TRAIT(owner, TRAIT_DOUBLE_VITAE_COST) ? vitae_cost*2 : vitae_cost)))
+			can_afford = FALSE
+	if(willpower_cost)
+		if(!owner.st_get_stat(STAT_TEMPORARY_WILLPOWER) >= willpower_cost)
+			can_afford = FALSE
+	return can_afford
+
 
 /**
  * Returns if this power can currently be activated
@@ -184,7 +196,7 @@
 	//the user cannot afford the power's vitae expenditure
 	if (!can_afford())
 		if (alert)
-			to_chat(owner, span_warning("You do not have enough blood to cast [src]!"))
+			do_afford_alert()
 		return FALSE
 
 	//the power's cooldown has not elapsed
@@ -449,7 +461,8 @@
 	INVOKE_ASYNC(src, PROC_REF(do_masquerade_violation), target)
 
 	do_caster_notification(target)
-	do_logging(target)
+	if(!custom_logging)
+		do_logging(target)
 
 	owner.update_action_buttons()
 
@@ -511,6 +524,7 @@
 /datum/discipline_power/proc/spend_resources()
 	if (can_afford())
 		owner.bloodpool = owner.bloodpool - (HAS_TRAIT(owner, TRAIT_DOUBLE_VITAE_COST) ? vitae_cost*2 : vitae_cost)
+		owner.st_decrease_stat_score(STAT_TEMPORARY_WILLPOWER, willpower_cost)
 		owner.update_action_buttons()
 		return TRUE
 	else
@@ -727,6 +741,8 @@
 	if (spend_resources())
 		if(vitae_cost > 0)
 			to_chat(owner, span_warning("[src] consumes your blood to stay active."))
+		if(willpower_cost > 0)
+			to_chat(owner, span_warning("[src] consumes your willpower to stay active."))
 		if (!duration_override)
 			do_duration(target)
 	else
@@ -753,3 +769,12 @@
 
 	deltimer(duration_timers[to_clear])
 	duration_timers.Cut(to_clear, to_clear + 1)
+
+// For certain discipline alerts, for example auspex 5 requiring willpower instead of blood points.
+/datum/discipline_power/proc/do_afford_alert()
+	if(vitae_cost && willpower_cost)
+		to_chat(owner, span_warning("You do not have enough blood and or willpower to cast [src]!"))
+	else if(vitae_cost)
+		to_chat(owner, span_warning("You do not have enough blood to cast [src]!"))
+	else if(willpower_cost)
+		to_chat(owner, span_warning("You do not have enough willpower to cast [src]!"))

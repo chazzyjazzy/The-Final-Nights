@@ -18,6 +18,10 @@
 #define MAX_TRUSTED_GENERATION 8
 /// The default generation everyone begins at
 #define DEFAULT_GENERATION 13
+// The generation a human is.
+#define HUMAN_GENERATION HIGHEST_GENERATION_LIMIT + 1
+// The lowest generation that anyone using Blood of Potency can go down to.
+#define BLOOD_POTENCY_GENERATION 4
 
 //Rank definitions.
 
@@ -75,7 +79,9 @@
 #define AURA_GHOUL "aura_ghoul"
 #define AURA_TRUE_FAITH "#ffe12f"
 #define AURA_DIAB "#000000"
-
+#define AURA_WYRM_LIGHT "#a087ce"
+#define AURA_WYRM_HEAVY "#541488"
+#define AURA_NO_WYRM "#d0c6d8"
 /**
  * Morality defines
  */

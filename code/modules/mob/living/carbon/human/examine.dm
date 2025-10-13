@@ -511,7 +511,7 @@
 
 			if(ishuman(user))
 				var/mob/living/carbon/human/garou = user
-				if((garou.mentality+garou.additional_mentality) > (src.social+src.additional_social))
+				if((garou.st_get_stat(STAT_INVESTIGATION)) > (src.st_get_stat(STAT_SUBTERFUGE)))
 					splat_sense = 1
 
 			if(iscathayan(src))
@@ -583,6 +583,10 @@
 
 				if (!wyrm_taint && !weaver_taint && !wyld_taint)
 					msg += "<span class='purple'><i>You aren't sensing any of the triat's influence on [p_them()]...</i></span>\n"
+				//TFN EDIT START - Kinfolk Merit
+				if(HAS_TRAIT(src, TRAIT_KINFOLK))
+					msg += "<span class='purple'><i>[p_they(TRUE)] smell[p_s()] of being Kin, in some way."
+				//TFN EDIT END - Kinfolk Merit
 		else
 			msg += "<span class='purple'><i>[p_they(TRUE)] [p_are()] too far away to get a good sniff...</i></span>\n"
 

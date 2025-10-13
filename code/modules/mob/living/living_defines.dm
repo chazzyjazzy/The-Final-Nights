@@ -2,7 +2,7 @@
 	see_invisible = SEE_INVISIBLE_LIVING
 	sight = 0
 	see_in_dark = 2
-	hud_possible = list(HEALTH_HUD,STATUS_HUD,ANTAG_HUD,NANITE_HUD,DIAG_NANITE_FULL_HUD,GLAND_HUD)
+	hud_possible = list(HEALTH_HUD,STATUS_HUD,ANTAG_HUD,NANITE_HUD,DIAG_NANITE_FULL_HUD,GLAND_HUD,SENSEWYRM_HUD) // TFN EDIT - Remakes the Theurge's "Sense Wyrm" gift - added ',SENSEWYRM_HUD)'
 
 	hud_type = /datum/hud/living
 
@@ -181,23 +181,6 @@
 
 	var/total_cleaned = 0
 
-	var/physique = 1
-	var/dexterity = 1
-	var/social = 1
-	var/mentality = 1
-	var/lockpicking = 0
-	var/athletics = 0
-	var/blood = 1
-
-	var/additional_physique = 0
-	var/additional_dexterity = 0
-	var/additional_mentality = 0
-	var/additional_social = 0
-	var/additional_blood = 0
-	var/additional_lockpicking = 0
-	var/additional_athletics = 0
-	var/more_companions = 0
-
 	var/info_known = INFO_KNOWN_UNKNOWN
 
 	var/last_message
@@ -315,3 +298,5 @@
 
 	//List for icons created for obfuscated mobs
 	var/list/obf_icons // TFN ADDITION - Adding an Obfuscate Indicator
+
+	var/datum/storyteller_stats/storyteller_stat_holder

@@ -23,15 +23,20 @@
 
 	cancelable = TRUE
 
+/datum/discipline_power/daimonion/sense_the_sin/pre_activation_checks(mob/living/target)
+	if(SSroll.storyteller_roll((owner.st_get_stat(STAT_PERCEPTION) + owner.st_get_stat(STAT_EMPATHY)), (max(target.st_get_stat(STAT_SELF_CONTROL), target.st_get_stat(STAT_INSTINCT)) + 4), mobs_to_show_output = owner) == !ROLL_SUCCESS)
+		return FALSE
+	return TRUE
+
 /datum/discipline_power/daimonion/sense_the_sin/activate(mob/living/carbon/human/target)
 	. = ..()
-	if(target.get_total_social() <= 2)
+	if(target.st_get_stat(STAT_CHARISMA) <= 2)
 		to_chat(owner, span_notice("Victim is not social or influencing."))
-	if(target.get_total_mentality() <= 2)
+	if(target.st_get_stat(STAT_PERMANENT_WILLPOWER) <= 2)
 		to_chat(owner, span_notice("Victim lacks appropiate willpower."))
-	if(target.get_total_physique() <= 2)
+	if(target.st_get_stat(STAT_STRENGTH) <= 2)
 		to_chat(owner, span_notice("Victim's body is weak and feeble."))
-	if(target.get_total_dexterity() <= 2)
+	if(target.st_get_stat(STAT_DEXTERITY) <= 2)
 		to_chat(owner, span_notice("Victim's lacks coordination."))
 	if(isgarou(target))
 		to_chat(owner, span_notice("Victim's natural banishment is silver..."))
@@ -104,6 +109,12 @@
 			if(CLAN_SALUBRI)
 				to_chat(owner, span_notice("[target] is ruled by consent."))
 				return
+			if(CLAN_SALUBRI_WARRIOR)
+				to_chat(owner, span_notice("[target] pursues an endless revenge."))
+				return
+			if(CLAN_NAGARAJA)
+				to_chat(owner, span_notice("[target] hungers for flesh"))
+				return
 			if(CLAN_GIOVANNI)
 				to_chat(owner, span_notice("[target] never considers any action too great for their family."))
 				return
@@ -169,7 +180,7 @@
 	duration_length = 3 SECONDS
 
 /datum/discipline_power/daimonion/fear_of_the_void_below/pre_activation_checks(mob/living/target)
-	if(SSroll.storyteller_roll(owner.get_total_social(), target.get_total_mentality(), mobs_to_show_output = owner) == !ROLL_SUCCESS)
+	if(SSroll.storyteller_roll((owner.st_get_stat(STAT_WITS) + owner.st_get_stat(STAT_INTIMIDATION)), target.st_get_stat(STAT_COURAGE) + 4, mobs_to_show_output = owner) == !ROLL_SUCCESS)
 		to_chat(owner, span_warning("[target] has too much willpower to induce fear into them!"))
 		return FALSE
 	return TRUE
@@ -249,17 +260,121 @@
 
 	violates_masquerade = FALSE
 
+/datum/discipline_power/daimonion/psychomachia/pre_activation_checks(mob/living/target)
+	//forces the subject's player to roll her lowest Virtue
+	var/datum/st_stat/virtue/lowest_virtue
+	for(var/datum/st_stat/virtue/virtue as anything in subtypesof(/datum/st_stat/virtue))
+		var/datum/st_stat/virtue/target_stat = target.st_get_stat(virtue)
+		if(!lowest_virtue || target_stat < lowest_virtue.score)
+			lowest_virtue = target.st_get_stat_datum(virtue)
+
+	if(SSroll.storyteller_roll(target.st_get_stat(lowest_virtue), 6, mobs_to_show_output = list(owner, target)) == !ROLL_SUCCESS)
+		to_chat(owner, span_warning("[target] is too pure to manifest their fears!"))
+		return FALSE
+	to_chat(owner, span_cult("[target] will suffer greatly."))
+	return TRUE
+
 /datum/discipline_power/daimonion/psychomachia/activate(mob/living/target)
 	. = ..()
-	if(SSroll.storyteller_roll(owner.get_total_mentality(), 6, mobs_to_show_output = owner) == ROLL_SUCCESS)
-		to_chat(target, span_boldwarning("You hear an infernal laugh!"))
-		new /datum/hallucination/baali(target, TRUE)
-		return TRUE
 
-	to_chat(owner, "<span class='warning'>[target] has too much willpower to induce fear into them!</span>")
-	return FALSE
+	if(isgarou(target))
+		switch(target.auspice.tribe.name)
+			if ("Black Spiral Dancers")
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh3.ogg", 50, FALSE)
+				target.visible_message(span_warning("[target] whines in animalistic fear"), span_cult("VISIONS OF BRIMSTONE AND FLAME FLASH BEFORE MY EYES"),)
+				target.Paralyze(5 SECONDS)
+			else
+				if (target.auspice.rage > 4)
+					target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh1.ogg", 50, FALSE)
+					to_chat(target, span_cult("THE WYRMFOE IS ALL AROUND ME"))
+					new /datum/hallucination/delusion(target, TRUE, "dancer", 200, 0)
+					target.rollfrenzy()
+				else
+					to_chat(target, span_cult("I can feel a overwhelming presence.. I NEED TO RUN!!"))
+					new /datum/hallucination/baali(target,TRUE,"wyrm")
+					target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh2.ogg", 50, FALSE)
+	if(iskindred(target))
+		var/mob/living/carbon/human/vampire = target
+		switch(vampire.clan?.name)
+			if(CLAN_TOREADOR)
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh2.ogg", 50, FALSE)
+				new /datum/hallucination/fire(target, TRUE)
+				to_chat(target, span_cult("FLAMES ENGULF MY BEAUTY"))
+				target.Paralyze(5 SECONDS)
+				return
+			if(CLAN_LASOMBRA)
+				to_chat(target, span_cult("THE SHADOWS BETRAY ME, SEEKING MY LIFE"))
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/eldritchlaugh.ogg", 50, FALSE)
+				target.blind_eyes(6 SECONDS)
+				target.Paralyze(6 SECONDS)
+				return
+			if(CLAN_BRUJAH)
+				to_chat(target, span_warning("You see visions of an underground stone monument weeping blood."))
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh3.ogg", 50, FALSE)
+				to_chat(target, span_cult("THE BEAST RAGES AGAINST THIS VISION!!"))
+				target.rollfrenzy()
+			if(CLAN_TZIMISCE)
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh3.ogg", 50, FALSE)
+				to_chat(target, span_cult("I SEE VISIONS OF FLAME ENGULFING MY DOMAIN"))
+				new /datum/hallucination/fire(target, TRUE)
+				target.Paralyze(6 SECONDS)
+				return
+			if(CLAN_MALKAVIAN)
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/malklaugh.ogg", 50, FALSE)
+				target.Paralyze(6 SECONDS)
+				target.visible_message(span_warning("[target] repeatedly bashes their head against the ground"), span_cult("THE WHISPERS ARE OVERTAKING ME"),)
+				target.apply_damage(50, BRUTE, BODY_ZONE_HEAD)
+				return
+			if(CLAN_TREMERE)
+				to_chat(target, span_cult("Blood pours out from my body, manifesting into a grotesque form"))
+				new /datum/hallucination/baali(target,TRUE,"tremere")
+				return
+			if(CLAN_BAALI)
+				to_chat(target, span_notice("The sacred icons appearing before you lack the true substance of faith"))
+				new /datum/hallucination/delusion(target, TRUE, "repent", 200, 0)
+				to_chat(owner, span_notice("Your illusions are easily dispelled by [target]"))
+				return
+			if(CLAN_BANU_HAQIM)
+				to_chat(target, span_cult("An overwhelming presence manifests around me.."))
+				new /datum/hallucination/baali(target,TRUE,"banu")
+				return
+			if(CLAN_SALUBRI)
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh1.ogg", 50, FALSE)
+				to_chat(target, span_warning("My third eye begins to reflexively open.."))
+				target.visible_message(span_warning("[target] tightly grasps their forehead, trying to conceal something"), span_cult("I MUST HIDE MY NATURE"),)
+				target.apply_damage(50, BRUTE, BODY_ZONE_HEAD)
+				target.Paralyze(6 SECONDS)
+				return
+			if(CLAN_SALUBRI_WARRIOR)
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/demonlaugh2.ogg", 50, FALSE)
+				to_chat(target, span_cult("BRIMSTONE AND FLAME AWAIT ME BEFORE MY REVENGE'S END"))
+				target.rollfrenzy()
+				return
+			if(CLAN_GIOVANNI)
+				to_chat(target, span_cult("A sense of profound dread enters you as soundless words enter your mind"))
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/eldritchlaugh.ogg", 50, FALSE)
+				new /datum/hallucination/baali(target,TRUE,"spectre")
+				return
+			if(CLAN_CAPPADOCIAN)
+				to_chat(target, span_cult("Freshly manifest despair enters your decaying flesh as you feel a hauntingly empty presence."))
+				target.playsound_local(target, "modular_tfn/modules/daim/audio/eldritchlaugh.ogg", 50, FALSE)
+				new /datum/hallucination/baali(target,TRUE,"spectre")
+				return
+			else
+				to_chat(target, span_cult("THE BEAST SCREAMS IN MY MIND TO RUN"))
+				new /datum/hallucination/baali(target,TRUE,"demon")
+				return
+	if(isghoul(target))
+		to_chat(target, span_cult("SOMETHING IS COMING, WHAT IS IT?!!"))
+		new /datum/hallucination/baali(target,TRUE,"demon")
+	if(!iskindred(target) && !isghoul(target) && !isgarou(target))
+		to_chat(target, span_cult("MY WORST NIGHTMARES FLASH BEFORE MY EYES"))
+		target.Paralyze(7 SECONDS)
+
 
 //CONDEMNATION
+
+
 /datum/discipline_power/daimonion/condemnation
 	name = "Condemnation"
 	desc = "Condemn a soul to suffering."
@@ -291,7 +406,7 @@
 			return
 		for(var/datum/curse/daimonion/C in curses)
 			if(C.name == chosencurse)
-				if(SSroll.storyteller_roll(owner.get_total_social(), target.get_total_mentality(), mobs_to_show_output = owner) == !ROLL_SUCCESS)
+				if(SSroll.storyteller_roll((owner.st_get_stat(STAT_INTELLIGENCE) + owner.st_get_stat(STAT_OCCULT)), target.st_get_stat(STAT_PERMANENT_WILLPOWER), mobs_to_show_output = owner) == !ROLL_SUCCESS)
 					to_chat(owner, span_warning("Your mind fails to pierce their mind!"))
 					to_chat(target, span_warning("You resists something that tried to pierce your mind."))
 					return
