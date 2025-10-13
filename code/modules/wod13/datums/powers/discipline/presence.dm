@@ -50,7 +50,7 @@
 	//number of successes is rather critical for the efficacy of the power
 	return successes
 
-/datum/discipline_power/presence/proc/apply_presence_overlay(mob/living/carbon/target)
+/datum/discipline_power/presence/proc/apply_presence_overlay(mob/living/carbon/target, resist_timer = 30 SECONDS)
 	target.remove_overlay(MUTATIONS_LAYER)
 	var/mutable_appearance/presence_overlay = mutable_appearance('code/modules/wod13/icons.dmi', "presence", -MUTATIONS_LAYER)
 	presence_overlay.pixel_z = 1
@@ -58,16 +58,23 @@
 	target.apply_overlay(MUTATIONS_LAYER)
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/presence_activate.ogg'))
 
+	// Grant the resist action
+	var/datum/action/resist_presence/resist_action = new(target)
+	resist_action.Grant(target)
+
+	// Remove the action after 20 seconds
+	addtimer(CALLBACK(resist_action, TYPE_PROC_REF(/datum/action, Remove), target), 20 SECONDS)
+
 //used in awe - v20 book states that awe affects the targets of lowest willpower first if affecting multiple targets.
-/datum/discipline_power/presence/proc/sort_targets_by_mentality(list/targets)
+/datum/discipline_power/presence/proc/sort_targets_by_willpower(list/targets)
 	var/list/sorted = list()
 	for(var/mob/living/carbon/target in targets)
-		var/target_mentality = target.st_get_stat(STAT_PERMANENT_WILLPOWER)
+		var/target_willpower = target.st_get_stat(STAT_TEMPORARY_WILLPOWER)
 		var/inserted = FALSE
 
 		for(var/i = 1; i <= length(sorted); i++)
 			var/mob/living/carbon/existing = sorted[i]
-			if(target_mentality < existing.st_get_stat(STAT_PERMANENT_WILLPOWER))
+			if(target_willpower < existing.st_get_stat(STAT_TEMPORARY_WILLPOWER))
 				sorted.Insert(i, target)
 				inserted = TRUE
 				break
@@ -82,6 +89,42 @@
 	desc = "You are completely entranced and compelled to serve."
 	icon_state = "hypnosis"
 
+//datum/action to resist presence powers by burning a willpower point and making a difficulty 8 roll
+/datum/action/resist_presence
+	name = "Resist Presence"
+	desc = "Burn a point of your temporary willpower to resist the effects of Presence."
+	button_icon = 'code/modules/wod13/UI/actions.dmi'
+	button_icon_state = "presence"
+	check_flags = AB_CHECK_CONSCIOUS
+
+/datum/action/resist_presence/Trigger(trigger_flags)
+	. = ..()
+	if(!.)
+		return FALSE
+
+	var/mob/living/carbon/human/user = owner
+	if(!ishuman(user))
+		return FALSE
+
+	if(user.st_get_stat(STAT_TEMPORARY_WILLPOWER) <= 0)
+		to_chat(user, span_warning("You don't have any temporary willpower left to resist!"))
+		return FALSE
+
+	user.st_decrease_stat_score(STAT_TEMPORARY_WILLPOWER, 1)
+	to_chat(user, span_warning("You burn a point of willpower to resist the supernatural influence..."))
+
+	var/roll_success = SSroll.storyteller_roll(user.st_get_stat(STAT_TEMPORARY_WILLPOWER), difficulty = 8, mobs_to_show_output = user)
+
+	if(roll_success)
+		user.remove_overlay(MUTATIONS_LAYER)
+		user.clear_alert("entrancement")
+		to_chat(user, span_notice("You have succeeded in resisting the effects of Presence."))
+		Remove(user)
+		return TRUE
+	else
+		to_chat(user, span_warning("Despite your efforts, the supernatural influence remains too strong!"))
+		return FALSE
+
 // AWE
 /datum/discipline_power/presence/awe
 	name = "Awe"
@@ -92,7 +135,7 @@
 	range = 7
 	multi_activate = FALSE
 	cooldown_length = 15 SECONDS
-	duration_length = 5 SECONDS
+	duration_length = 10 SECONDS
 	vitae_cost = 1
 	var/successes = 0
 	var/list/affected_targets = list()
@@ -124,7 +167,7 @@
 	var/list/target_counts = list(1, 2, 6, 20, length(potential_targets)) //v20 core rulebook presence -> awe
 	var/targets_to_affect = target_counts[clamp(successes, 1, 5)]
 
-	potential_targets = sort_targets_by_mentality(potential_targets)
+	potential_targets = sort_targets_by_willpower(potential_targets)
 	affected_targets = list()
 
 	for(var/i = 1; i <= min(targets_to_affect, length(potential_targets)); i++)
@@ -156,7 +199,7 @@
 	range = 7
 	multi_activate = TRUE
 	cooldown_length = 15 SECONDS
-	duration_length = 5 SECONDS
+	duration_length = 10 SECONDS
 	vitae_cost = 1 //no mention of literally any cost for using this in v20
 	var/successes = 0
 
@@ -202,7 +245,7 @@
 	target_type = TARGET_HUMAN
 	range = 7
 	multi_activate = TRUE
-	cooldown_length = 3 MINUTES //in reality this should be raised considering this is a 'one tap bloodbond' type ability? lmk in review i want to delete this comment
+	cooldown_length = 3 MINUTES
 	duration_length = 5 SECONDS
 	vitae_cost = 1
 	var/successes = 0
@@ -226,7 +269,7 @@
 	target.throw_alert("entrancement", /atom/movable/screen/alert/entrancement)
 	log_combat(owner, target, "Used Presence Entrancement")
 
-	apply_presence_overlay(target)
+	apply_presence_overlay(target, successes * 1 INGAME_HOURS)
 	to_chat(target, span_hypnophrase("You find yourself becoming completely entraced by [owner]. You are now their willing servant."))
 	to_chat(target, span_info("You are now the willing servant of [owner]. You will seek to please them and fulfill their every desire, but this desire will fade soon."))
 	addtimer(CALLBACK(src, PROC_REF(end_entrancement), target), successes * 1 INGAME_HOURS) // might be alot considering 5 successes is 5 ingame hours which is... most of a round.
@@ -283,7 +326,7 @@
 		to_chat(owner, span_warning("Your summons failed to reach [summon_target ? summon_target.real_name : "your target"]."))
 		return
 
-	apply_presence_overlay(summon_target)
+	apply_presence_overlay(summon_target, 5 MINUTES)
 
 	var/turf/owner_turf = get_turf(owner)
 	var/location_info = "[get_area_name(owner_turf)], X:[owner_turf.x] Y:[owner_turf.y] Z:[owner_turf.z]"
@@ -318,7 +361,7 @@
 	multi_activate = TRUE
 	cooldown_length = 12 MINUTES
 	duration_length = 3 MINUTES
-	vitae_cost = 1 //'but she must spend a willpower point' placeholder
+	willpower_cost = 1
 	var/list/affected_targets = list()
 
 /datum/discipline_power/presence/majesty/pre_activation_checks(mob/living/target)
@@ -335,7 +378,7 @@
 		var/hearer_successes = SSroll.storyteller_roll(hearer.st_get_stat(STAT_COURAGE), difficulty = owner.st_get_stat(STAT_CHARISMA) + owner.st_get_stat(STAT_INTIMIDATION), mobs_to_show_output = hearer, numerical = TRUE)
 		hearer_successes = max(0, hearer_successes)
 
-		apply_presence_overlay(hearer)
+		apply_presence_overlay(hearer, 3 MINUTES)
 		affected_targets[hearer] = hearer_successes
 
 		to_chat(hearer, span_hypnophrase("You find yourself completely submitting to the Majesty of [owner]. Their every word is your utmost priority, every frown of displeasure crushing your soul. You find yourself humbling yourself entirely in their overwhelming presence."))
