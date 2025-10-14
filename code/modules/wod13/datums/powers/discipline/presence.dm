@@ -63,7 +63,7 @@
 	resist_action.Grant(target)
 
 	// Remove the action after 20 seconds
-	addtimer(CALLBACK(resist_action, TYPE_PROC_REF(/datum/action, Remove), target), 20 SECONDS)
+	addtimer(CALLBACK(resist_action, TYPE_PROC_REF(/datum/action, Remove), target), resist_timer)
 
 //used in awe - v20 book states that awe affects the targets of lowest willpower first if affecting multiple targets.
 /datum/discipline_power/presence/proc/sort_targets_by_willpower(list/targets)
