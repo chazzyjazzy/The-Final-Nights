@@ -168,13 +168,8 @@
 		if(panic && (host.mind.assigned_role == "Prince" || host.mind.assigned_role == "Sheriff" || host.mind.assigned_role == "Seneschal"))
 			dat += "The pincode for the panic room keypad is<b>: [panic.pincode]</b><BR>"
 		var/obj/structure/vaultdoor/pincode/bank/bankdoor = find_door_pin(/obj/structure/vaultdoor/pincode/bank)
-		if(bankdoor && (host.mind.assigned_role == "Capo"))
-			dat += "The pincode for the bank vault is <b>: [bankdoor.pincode]</b><BR>"
-		if(bankdoor && (host.mind.assigned_role == "La Squadra"))
-			if(prob(50))
-				dat += "<b>The pincode for the bank vault is: [bankdoor.pincode]</b><BR>"
-			else
-				dat += "<b>Unfortunately you don't know the vault code.</b><BR>"
+		if(bankdoor && ((host.mind.assigned_role == "Capo") || (host.mind.assigned_role == "La Squadra") || (host.mind.assigned_role == "La Famiglia")))
+			dat += "<b>The pincode for the bank vault is: [bankdoor.pincode]</b><BR>"
 
 		if(LAZYLEN(host.knowscontacts) > 0)
 			dat += "<b>I know some other of my kind in this city. Need to check my phone, there definetely should be:</b><BR>"
@@ -313,13 +308,13 @@
 	if(!iskindred(owner))
 		return
 	var/mob/living/carbon/human/vampire = owner
-	if(vampire.bloodpool < 2)
+	if(vampire.bloodpool < 1)
 		to_chat(owner, span_warning("You don't have enough <b>BLOOD</b> to do that!"))
 		return
 	if(isanimal(vampire.pulling))
 		var/mob/living/animal = vampire.pulling
 		animal.bloodpool = min(animal.maxbloodpool, animal.bloodpool+2)
-		vampire.bloodpool = max(0, vampire.bloodpool-2)
+		vampire.bloodpool = max(0, vampire.bloodpool-1)
 		animal.adjustBruteLoss(-25)
 		animal.adjustFireLoss(-25)
 		return
@@ -343,7 +338,7 @@
 	message_admins("[ADMIN_LOOKUPFLW(vampire)] has fed [ADMIN_LOOKUPFLW(grabbed_victim)] their blood!")
 	owner.visible_message(span_warning("[owner] feeds [grabbed_victim] with their own blood!"), span_notice("You successfully feed [grabbed_victim] with your own blood."))
 
-	vampire.bloodpool = max(0, vampire.bloodpool-2)
+	vampire.bloodpool = max(0, vampire.bloodpool-1)
 
 	var/mob/living/carbon/human/childe = grabbed_victim
 	var/mob/living/carbon/human/sire = vampire
@@ -355,7 +350,8 @@
 		var/datum/wound/W = pick(childe.all_wounds)
 		W.remove_wound()
 	childe.adjustFireLoss(-25, TRUE)
-	childe.bloodpool = min(childe.maxbloodpool, childe.bloodpool+(2 * sire.bloodquality))
+	childe.bloodpool = min(childe.maxbloodpool, childe.bloodpool+(1 * sire.bloodquality))
+	childe.blood_volume = min(BLOOD_VOLUME_NORMAL, childe.blood_volume+50)
 	childe.drunked_of |= "[sire.dna.real_name]"
 	childe.mind?.ingested_blood = sire
 
@@ -563,7 +559,15 @@
 		return
 
 	var/possible_disciplines = teacher_prefs.discipline_types - student_prefs.discipline_types
-	var/teaching_discipline = input(teacher, "What Discipline do you want to teach [student.name]?", "Discipline Selection") as null|anything in possible_disciplines
+
+	// remove path and its subtypes
+	var/list/filtered_disciplines = list()
+	for (var/D in possible_disciplines)
+		if (!ispath(D, /datum/discipline/path))
+			filtered_disciplines += D
+
+
+	var/teaching_discipline = input(teacher, "What Discipline do you want to teach [student.name]?", "Discipline Selection") as null|anything in filtered_disciplines
 
 	if (teaching_discipline)
 		var/datum/discipline/teacher_discipline = teacher_species.get_discipline(teaching_discipline)

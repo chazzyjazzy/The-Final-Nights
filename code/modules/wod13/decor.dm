@@ -34,6 +34,14 @@
 	.=..()
 	RemoveElement(/datum/element/climbable)
 
+// TFN EDIT START: Check for trait to allow phasing through doors
+/obj/structure/vampfence/CanPass(atom/movable/mover, turf/target)
+	. = ..()
+	if(istype(mover, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = mover
+		if(HAS_TRAIT(H, TRAIT_PASSDOOR))
+			return TRUE
+// TFN EDIT END
 
 /obj/structure/gargoyle
 	name = "\improper gargoyle"
@@ -816,6 +824,16 @@
 	desc = "Eat some precious chicken nuggets and donuts!"
 	icon = 'code/modules/wod13/fastfood.dmi'
 	icon_state = "gummaguts"
+	plane = GAME_PLANE
+	layer = CAR_LAYER
+	anchored = TRUE
+	pixel_w = -16
+
+/obj/reddragon
+	name = "The Red Dragon"
+	desc = "Eat some spicy chicken and 'eggroll'!"
+	icon = 'code/modules/wod13/fastfood.dmi'
+	icon_state = "reddragon"
 	plane = GAME_PLANE
 	layer = CAR_LAYER
 	anchored = TRUE
@@ -1788,3 +1806,10 @@
 			burying = FALSE
 		else
 			burying = FALSE
+
+/obj/structure/shrinebox
+	name = "Box Shrine"
+	desc = "Holds offerings which bring good fortune, while incense burns."
+	icon = 'code/modules/wod13/props.dmi'
+	icon_state = "shrinebox"
+	anchored = TRUE
