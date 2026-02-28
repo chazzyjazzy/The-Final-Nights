@@ -403,6 +403,15 @@ GLOBAL_LIST_EMPTY(selectable_races)
 
 	regenerate_organs(C,old_species)
 
+	if(ishuman(C))
+		var/mob/living/carbon/human/H = C
+		if(H.physiology)
+			H.physiology.brute_mod = brutemod
+			H.physiology.burn_mod = burnmod
+			H.physiology.cold_mod = coldmod
+			H.physiology.heat_mod = heatmod
+			H.physiology.stun_mod = stunmod
+
 	if(exotic_bloodtype && C.dna.blood_type != exotic_bloodtype)
 		C.dna.blood_type = exotic_bloodtype
 
