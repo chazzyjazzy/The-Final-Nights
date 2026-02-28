@@ -60,7 +60,7 @@
 		qdel(temp_antag)
 
 /obj/effect/landmark/start/sabbatpriest
-	name = "Sabbat Priest"
+	name = "Camarilla Alastor"
 	icon_state = "Assistant"
 
 /proc/is_sabbatist(mob/living/user)

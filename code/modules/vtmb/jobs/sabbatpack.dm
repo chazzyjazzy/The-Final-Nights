@@ -60,7 +60,7 @@
 		qdel(temp_antag)
 
 /obj/effect/landmark/start/sabbatpack
-	name = "Sabbat Pack"
+	name = "Camarilla Archon"
 	icon_state = "Assistant"
 
 // keeping this for lateparty sabbat
