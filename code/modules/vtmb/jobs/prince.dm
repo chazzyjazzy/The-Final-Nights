@@ -30,7 +30,7 @@
 
 	minimal_masquerade = 5
 	allowed_species = list("Vampire")
-	allowed_bloodlines = list(CLAN_TREMERE, CLAN_VENTRUE, CLAN_NOSFERATU, CLAN_TOREADOR, CLAN_MALKAVIAN, CLAN_LASOMBRA, CLAN_BANU_HAQIM)
+	allowed_bloodlines = list(CLAN_ALL)
 
 	known_contacts = list(
 		"Sheriff",
@@ -42,25 +42,25 @@
 		"Voivode"
 	)
 
-	v_duty = "You are the top dog of this city. You hold Praxis over San Francisco, and your word is law. Make sure the Masquerade is upheld, and your status is respected."
+	v_duty = "You are the Archbishop of San Francisco, recently taken over by the forces of the Sabbat. Ensure the Code of Milan is upheld, and that Cainite society remains free from the Elders and the Jyhad, hidden from the mortals, so this city may support the liberation of others..."
 	experience_addition = 25
 
 /datum/job/vamp/prince/announce(mob/living/carbon/human/H)
 	..()
-	SSticker.OnRoundstart(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(minor_announce), "Prince [H.real_name] has arrived in the district!"))
+	SSticker.OnRoundstart(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(minor_announce), "Archbishop [H.real_name] has arrived in the district!"))
 
 /datum/outfit/job/prince
-	name = "Prince"
+	name = "Archbishop"
 	jobtype = /datum/job/vamp/prince
 
 	id = /obj/item/card/id/prince
 	glasses = /obj/item/clothing/glasses/vampire/sun
 	gloves = /obj/item/clothing/gloves/vampire/latex
 	uniform =  /obj/item/clothing/under/vampire/prince
-	suit = /obj/item/clothing/suit/vampire/trench/alt
+	suit = /obj/item/clothing/suit/vampire/trench
 	shoes = /obj/item/clothing/shoes/vampire
 	l_pocket = /obj/item/vamp/phone/prince
-	r_pocket = /obj/item/vamp/keys/prince
+	r_pocket = /obj/item/vamp/keys/sabbat
 	backpack_contents = list(/obj/item/gun/ballistic/automatic/vampire/deagle=1, /obj/item/phone_book=1, /obj/item/passport=1, /obj/item/cockclock=1, /obj/item/flashlight=1, /obj/item/masquerade_contract=1, /obj/item/vamp/creditcard/prince=1, /obj/item/card/id/elysium=1)
 
 
