@@ -1,5 +1,5 @@
 /datum/job/vamp/sabbatpriest
-	title = "Sabbat Priest"
+	title = "Camarilla Archon"
 	faction = "Vampire"
 	total_positions = 2
 	spawn_positions = 2

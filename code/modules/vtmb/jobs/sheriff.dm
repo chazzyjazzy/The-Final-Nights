@@ -1,12 +1,12 @@
 /datum/job/vamp/sheriff
-	title = "Sheriff"
+	title = "Inquisitor"
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD|DEADMIN_POSITION_SECURITY
 	department_head = list("Prince")
 	head_announce = list(RADIO_CHANNEL_SECURITY)
 	faction = "Vampire"
 	total_positions = 1
 	spawn_positions = 1
-	supervisors = "the prince"
+	supervisors = "the Archbishop, Caine, and the Code of Milan"
 	selection_color = "#bd3327"
 	req_admin_notify = 1
 	minimal_player_age = 14
@@ -42,7 +42,7 @@
 
 	known_contacts = list("Prince","Seneschal","Tremere Regent","Dealer","Primogens","Voivode")
 
-	v_duty = "Protect the Prince and the Masquerade. You are their sword."
+	v_duty = "Protect the Archbishop, the Code of Milan, Caine's childer, and begrudgingly uphold the Masquerade"
 	experience_addition = 20
 
 /datum/outfit/job/sheriff
@@ -73,5 +73,5 @@
 		uniform = /obj/item/clothing/under/vampire/sheriff/female
 
 /obj/effect/landmark/start/sheriff
-	name = "Sheriff"
+	name = "Inquisitor"
 	icon_state = "Sheriff"

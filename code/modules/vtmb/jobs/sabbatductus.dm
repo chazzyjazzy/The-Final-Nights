@@ -1,9 +1,9 @@
 /datum/job/vamp/sabbatductus
-	title = "Sabbat Ductus"
+	title = "Camarilla Praetor"
 	faction = "Vampire"
 	total_positions = 1
 	spawn_positions = 1
-	supervisors = "Caine"
+	supervisors = "the Inner Council"
 	selection_color = "#7B0000"
 	access = list()
 	minimal_access = list()
@@ -57,7 +57,7 @@
 		qdel(temp_antag)
 
 /obj/effect/landmark/start/sabbatductus
-	name = "Sabbat Ductus"
+	name = "Camarilla Praetor"
 	icon_state = "Assistant"
 
 /datum/antagonist/sabbatist/sabbatductus/on_gain()

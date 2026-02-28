@@ -1,9 +1,9 @@
 /datum/job/vamp/sabbatpack
-	title = "Sabbat Pack"
+	title = "Camarilla Archon"
 	faction = "Vampire"
 	total_positions = 2
 	spawn_positions = 2
-	supervisors = "Caine"
+	supervisors = "the Inner Council"
 	selection_color = "#7B0000"
 	access = list()
 	minimal_access = list()
