@@ -17,11 +17,11 @@
 
 	display_order = JOB_DISPLAY_ORDER_GARGOYLE
 
-	v_duty = "An agent of the Chantry, you are a Tremere Gargoyle who was made legally having existed before their creation was banned. Serve the Regent well!"
+	v_duty = "An agent of the Chantry, you are a Tremere Gargoyle who finds their home within the local Sabbat Tremere Chantry. Serve the Bishop well!"
 	minimal_masquerade = 3
 	allowed_species = list("Vampire")
 	allowed_bloodlines = list(CLAN_GARGOYLE)
-	known_contacts = list("Tremere Regent")
+	known_contacts = list("Sabbat Tremere Bishop")
 	experience_addition = 15
 
 /datum/outfit/job/gargoyle
@@ -44,6 +44,7 @@
 		/obj/item/arcane_tome=1,
 		/obj/item/vamp/creditcard=1,
 		/obj/item/melee/vampirearms/katana/kosa=1,
+		/obj/item/vamp/keys/sabbat=1,
 	)
 
 /obj/effect/landmark/start/gargoyle

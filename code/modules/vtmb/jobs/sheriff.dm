@@ -1,7 +1,7 @@
 /datum/job/vamp/sheriff
 	title = "Inquisitor"
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD|DEADMIN_POSITION_SECURITY
-	department_head = list("Prince")
+	department_head = list("Archbishop")
 	head_announce = list(RADIO_CHANNEL_SECURITY)
 	faction = "Vampire"
 	total_positions = 1
@@ -40,7 +40,7 @@
 	allowed_species = list("Vampire")
 	allowed_bloodlines = list(CLAN_TRUE_BRUJAH, CLAN_BRUJAH, CLAN_TREMERE, CLAN_VENTRUE, CLAN_NOSFERATU, CLAN_GANGREL, CLAN_TOREADOR, CLAN_MALKAVIAN, CLAN_BANU_HAQIM, CLAN_LASOMBRA)
 
-	known_contacts = list("Prince","Seneschal","Tremere Regent","Dealer","Primogens","Voivode")
+	known_contacts = list("Archbishop","Priscus","Sabbat Tremere Bishop","Dealer","Bishops","Voivode")
 
 	v_duty = "Protect the Archbishop, the Code of Milan, Caine's childer, and begrudgingly uphold the Masquerade"
 	experience_addition = 20
@@ -57,7 +57,7 @@
 	gloves = /obj/item/clothing/gloves/vampire/leather
 	head = /obj/item/clothing/head/hos/beret
 	glasses = /obj/item/clothing/glasses/vampire/sun
-	r_pocket = /obj/item/vamp/keys/sheriff
+	r_pocket = /obj/item/vamp/keys/sabbat
 	l_pocket = /obj/item/vamp/phone/sheriff
 	backpack_contents = list(/obj/item/gun/ballistic/automatic/vampire/deagle=1, /obj/item/vampire_stake=3, /obj/item/passport=1, /obj/item/cockclock=1, /obj/item/flashlight=1, /obj/item/masquerade_contract=1, /obj/item/vamp/creditcard/elder=1)
 

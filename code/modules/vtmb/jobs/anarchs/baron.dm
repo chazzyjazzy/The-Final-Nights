@@ -22,8 +22,8 @@
 	minimum_vampire_age = 1
 
 	known_contacts = list(
-		"Prince",
-		"Sheriff",
+		"Archbishop",
+		"Inquisitor",
 		"Dealer",
 		"Bouncer",
 		"Emissary",

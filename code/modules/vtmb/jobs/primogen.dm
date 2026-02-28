@@ -297,8 +297,8 @@
 	title = "Sabbat Bishop"
 	department_head = list("Archbishop")
 	faction = "Vampire"
-	total_positions = 1
-	spawn_positions = 1
+	total_positions = 6
+	spawn_positions = 6
 	supervisors = " the Code of Milan and Caine."
 	selection_color = "#4f0404"
 
@@ -317,10 +317,10 @@
 //	minimum_character_age = 100
 	minimum_vampire_age = 5 // Heavily meritocratic and new to the Camarilla, plus, Julia Sowinski *shrug
 
-	v_duty = "You serve as a Bishop of the Sabbat in this city, overseeing the enforcement of the Code of Milan."
+	v_duty = "You serve as a Bishop of the Sabbat in this city, overseeing the enforcement of the Code of Milan. As Bishop you may have a particular focus - rooting out any sign of Diabolism, overseeing the affairs of the clans, assisting in the philosophical and religious studies of Caine and the Book of Nod, or merely advising the Archbishop."
 	experience_addition = 20
 	minimal_masquerade = 5
-	known_contacts = list("Prince")
+	known_contacts = list("Archbishop")
 
 /datum/outfit/job/bishop
 	name = "Sabbat Bishop"

@@ -33,16 +33,16 @@
 	allowed_bloodlines = list(CLAN_ALL)
 
 	known_contacts = list(
-		"Sheriff",
-		"Seneschal",
+		"Inquisitor",
+		"Priscus",
 		"Dealer",
-		"Tremere Regent",
-		"Primogens",
+		"Sabbat Tremere Bishop",
+		"Bishops",
 		"Baron",
 		"Voivode"
 	)
 
-	v_duty = "You are the Archbishop of San Francisco, recently taken over by the forces of the Sabbat. Ensure the Code of Milan is upheld, and that Cainite society remains free from the Elders and the Jyhad, hidden from the mortals, so this city may support the liberation of others..."
+	v_duty = "You are the Archbishop of San Francisco, recently taken over by the forces of the Sabbat. Ensure the Code of Milan is upheld, and that Cainite society remains free from the Elders and the Jyhad, hidden from the mortals, so this city may support the liberation of others. Beware if you let the city fall into ruin, as there are Cainites greater than you who will punish you if the city falls..."
 	experience_addition = 25
 
 /datum/job/vamp/prince/announce(mob/living/carbon/human/H)

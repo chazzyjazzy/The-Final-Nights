@@ -17,7 +17,7 @@
 	exp_type_department = EXP_TYPE_TREMERE
 
 	display_order = JOB_DISPLAY_ORDER_REGENT
-	v_duty = "The House Goratrix, while making inroads with the Camarilla, still have some stragglers, who cling to the Vaulderie and Dark Thaumaturgy, creating Blood Brothers, Gargoyles, and other inhuman servants alongside the Tzimisce."
+	v_duty = "The House Goratrix, while making inroads with the Camarilla, still have some stragglers who miraculously survived the magical purge of their kind, who cling to the Vaulderie and Dark Thaumaturgy, creating Blood Brothers, Gargoyles, and other inhuman servants alongside the Tzimisce."
 	minimal_masquerade = 4
 	minimal_generation = 10
 //	minimum_character_age = 150 //Uncomment if age-restriction wanted
@@ -25,7 +25,7 @@
 	allowed_species = list("Vampire")
 	allowed_bloodlines = list(CLAN_TREMERE, CLAN_BAALI)
 	experience_addition = 20
-	known_contacts = list("Prince")
+	known_contacts = list("Archbishop")
 
 /datum/outfit/job/regent
 	name = "Tremere Bishop"
@@ -48,6 +48,7 @@
 		/obj/item/arcane_tome=1,
 		/obj/item/vamp/creditcard/elder=1,
 		/obj/item/melee/vampirearms/katana/kosa=1,
+		/obj/item/vamp/keys/sabbat=1,
 	)
 
 /datum/outfit/job/regent/pre_equip(mob/living/carbon/human/H)

@@ -24,9 +24,9 @@
 
 	display_order = JOB_DISPLAY_ORDER_HOUND
 	bounty_types = CIV_JOB_SEC
-	known_contacts = list("Prince", "Sheriff")
+	known_contacts = list("Archbishop", "Inquisitor")
 
-	v_duty = "You are the Archbishop's enforcer. Enforce the Code of Milan, and begrudgingly maintain the Masquerade so that Cain's children may continue to thrive."
+	v_duty = "You are the Archbishop's enforcer. Enforce the Code of Milan, and begrudgingly maintain the Masquerade so that Caine's children may continue to thrive."
 	minimal_masquerade = 4
 	experience_addition = 10
 	allowed_bloodlines = list(CLAN_ALL)
