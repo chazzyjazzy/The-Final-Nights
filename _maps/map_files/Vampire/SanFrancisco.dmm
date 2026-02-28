@@ -4467,6 +4467,7 @@
 /obj/structure/chair/comfy/black{
 	dir = 1
 	},
+/obj/effect/landmark/start/sabbat_bishop,
 /turf/open/floor/carpet/royalblack,
 /area/vtm/interior/millennium_tower/f3)
 "bbj" = (
@@ -10997,6 +10998,7 @@
 	dir = 4
 	},
 /obj/effect/decal/cleanable/blood/old,
+/obj/effect/landmark/start/sabbatpack,
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/interior/sabbat_lair)
 "cBq" = (
@@ -12148,6 +12150,7 @@
 	pixel_x = 16;
 	pixel_y = 10
 	},
+/obj/effect/landmark/start/sabbatpack,
 /turf/open/floor/plating/vampdirt,
 /area/vtm/interior/sabbat_lair)
 "cOZ" = (
@@ -27273,6 +27276,7 @@
 	color = "#80392d"
 	},
 /obj/effect/decal/cleanable/fire_ash,
+/obj/effect/landmark/start/sabbatpack,
 /turf/open/floor/plating/vampcanal{
 	icon_state = "canal2";
 	base_icon_state = "canal2"
@@ -29622,6 +29626,17 @@
 	},
 /turf/closed/wall/vampwall/rich/old/low/window,
 /area/vtm)
+"gTe" = (
+/obj/structure/railing/metal{
+	dir = 8;
+	color = "#80392d"
+	},
+/obj/effect/landmark/start/sabbatpack,
+/turf/open/floor/plating/vampcanal{
+	icon_state = "canal2";
+	base_icon_state = "canal2"
+	},
+/area/vtm/interior/sabbat_lair)
 "gTh" = (
 /obj/structure/vampdoor/glass/prince{
 	lock_id = "biker_bar";
@@ -38587,6 +38602,7 @@
 /area/vtm/sewer/nosferatu_warren)
 "iTw" = (
 /obj/structure/chair/comfy/beige,
+/obj/effect/landmark/start/sabbatductus,
 /turf/open/floor/plating/vampcanal{
 	icon_state = "canal2";
 	base_icon_state = "canal2"
@@ -42115,6 +42131,7 @@
 /obj/structure/chair/wood{
 	dir = 8
 	},
+/obj/effect/landmark/start/sabbatpack,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/sabbat_lair)
 "jKB" = (
@@ -45599,6 +45616,7 @@
 /obj/structure/chair/wood{
 	dir = 1
 	},
+/obj/effect/landmark/start/sabbatpriest,
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/interior/sabbat_lair)
 "kzb" = (
@@ -46664,6 +46682,7 @@
 /obj/structure/chair/plastic{
 	dir = 1
 	},
+/obj/effect/landmark/start/sabbatpriest,
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/interior/sabbat_lair)
 "kMB" = (
@@ -76910,6 +76929,7 @@
 /obj/structure/chair/office{
 	dir = 1
 	},
+/obj/effect/landmark/start/sabbatpriest,
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/interior/sabbat_lair)
 "rEb" = (
@@ -77255,6 +77275,7 @@
 "rIW" = (
 /obj/structure/chair/wood,
 /obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/landmark/start/sabbatpack,
 /turf/open/floor/plating/vampcanal{
 	icon_state = "canal2";
 	base_icon_state = "canal2"
@@ -77817,6 +77838,7 @@
 /area/vtm/interior/giovanni/basement)
 "rOU" = (
 /obj/structure/chair/comfy/black,
+/obj/effect/landmark/start/sabbat_bishop,
 /turf/open/floor/carpet/royalblack,
 /area/vtm/interior/millennium_tower/f3)
 "rOV" = (
@@ -82499,6 +82521,7 @@
 /obj/structure/chair/comfy/black{
 	dir = 8
 	},
+/obj/effect/landmark/start/sabbat_bishop,
 /turf/open/floor/carpet/royalblack,
 /area/vtm/interior/millennium_tower/f3)
 "sXQ" = (
@@ -91048,6 +91071,7 @@
 /obj/structure/chair/office/red{
 	dir = 8
 	},
+/obj/effect/landmark/start/sabbatductus,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/sabbat_lair)
 "uWf" = (
@@ -114533,7 +114557,7 @@ mTX
 mTX
 mTX
 hYX
-xvk
+gTe
 xvk
 xvk
 afX
