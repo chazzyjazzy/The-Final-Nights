@@ -37,11 +37,11 @@
 	var/mob/living/target = null
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
 		// if the target is not dead, is the challenger isnt targeting themselves, if the target is a sabbatist, and if one of the name datums match the name input
-		if(H.stat != DEAD && H != challenger && is_sabbatist(H) && (findtext(H.real_name, challenged_name) || findtext(H.name, challenged_name)))
+		if(H.stat != DEAD && H != challenger && (findtext(H.real_name, challenged_name) || findtext(H.name, challenged_name)))
 			target = H
 
 	if(!target)
-		to_chat(challenger, span_cult("Could not find anyone with that name to challenge! Only members of the Sabbat may engage in Monomacy."))
+		to_chat(challenger, span_cult("Could not find anyone with that name to challenge!"))
 		return
 
 
@@ -50,7 +50,7 @@
 	SEND_SOUND(challenger, sound('code/modules/wod13/sounds/announce.ogg'))
 
 	// Notify the target
-	to_chat(target, span_cult("[challenger.real_name] challenges you to a duel of Monomacy! Return to the lair at once!"))
+	to_chat(target, span_cult("[challenger.real_name] challenges you to a duel of Monomacy! Answer the call or lose favor."))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/announce.ogg'))
 
 	// Announce the challenge to everyone nearby

@@ -18479,6 +18479,7 @@
 	},
 /obj/item/reagent_containers/blood/elite,
 /obj/item/reagent_containers/blood/elite,
+/obj/item/sabbat_priest_tome,
 /turf/open/floor/carpet/royalblack,
 /area/vtm/interior/millennium_tower/f3)
 "eqF" = (
@@ -37385,6 +37386,10 @@
 /obj/item/kirbyplants/random,
 /turf/open/floor/plating/rough,
 /area/vtm/sewer/nosferatu_warren)
+"iHQ" = (
+/obj/sabbatrune,
+/turf/open/floor/mineral/titanium/white,
+/area/vtm/interior/millennium_tower/f3)
 "iHX" = (
 /obj/structure/table/wood,
 /obj/item/paper_bin{
@@ -56006,6 +56011,7 @@
 	dir = 10
 	},
 /obj/item/stack/dollar/thousand,
+/obj/item/sabbat_priest_tome,
 /turf/open/floor/carpet/royalblack,
 /area/vtm/interior/millennium_tower/f3)
 "mVm" = (
@@ -252680,7 +252686,7 @@ iya
 iMS
 cBv
 rEC
-nvh
+iHQ
 rEC
 hah
 thd
