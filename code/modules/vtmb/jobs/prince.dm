@@ -1,11 +1,11 @@
 /datum/job/vamp/prince
-	title = "Prince"
+	title = "Archbishop"
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD|DEADMIN_POSITION_SECURITY
-	department_head = list("Justicar")
+	department_head = list("Regent")
 	faction = "Vampire"
 	total_positions = 1
 	spawn_positions = 1
-	supervisors = "the Camarilla and the Traditions. Yourself."
+	supervisors = "the Code of Milan and the Regent of the Sabbat."
 	selection_color = "#bd3327"
 	req_admin_notify = 1
 	minimal_player_age = 14
