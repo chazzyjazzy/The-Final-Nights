@@ -79,3 +79,10 @@
 	lock_id = "setite"
 	locked = TRUE
 	lockpick_difficulty = 15
+
+/obj/structure/vampdoor/glass/sabbat
+	icon_state = "glass-1"
+	baseicon = "glass"
+	locked = TRUE
+	lock_id = "sabbat"
+	lockpick_difficulty = 12

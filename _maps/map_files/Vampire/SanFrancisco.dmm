@@ -9326,11 +9326,8 @@
 /turf/open/floor/plating/vampgrass,
 /area/vtm)
 "civ" = (
-/obj/structure/vampdoor/wood{
-	dir = 8;
-	lock_id = "primVentrue";
-	locked = 1;
-	lockpick_difficulty = 10
+/obj/structure/vampdoor/wood/sabbat{
+	dir = 4
 	},
 /obj/effect/turf_decal/siding/wideplating{
 	color = "#802d29";
@@ -16117,7 +16114,8 @@
 /turf/open/floor/carpet/green,
 /area/vtm/interior/cog/caern)
 "dOh" = (
-/obj/structure/vampdoor/wood/theatre{
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
 	dir = 8
 	},
 /turf/open/floor/plating/parquetry/old,
@@ -23923,11 +23921,8 @@
 /turf/open/floor/plating/roofwalk,
 /area/vtm)
 "fCs" = (
-/obj/structure/vampdoor/wood{
-	dir = 8;
-	lock_id = "primVentrue";
-	locked = 1;
-	lockpick_difficulty = 10
+/obj/structure/vampdoor/wood/sabbat{
+	dir = 4
 	},
 /obj/effect/turf_decal/siding/wideplating{
 	color = "#5a2355";
@@ -29316,8 +29311,8 @@
 /obj/effect/turf_decal/siding/wood{
 	color = "#9a704a"
 	},
-/obj/structure/vampdoor/glass/prince{
-	lock_id = "clerk"
+/obj/structure/vampdoor/glass/sabbat{
+	dir = 1
 	},
 /turf/open/floor/plating/parquetry,
 /area/vtm/interior/millennium_tower)
@@ -36810,8 +36805,8 @@
 	dir = 1;
 	color = "#574d46"
 	},
-/obj/structure/vampdoor/wood/theatre{
-	dir = 1
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/theatre)
@@ -40569,11 +40564,9 @@
 /turf/open/floor/plating/vampgrass,
 /area/vtm/forest)
 "juf" = (
-/obj/structure/vampdoor/wood{
-	dir = 4;
-	lock_id = "theatre";
-	locked = 1;
-	lockpick_difficulty = 12
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
+	dir = 8
 	},
 /obj/effect/vip_barrier/elysium/theatre_backdoor{
 	dir = 8
@@ -48103,10 +48096,8 @@
 /turf/open/floor/plating/circled,
 /area/vtm/interior/shop)
 "lgN" = (
-/obj/structure/vampdoor/wood{
-	dir = 4;
-	lock_id = "ventrue";
-	lockpick_difficulty = 12
+/obj/structure/vampdoor/wood/sabbat{
+	dir = 4
 	},
 /obj/effect/turf_decal/siding/wideplating{
 	color = "#802d29";
@@ -49918,9 +49909,8 @@
 /turf/open/floor/plating/vampplating,
 /area/vtm/interior/endron_facility)
 "lBW" = (
-/obj/structure/vampdoor/wood/sabbat{
-	lockpick_difficulty = 15;
-	dir = 8
+/obj/structure/vampdoor/glass/sabbat{
+	dir = 4
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower)
@@ -52232,11 +52222,8 @@
 	color = "#004136";
 	dir = 1
 	},
-/obj/structure/vampdoor/wood{
-	dir = 1;
-	lock_id = "ventrueGreenroom";
-	lockpick_difficulty = 12;
-	locked = 1
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/plating/parquetry,
 /area/vtm/jazzclub)
@@ -54917,11 +54904,8 @@
 	},
 /area/vtm/supply)
 "mJN" = (
-/obj/structure/vampdoor/wood{
-	dir = 1;
-	lock_id = "ventrue";
-	lockpick_difficulty = 12;
-	locked = 1
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /obj/effect/turf_decal/siding/wideplating{
 	color = "#802d29"
@@ -60985,7 +60969,8 @@
 /turf/open/floor/plating/sidewalk/rich,
 /area/vtm/financialdistrict/library)
 "oan" = (
-/obj/structure/vampdoor/wood/theatre{
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
 	dir = 8
 	},
 /obj/effect/vip_barrier/elysium/theatre{
@@ -66200,6 +66185,12 @@
 /obj/structure/roofstuff/alt2,
 /turf/open/floor/plating/sidewalk/poor,
 /area/vtm)
+"pjx" = (
+/obj/structure/vampdoor/glass/sabbat{
+	dir = 1
+	},
+/turf/open/floor/carpet/red,
+/area/vtm/jazzclub)
 "pjz" = (
 /turf/open/floor/plating/circled,
 /area/vtm/sewer/police)
@@ -77000,10 +76991,7 @@
 /turf/open/floor/carpet/red,
 /area/vtm/interior/chantry)
 "rLf" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 10;
+/obj/structure/vampdoor/wood/sabbat{
 	dir = 4
 	},
 /obj/effect/turf_decal/siding/white{
@@ -83966,6 +83954,21 @@
 	},
 /turf/open/floor/plating/sidewalk/old,
 /area/vtm/jazzclub)
+"tte" = (
+/obj/effect/turf_decal/siding/white{
+	dir = 1;
+	color = "#636363"
+	},
+/obj/structure/table/wood,
+/obj/item/vamp/keys/church,
+/obj/item/vamp/keys/church,
+/obj/item/vamp/keys/church,
+/obj/item/vamp/keys/church,
+/obj/item/vamp/keys/church,
+/turf/open/floor/plating/toilet{
+	color = "#636363"
+	},
+/area/vtm/church/interior/staff)
 "tty" = (
 /obj/structure/musician/piano{
 	desc = "an elegant piano";
@@ -88599,10 +88602,7 @@
 /turf/open/floor/plating/asphalt,
 /area/vtm/interior)
 "uyO" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 10;
+/obj/structure/vampdoor/wood/sabbat{
 	dir = 4
 	},
 /obj/effect/turf_decal/siding/white{
@@ -97922,11 +97922,8 @@
 /turf/open/floor/plating/vampgrass,
 /area/vtm)
 "wLO" = (
-/obj/structure/vampdoor/wood/old{
-	dir = 4;
-	lock_id = "primLasombra";
-	locked = 1;
-	lockpick_difficulty = 24
+/obj/structure/vampdoor/wood/sabbat{
+	dir = 4
 	},
 /turf/open/floor/plating/church,
 /area/vtm/church/interior/haven)
@@ -98229,6 +98226,16 @@
 	},
 /turf/open/floor/plating/vampplating,
 /area/vtm/interior/endron_facility/restricted)
+"wPT" = (
+/obj/structure/vampdoor/wood/sabbat{
+	dir = 4
+	},
+/obj/effect/turf_decal/siding/white{
+	dir = 8;
+	color = "#636363"
+	},
+/turf/open/floor/plating/church,
+/area/vtm/jazzclub)
 "wPW" = (
 /obj/structure/table/wood,
 /obj/item/reagent_containers/spray/cleaner,
@@ -154897,7 +154904,7 @@ xLf
 nqH
 xny
 hfQ
-wWR
+tte
 pLV
 vVo
 vVo
@@ -179352,7 +179359,7 @@ mTu
 fIE
 fIE
 fIE
-kDp
+pjx
 fIE
 fIE
 fIE
@@ -219751,7 +219758,7 @@ fJb
 ucp
 ucp
 ucp
-cvN
+wPT
 ucp
 ucp
 xEp
