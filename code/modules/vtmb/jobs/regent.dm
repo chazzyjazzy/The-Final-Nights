@@ -1,11 +1,11 @@
 
 /datum/job/vamp/regent
-	title = "Chantry Regent"
-	department_head = list("Prince")
+	title = "Tremere Bishop"
+	department_head = list("Archbishop")
 	faction = "Vampire"
 	total_positions = 1
 	spawn_positions = 1
-	supervisors = "the Pyramid, or what remains of it"
+	supervisors = "House Goratrix and the Archbishop."
 	selection_color = "#ab2508"
 
 	outfit = /datum/outfit/job/regent
@@ -17,26 +17,26 @@
 	exp_type_department = EXP_TYPE_TREMERE
 
 	display_order = JOB_DISPLAY_ORDER_REGENT
-	v_duty = "Lead the Chantry. You serve as both the Regent and Tremere Primogen. You report to the Tremere Lord of this region first, Prince second."
+	v_duty = "The House Goratrix, while making inroads with the Camarilla, still have some stragglers, who cling to the Vaulderie and Dark Thaumaturgy, creating Blood Brothers, Gargoyles, and other inhuman servants alongside the Tzimisce."
 	minimal_masquerade = 4
 	minimal_generation = 10
 //	minimum_character_age = 150 //Uncomment if age-restriction wanted
 	minimum_vampire_age = 60
 	allowed_species = list("Vampire")
-	allowed_bloodlines = list(CLAN_TREMERE)
+	allowed_bloodlines = list(CLAN_TREMERE, CLAN_BAALI)
 	experience_addition = 20
 	known_contacts = list("Prince")
 
 /datum/outfit/job/regent
-	name = "Chantry Regent"
+	name = "Tremere Bishop"
 	jobtype = /datum/job/vamp/regent
 
 	id = /obj/item/card/id/regent
-	glasses = /obj/item/clothing/glasses/vampire/red
-	suit = /obj/item/clothing/suit/vampire/trench/strauss
+	glasses = /obj/item/clothing/glasses/vampire/sun
+	suit = /obj/item/clothing/suit/vampire/trench
 	shoes = /obj/item/clothing/shoes/vampire
 	gloves = /obj/item/clothing/gloves/vampire/latex
-	uniform = /obj/item/clothing/under/vampire/archivist
+	uniform = /obj/item/clothing/under/vampire/suit
 	r_pocket = /obj/item/vamp/keys/regent
 	l_pocket = /obj/item/vamp/phone/tremere_regent
 	accessory = /obj/item/clothing/accessory/pocketprotector/full
@@ -57,5 +57,5 @@
 		shoes = /obj/item/clothing/shoes/vampire/heels
 
 /obj/effect/landmark/start/regent
-	name = "Chantry Regent"
+	name = "Tremere Bishop"
 	icon_state = "Archivist"
