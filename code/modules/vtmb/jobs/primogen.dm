@@ -1,3 +1,4 @@
+/*
 /datum/job/vamp/bishop_malkavian
 	title = "Malkavian Bishop"
 	department_head = list("Archbishop")
@@ -29,7 +30,7 @@
 
 /datum/outfit/job/malkav
 	name = "Malkavian Bishop"
-	jobtype = /datum/job/vamp/Bishop_malkavian
+	jobtype = /datum/job/vamp/primogen_malkavian
 
 	id = /obj/item/card/id/Bishop
 	glasses = /obj/item/clothing/glasses/vampire/sun
@@ -46,7 +47,7 @@
 	if(H.gender == FEMALE)
 		suit = null
 		head = null
-		uniform = /obj/item/clothing/under/vampire/Bishop_malkavian/female
+		uniform = /obj/item/clothing/under/vampire/primogen_malkavian/female
 		shoes = /obj/item/clothing/shoes/vampire/heels
 
 /datum/job/vamp/bishop_nosferatu
@@ -189,7 +190,7 @@
 /datum/outfit/job/toreador/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.gender == FEMALE)
-		uniform = /obj/item/clothing/under/vampire/Bishop_toreador/female
+		uniform = /obj/item/clothing/under/vampire/primogen_toreador/female
 		shoes = /obj/item/clothing/shoes/vampire/heels/red
 
 /datum/job/vamp/bishop_banu
@@ -290,7 +291,7 @@
 /obj/effect/landmark/start/Bishop_lasombra
 	name = "Bishop Lasombra"
 	icon_state = "Assistant"
-
+*/
 
 /datum/job/vamp/bishop
 	title = "Sabbat Bishop"
@@ -320,3 +321,16 @@
 	experience_addition = 20
 	minimal_masquerade = 5
 	known_contacts = list("Prince")
+
+/datum/outfit/job/bishop
+	name = "Sabbat Bishop"
+	jobtype = /datum/job/vamp/bishop
+
+	id = /obj/item/card/id/primogen
+	glasses = /obj/item/clothing/glasses/vampire/sun
+	uniform = /obj/item/clothing/under/vampire/turtleneck_black
+	suit = /obj/item/clothing/suit/vampire/trench
+	shoes = /obj/item/clothing/shoes/vampire/jackboots
+	l_pocket = /obj/item/vamp/phone/lasombra_primo
+	r_pocket = /obj/item/cockclock
+	backpack_contents = list(/obj/item/vamp/keys/sabbat=1,/obj/item/passport=1, /obj/item/vamp/creditcard/elder=1, /obj/item/card/id/whip, /obj/item/card/id/steward, /obj/item/card/id/myrmidon)
