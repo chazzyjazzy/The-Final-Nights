@@ -334,3 +334,7 @@
 	l_pocket = /obj/item/vamp/phone/lasombra_primo
 	r_pocket = /obj/item/cockclock
 	backpack_contents = list(/obj/item/vamp/keys/sabbat=1,/obj/item/passport=1, /obj/item/vamp/creditcard/elder=1, /obj/item/card/id/whip, /obj/item/card/id/steward, /obj/item/card/id/myrmidon)
+
+/obj/effect/landmark/start/sabbat_bishop
+	name = "Sabbat Bishop"
+	icon_state = "Assistant"

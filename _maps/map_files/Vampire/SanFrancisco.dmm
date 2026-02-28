@@ -2633,9 +2633,8 @@
 	color = "#828282";
 	dir = 1
 	},
-/obj/structure/vampdoor/wood{
-	lock_id = "banuhaqim";
-	lockpick_difficulty = 16
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/plating/toilet,
 /area/vtm/interior/banu)
@@ -4075,10 +4074,8 @@
 	},
 /area/vtm/interior/tzimisce_manor)
 "aWc" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "banuhaqim";
-	lockpick_difficulty = 16;
-	locked = 1
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/banu/haven)
@@ -4196,10 +4193,8 @@
 /turf/open/floor/plating/circled,
 /area/vtm/interior/laundromat)
 "aXP" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "clerk";
-	locked = 1;
-	lockpick_difficulty = 16
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/plating/parquetry,
 /area/vtm/interior/millennium_tower)
@@ -14664,11 +14659,8 @@
 	dir = 3;
 	color = "#636363"
 	},
-/obj/structure/vampdoor/wood{
-	dir = 1;
-	lock_id = "prince";
-	locked = 1;
-	lockpick_difficulty = 24
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower/f3)
@@ -15368,7 +15360,7 @@
 	dir = 8;
 	color = "#574d46"
 	},
-/obj/structure/vampdoor/wood/sabbat{
+/obj/structure/vampdoor/camarilla{
 	dir = 4
 	},
 /turf/open/floor/plating/vampcanal{
@@ -16036,11 +16028,8 @@
 /turf/open/floor/plating/vampgrass,
 /area/vtm/graveyard)
 "dNs" = (
-/obj/structure/vampdoor/simple{
-	dir = 8;
-	lock_id = "sabbat";
-	lockpick_difficulty = 16;
-	locked = 1
+/obj/structure/vampdoor/camarilla{
+	dir = 4
 	},
 /obj/effect/decal/bordur{
 	dir = 8
@@ -16708,10 +16697,8 @@
 /turf/open/floor/plating/stone,
 /area/vtm/forest/caves)
 "dUF" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 16
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower)
@@ -16720,9 +16707,7 @@
 	dir = 4;
 	color = "#574d46"
 	},
-/obj/structure/vampdoor/wood{
-	lock_id = "banuhaqim";
-	lockpick_difficulty = 16;
+/obj/structure/vampdoor/wood/sabbat{
 	dir = 4
 	},
 /turf/open/floor/carpet/green,
@@ -19220,11 +19205,8 @@
 	},
 /area/vtm/interior/tzimisce_manor)
 "eAK" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "primBanu";
-	lockpick_difficulty = 24;
-	locked = 1;
-	dir = 8
+/obj/structure/vampdoor/wood/sabbat{
+	dir = 4
 	},
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/banu/haven)
@@ -23102,13 +23084,12 @@
 	pixel_y = 15;
 	pixel_x = 7
 	},
-/obj/item/vamp/keys/sabbat,
-/obj/item/vamp/keys/sabbat,
-/obj/item/vamp/keys/sabbat,
-/obj/item/vamp/keys/sabbat,
-/obj/item/vamp/keys/sabbat,
-/obj/item/vamp/keys/sabbat,
-/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/camarilla,
+/obj/item/vamp/keys/camarilla,
+/obj/item/vamp/keys/camarilla,
+/obj/item/vamp/keys/camarilla,
+/obj/item/vamp/keys/camarilla,
+/obj/item/vamp/keys/camarilla,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/sabbat_lair)
 "fss" = (
@@ -24464,17 +24445,6 @@
 	},
 /turf/open/floor/plating/vampcarpet,
 /area/vtm/anarch/basement)
-"fIW" = (
-/obj/structure/table,
-/obj/machinery/p25transceiver/clinic{
-	pixel_y = 9;
-	pixel_x = 1
-	},
-/obj/effect/turf_decal/siding/white{
-	dir = 1
-	},
-/turf/open/floor/plating/circled,
-/area/vtm/clinic)
 "fIY" = (
 /obj/structure/railing/metal{
 	dir = 4
@@ -31903,9 +31873,6 @@
 	dir = 4
 	},
 /obj/structure/table/wood,
-/obj/machinery/p25transceiver/tower{
-	pixel_y = 10
-	},
 /turf/open/floor/plating/granite/black,
 /area/vtm/interior/millennium_tower/f2)
 "hwc" = (
@@ -34132,10 +34099,6 @@
 	},
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/techshop)
-"hWz" = (
-/obj/item/vampirebook/noddist,
-/turf/open/floor/plating/vampcanal,
-/area/vtm/interior/sabbat_lair)
 "hWA" = (
 /obj/machinery/photocopier,
 /obj/machinery/light{
@@ -34586,13 +34549,6 @@
 	},
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/anarch)
-"ibW" = (
-/obj/structure/bath/sabbatbath,
-/turf/open/floor/plating/vampcanal{
-	icon_state = "canal2";
-	base_icon_state = "canal2"
-	},
-/area/vtm/interior/sabbat_lair)
 "ibY" = (
 /obj/structure/rack,
 /obj/effect/turf_decal/siding/green/end{
@@ -34785,11 +34741,6 @@
 	color = "#919191"
 	},
 /area/vtm/interior)
-"idX" = (
-/obj/structure/closet/crate/coffin,
-/obj/item/vampirebook/noddist,
-/turf/open/floor/plating/parquetry/old,
-/area/vtm/interior/sabbat_lair)
 "iec" = (
 /obj/machinery/light/prince{
 	pixel_y = 32;
@@ -38449,13 +38400,7 @@
 	pixel_x = -10;
 	pixel_y = 8
 	},
-/obj/item/sabbat_priest_tome{
-	pixel_y = 6;
-	pixel_x = 16
-	},
-/obj/item/reagent_containers/food/drinks/silver_goblet/vaulderie_goblet{
-	pixel_y = 11
-	},
+/obj/item/storage/belt/vampire/sheathe/longsword,
 /turf/open/floor/plating/vampcanal{
 	icon_state = "canal2";
 	base_icon_state = "canal2"
@@ -40091,9 +40036,8 @@
 /turf/open/floor/plating/concrete,
 /area/vtm/clinic/haven)
 "jol" = (
-/obj/structure/vampdoor/wood/sabbat{
-	lockpick_difficulty = 15;
-	dir = 8
+/obj/structure/vampdoor/camarilla{
+	dir = 4
 	},
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/interior/sabbat_lair)
@@ -44475,11 +44419,9 @@
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/anarch)
 "kou" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 12;
-	dir = 4
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
+	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower/f2)
@@ -44502,7 +44444,6 @@
 /area/vtm/interior)
 "koB" = (
 /obj/structure/table/wood,
-/obj/machinery/p25transceiver/clinic,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/police/upstairs)
 "koC" = (
@@ -46129,7 +46070,6 @@
 	pixel_x = -10;
 	pixel_y = 8
 	},
-/obj/item/sabbat_war_party,
 /turf/open/floor/plating/parquetry/old,
 /area/vtm/interior/sabbat_lair)
 "kIa" = (
@@ -46195,9 +46135,7 @@
 	pixel_x = 11;
 	pixel_y = 8
 	},
-/obj/item/reagent_containers/food/drinks/silver_goblet/vaulderie_goblet{
-	pixel_y = 11
-	},
+/obj/item/storage/belt/vampire/sheathe/longsword,
 /turf/open/floor/plating/vampcanal{
 	icon_state = "canal2";
 	base_icon_state = "canal2"
@@ -46575,15 +46513,6 @@
 /obj/structure/flora/ausbushes/sunnybush,
 /turf/open/floor/plating/vampgrass,
 /area/vtm)
-"kNP" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 16;
-	dir = 4
-	},
-/turf/open/floor/mineral/plastitanium,
-/area/vtm/interior/millennium_tower/f2)
 "kOa" = (
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/sewer)
@@ -48409,10 +48338,8 @@
 /turf/open/floor/plating/concrete,
 /area/vtm/supply)
 "ljb" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 12
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower/f2)
@@ -49991,10 +49918,8 @@
 /turf/open/floor/plating/vampplating,
 /area/vtm/interior/endron_facility)
 "lBW" = (
-/obj/structure/vampdoor/glass/prince{
-	lockpick_difficulty = 8;
-	lock_id = "camarilla";
-	locked = 0;
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
 	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium,
@@ -50366,11 +50291,9 @@
 	dir = 4;
 	color = "#636363"
 	},
-/obj/structure/vampdoor/wood{
-	dir = 4;
-	lock_id = "prince";
-	locked = 1;
-	lockpick_difficulty = 24
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
+	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower/f3)
@@ -53233,10 +53156,6 @@
 /obj/structure/stairs/east,
 /turf/open/floor/plating/concrete,
 /area/vtm/supply)
-"mnG" = (
-/obj/structure/vampdoor/wood/sabbat,
-/turf/open/floor/plating/vampcanalplating,
-/area/vtm/interior/sabbat_lair)
 "mnL" = (
 /obj/structure/chair/plastic,
 /turf/open/floor/plating/dirt,
@@ -55791,10 +55710,8 @@
 	color = "#9a704a";
 	dir = 1
 	},
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 10
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/plating/parquetry,
 /area/vtm/interior/millennium_tower)
@@ -56908,7 +56825,6 @@
 /obj/structure/chair/comfy/black{
 	dir = 1
 	},
-/obj/effect/landmark/start/primogen_banu,
 /turf/open/floor/carpet,
 /area/vtm/interior/banu/haven)
 "ndQ" = (
@@ -60469,10 +60385,6 @@
 	},
 /turf/open/floor/plating/parquetry,
 /area/vtm/jazzclub)
-"nTk" = (
-/obj/sabbatrune,
-/turf/open/floor/plating/vampcanalplating,
-/area/vtm/interior/sabbat_lair)
 "nTn" = (
 /obj/structure/chair/red{
 	dir = 8
@@ -63446,9 +63358,7 @@
 /turf/open/floor/plating/vampbeach,
 /area/vtm/fishermanswharf/lower)
 "oBl" = (
-/obj/structure/vampdoor/wood/sabbat{
-	lockpick_difficulty = 15
-	},
+/obj/structure/vampdoor/camarilla,
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/interior/sabbat_lair)
 "oBp" = (
@@ -65038,11 +64948,9 @@
 /turf/open/floor/plating/grate,
 /area/vtm/interior/endron_facility/restricted)
 "oVh" = (
-/obj/structure/vampdoor/wood{
-	dir = 4;
-	lock_id = "prince";
-	locked = 1;
-	lockpick_difficulty = 24
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
+	dir = 8
 	},
 /turf/open/floor/plating/parquetry/rich,
 /area/vtm/interior/millennium_tower/f3)
@@ -68064,12 +67972,6 @@
 	},
 /turf/open/floor/plating/dirt,
 /area/vtm/forest)
-"pEM" = (
-/obj/structure/vampdoor/wood/sabbat{
-	dir = 4
-	},
-/turf/open/floor/plating/vampcanalplating,
-/area/vtm/interior/sabbat_lair)
 "pEV" = (
 /obj/structure/stone_tile/surrounding_tile{
 	dir = 8
@@ -70718,8 +70620,8 @@
 /obj/effect/vip_barrier/elysium{
 	dir = 4
 	},
-/obj/structure/vampdoor/wood/millennium_common{
-	lockpick_difficulty = 16;
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
 	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium,
@@ -71149,6 +71051,7 @@
 "qqi" = (
 /obj/structure/table/wood,
 /obj/item/vtm_artifact/rand,
+/obj/item/storage/belt/vampire/sheathe/sabre,
 /turf/open/floor/plating/dirt,
 /area/vtm/interior/sabbat_lair)
 "qql" = (
@@ -71629,14 +71532,6 @@
 	},
 /turf/open/floor/plating/woodrough,
 /area/vtm/interior/ranger)
-"qvZ" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 10
-	},
-/turf/open/floor/mineral/plastitanium,
-/area/vtm/interior/millennium_tower)
 "qwa" = (
 /mob/living/simple_animal/pet/cat/vampire{
 	name = "Sproingus"
@@ -72096,11 +71991,9 @@
 	color = "#9a704a";
 	dir = 4
 	},
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 10;
-	dir = 4
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
+	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower)
@@ -73679,11 +73572,7 @@
 /area/vtm/interior/endron_facility)
 "qSU" = (
 /obj/structure/table/wood,
-/obj/item/melee/vampirearms/shovel,
-/obj/item/melee/vampirearms/shovel{
-	pixel_x = 9;
-	pixel_y = -7
-	},
+/obj/item/storage/belt/vampire/sheathe/rapier,
 /turf/open/floor/plating/dirt,
 /area/vtm/interior/sabbat_lair)
 "qSX" = (
@@ -77905,9 +77794,6 @@
 	id = 22;
 	pixel_y = 30
 	},
-/obj/machinery/p25transceiver/endron{
-	pixel_y = 8
-	},
 /turf/open/floor/plating/vampplating,
 /area/vtm/interior/endron_facility/restricted)
 "rTF" = (
@@ -79179,11 +79065,9 @@
 	dir = 8;
 	color = "#636363"
 	},
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 10;
-	dir = 4
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
+	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower)
@@ -89369,7 +89253,6 @@
 /area/vtm/clinic)
 "uFZ" = (
 /obj/structure/table/wood,
-/obj/item/vamp/keys/sabbat,
 /obj/item/masquerade_contract,
 /turf/open/floor/plating/vampcanalplating,
 /area/vtm/interior/sabbat_lair)
@@ -90245,8 +90128,7 @@
 /turf/open/floor/plating/grate,
 /area/vtm/interior/chantry/basement)
 "uPX" = (
-/obj/structure/vampdoor/wood{
-	lock_id = "banuhaqim";
+/obj/structure/vampdoor/wood/sabbat{
 	dir = 4
 	},
 /obj/effect/turf_decal/siding/white{
@@ -92827,11 +92709,9 @@
 	color = "#9a704a";
 	dir = 8
 	},
-/obj/structure/vampdoor/wood{
-	dir = 8;
-	lock_id = "prince";
-	locked = 1;
-	lockpick_difficulty = 24
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15;
+	dir = 8
 	},
 /turf/open/floor/plating/parquetry,
 /area/vtm/interior/millennium_tower/f2)
@@ -92841,10 +92721,6 @@
 /area/vtm/clinic)
 "vAE" = (
 /obj/structure/table/wood,
-/obj/machinery/p25transceiver/anarch{
-	pixel_y = 11;
-	pixel_x = -5
-	},
 /obj/item/p25radio{
 	pixel_y = 16;
 	pixel_x = 10
@@ -95538,7 +95414,6 @@
 /obj/structure/chair/comfy/black{
 	dir = 1
 	},
-/obj/effect/landmark/start/primogen_lasombra,
 /turf/open/floor/plating/church,
 /area/vtm/church/interior/haven)
 "wiZ" = (
@@ -100097,10 +99972,8 @@
 	dir = 1;
 	color = "#636363"
 	},
-/obj/structure/vampdoor/wood{
-	lock_id = "camarilla";
-	locked = 1;
-	lockpick_difficulty = 10
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/mineral/plastitanium,
 /area/vtm/interior/millennium_tower)
@@ -103696,10 +103569,8 @@
 /obj/effect/turf_decal/siding/white{
 	color = "#636363"
 	},
-/obj/structure/vampdoor/wood{
-	lock_id = "prince";
-	locked = 1;
-	lockpick_difficulty = 24
+/obj/structure/vampdoor/wood/sabbat{
+	lockpick_difficulty = 15
 	},
 /turf/open/floor/plating/toilet{
 	color = "#919191"
@@ -103829,10 +103700,6 @@
 	icon_state = "carpet_black"
 	},
 /area/vtm/sewer/nosferatu_bar)
-"ydH" = (
-/obj/sabbatrune,
-/turf/open/floor/plating/vampdirt,
-/area/vtm/interior/sabbat_lair)
 "ydJ" = (
 /obj/effect/decal/bordur{
 	dir = 4
@@ -112667,7 +112534,7 @@ xfw
 xfw
 rCB
 hYX
-idX
+reI
 kwk
 wGV
 reI
@@ -112888,7 +112755,7 @@ mTX
 wcZ
 cJU
 nab
-hWz
+nab
 hYX
 rCB
 xfw
@@ -114292,13 +114159,13 @@ tWF
 mTX
 oWy
 mTX
-mnG
+oBl
 jxH
 rWY
 gmc
 hmo
 dqO
-nTk
+mTX
 mTX
 mTX
 mTX
@@ -114693,7 +114560,7 @@ rCB
 hYX
 nwu
 hYX
-pEM
+jol
 hYX
 nwu
 hYX
@@ -114702,7 +114569,7 @@ hYX
 hYX
 hYX
 hYX
-pEM
+jol
 hYX
 hYX
 hYX
@@ -114902,7 +114769,7 @@ vFc
 pBQ
 oYJ
 hYX
-ibW
+wcZ
 mTX
 mTX
 mTX
@@ -115108,7 +114975,7 @@ kID
 mTX
 mTX
 mTX
-ibW
+wcZ
 hYX
 rCB
 rCB
@@ -115300,16 +115167,16 @@ hYX
 hYX
 bYW
 kWG
-ydH
+lbE
 riS
 pBQ
 oYJ
 hYX
 hYX
 hYX
-ibW
+wcZ
 rjC
-ibW
+wcZ
 hYX
 hYX
 rCB
@@ -171793,7 +171660,7 @@ eVn
 fQB
 ijJ
 ijJ
-qvZ
+dUF
 ijJ
 ijJ
 ijJ
@@ -179127,7 +178994,7 @@ joX
 nBC
 jIO
 kaD
-fIW
+wBb
 joX
 joX
 joX
@@ -211186,7 +211053,7 @@ mjT
 sCA
 sCA
 sCA
-kNP
+kou
 sCA
 qeA
 rlE
