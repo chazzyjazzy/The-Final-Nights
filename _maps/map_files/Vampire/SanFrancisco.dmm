@@ -2761,6 +2761,7 @@
 	pixel_x = -5;
 	pixel_y = 7
 	},
+/obj/item/candle/infinite,
 /turf/open/floor/plating/woodfancy,
 /area/vtm/interior/millennium_tower)
 "aFu" = (
@@ -12752,6 +12753,11 @@
 	color = "#bfbfbf"
 	},
 /area/vtm/sewer/police)
+"cXu" = (
+/obj/structure/table/wood,
+/obj/item/candle/infinite,
+/turf/open/floor/plating/woodfancy,
+/area/vtm/interior/millennium_tower)
 "cXv" = (
 /obj/structure/vampdoor{
 	locked = 1;
@@ -170051,7 +170057,7 @@ jcZ
 jcZ
 dda
 igC
-qYi
+cXu
 vPV
 vPV
 pmd
