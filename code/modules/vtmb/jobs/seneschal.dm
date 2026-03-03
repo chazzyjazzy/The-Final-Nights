@@ -5,8 +5,8 @@
 	department_head = list("Archbishop")
 	head_announce = list(RADIO_CHANNEL_SUPPLY, RADIO_CHANNEL_SERVICE)
 	faction = "Vampire"
-	total_positions = 1
-	spawn_positions = 1
+	total_positions = 2
+	spawn_positions = 2
 	supervisors = "the Archbishop and Caine."
 	selection_color = "#bd3327"
 	req_admin_notify = 1

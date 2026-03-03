@@ -1,8 +1,8 @@
 /datum/job/vamp/sabbatpriest
 	title = "Camarilla Alastor"
 	faction = "Vampire"
-	total_positions = 2
-	spawn_positions = 2
+	total_positions = 4
+	spawn_positions = 4
 	supervisors = "Caine"
 	selection_color = "#7B0000"
 	access = list()
@@ -16,10 +16,10 @@
 	access = list(ACCESS_MAINT_TUNNELS)
 	liver_traits = list(TRAIT_GREYTIDE_METABOLISM)
 
-	v_duty = "You are the Sabbat Priest. You are charged with the supervision of the ritae of your pack. You also serve as the second-in-command to the Ductus. Consecrate the Vaulderie for new Sabbat, consult your tome for rites to aid your pack, and ensure the Sabbat live on in Caine's favor.  <br> <b> NOTE: BY PLAYING THIS ROLE YOU AGREE TO AND HAVE READ THE SERVER'S RULES ON ESCALATION FOR ANTAGS. KEEP THINGS INTERESTING AND ENGAGING FOR BOTH SIDES. KILLING PLAYERS JUST BECAUSE YOU CAN MAY RESULT IN A ROLEBAN. "
+	v_duty = "Ever since the Sabbat has taken over the city, you found your duties quickly change to become a ranking Alastor of the Camarilla - an agent charged with hunting down those vampires deemed as Anathema by Camarilla Leadership, blood hunted and sentenced to death or diablerie by the Lextalionis. Ancient Kindred law demands an eye for an eye - and the fall of the city to the Sabbat demands yet another fall back into our hands! "
 	duty = "Down with the Camarilla. Down with the Elders. Down with the Jyhad! The Kindred are the true rulers of Earth, blessed by Caine, the Dark Father."
 	minimal_masquerade = 0
-	allowed_bloodlines = list(CLAN_BRUJAH, CLAN_TREMERE, CLAN_VENTRUE, CLAN_TOREADOR, CLAN_GANGREL, CLAN_MALKAVIAN, CLAN_LASOMBRA, CLAN_BANU_HAQIM)
+	allowed_bloodlines = list(CLAN_BRUJAH, CLAN_TREMERE, CLAN_VENTRUE, CLAN_TOREADOR, CLAN_GANGREL, CLAN_MALKAVIAN, CLAN_LASOMBRA, CLAN_BANU_HAQIM, CLAN_LASOMBRA)
 	display_order = JOB_DISPLAY_ORDER_SABBATPRIEST
 	//whitelisted = TRUE
 
