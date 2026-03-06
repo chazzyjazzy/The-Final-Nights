@@ -365,6 +365,20 @@
 	accesslocks = list(
 		"sabbat",
 		"chantry",
+		"nosferatu",
+		"toreador",
+		"toreador1",
+		"toreador2",
+		"toreador3",
+		"toreador4",
+		"strip",
+		"malkav",
+		"psych",
+		"milleniumCommon",
+		"clerk",
+		"theatre",
+		"ventrueGreenroom",
+		"camarilla",
 	)
 	color = "#6a2e1d"
 

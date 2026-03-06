@@ -52,10 +52,7 @@
 		backpack_contents = list(/obj/item/passport=1, /obj/item/flashlight=1, /obj/item/vamp/creditcard=1)
 	if(H.clan && H.clan.name != "Lasombra")
 		backpack_contents = list(/obj/item/passport=1, /obj/item/flashlight=1, /obj/item/vamp/creditcard=1)
-	if(H.mind)
-		var/datum/antagonist/temp_antag = new()
-		temp_antag.add_antag_hud(ANTAG_HUD_REV, "rev_head", H)
-		qdel(temp_antag)
+
 
 /obj/effect/landmark/start/sabbatductus
 	name = "Camarilla Praetor"

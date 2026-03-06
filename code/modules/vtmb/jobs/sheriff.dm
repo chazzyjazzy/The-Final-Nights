@@ -38,7 +38,7 @@
 	minimum_vampire_age = 30
 	minimal_masquerade = 5
 	allowed_species = list("Vampire")
-	allowed_bloodlines = list(CLAN_ALL)
+	allowed_bloodlines = list(CLAN_NONE, CLAN_BRUJAH, CLAN_TOREADOR, CLAN_NOSFERATU, CLAN_TREMERE, CLAN_GANGREL, CLAN_VENTRUE, CLAN_MALKAVIAN, CLAN_TZIMISCE, CLAN_TRUE_BRUJAH, CLAN_OLD_TZIMISCE, CLAN_SALUBRI, CLAN_KIASYD, CLAN_LASOMBRA, CLAN_SETITES, CLAN_BANU_HAQIM, CLAN_GARGOYLE, CLAN_DAUGHTERS_OF_CACOPHONY, CLAN_CAPPADOCIAN, CLAN_NAGARAJA, CLAN_SALUBRI_WARRIOR)
 
 	known_contacts = list("Archbishop","Priscus","Sabbat Tremere Bishop","Dealer","Bishops","Voivode")
 

@@ -83882,6 +83882,11 @@
 "sTb" = (
 /obj/structure/table/wood/fancy/royalblack,
 /obj/item/vampirebook/noddist,
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
+/obj/item/vamp/keys/sabbat,
 /turf/open/floor/carpet/royalblack,
 /area/vtm/interior/millennium_tower/f3)
 "sTf" = (
