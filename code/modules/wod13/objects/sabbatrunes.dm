@@ -46,11 +46,11 @@
 
 
 	// Notify the challenger
-	to_chat(challenger, span_cult("You have challenged [target.real_name] to a duel of Monomacy!"))
+	to_chat(challenger, span_cult("You have challenged [target.real_name] to a duel of Monomacy! As the challenging Cainite, you determine the time and location of the duel, while your rival determines nearly all other factors. The Priest has the right to alter anything about the duel at any point - but the Priest who favors their own candidate is heavily looked down upon."))
 	SEND_SOUND(challenger, sound('code/modules/wod13/sounds/announce.ogg'))
 
 	// Notify the target
-	to_chat(target, span_cult("[challenger.real_name] challenges you to a duel of Monomacy! Answer the call or lose favor."))
+	to_chat(target, span_cult("[challenger.real_name] challenges you to a duel of Monomacy! Answer the call or lose favor. As the challenged Cainite, you have the right to determine when the duel ends, what weapons shall be used, whether or not disciplines are permitted, as well as any other factors such as both duelists wearing blindfolds. Your Priest has the right to modify these terms at any time, but the Priest who favors their own candidate is looked down upon."))
 	SEND_SOUND(target, sound('code/modules/wod13/sounds/announce.ogg'))
 
 	// Announce the challenge to everyone nearby
@@ -62,7 +62,7 @@
 	// Notify the priest
 	for(var/mob/living/carbon/human/priest in GLOB.player_list)
 		if(is_sabbat_priest(priest))
-			to_chat(priest, span_cult("[challenger.real_name] has challenged [target.real_name] to a duel of Monomacy! Return to the lair at once to ensure Caine's will is done."))
+			to_chat(priest, span_cult("[challenger.real_name] has challenged [target.real_name] to a duel of Monomacy! Seek them out and ensure the duel is performed honorably. As Priest, you have the right to adjust any of the terms of the duel - you even have the right to declare a monomacy as null and void after the fact, but beware, the Priest who tips the scales in favor of their own candidate is heavily disfavored."))
 			SEND_SOUND(priest, sound('code/modules/wod13/sounds/announce.ogg'))
 
 	// Visual and audio effects for the rune itself

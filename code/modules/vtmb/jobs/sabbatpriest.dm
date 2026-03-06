@@ -83,6 +83,10 @@
 	name = "Pack Credo"
 	desc = "We are the Sword of Caine. We do not bow to the Masquerade. We are not slaves to the Elders, nor tools of the Antediluvians. Through blood and fire, we prepare for Gehenna. We act not in secrecy, but in strength, united as one Pack. Death to traitors. Death to tyrants. Caine wills it.\n"
 
+/datum/sabbat_ritae/ritae_description/code_of_milan
+	name = "Code of Milan"
+	desc = "The Sabbat shall remain united in its support of the sect's Regent. If necessary, a new Regent shall be elected. The Regent shall support relief from tyranny, granting all Sabbat freedom.\n\n1. All Sabbat shall do their best to serve their leaders as long as said leaders serve the will of the Regent.\n2. All Sabbat shall faithfully observe all the Auctoritas Ritae.\n3. All Sabbat shall keep their word of honor to one another.\n4. All Sabbat shall treat their peers fairly and equally, upholding the strength and unity of the Sabbat. If necessary, they shall provide for the needs of their brethren.\n5. All Sabbat must put the good of the sect and the race of Cainites before their own personal needs, despite all costs.\n6. Those who are not honorable under this code will be considered less than equal and therefore unworthy of assistance.\n7. As it has always been, so it shall always be. The Lextalionis shall be the model for undying justice by which all Sabbat shall abide.\n8. All Sabbat shall protect one another from the enemies of the Sect. Personal enemies shall remain personal responsibility, unless they undermine Sect security.\n9. All sect members shall protect Sabbat territory from all other powers.\n10. The spirit of freedom shall be the fundamental principle of the Sect. All Sabbat shall expect and demand freedom from their leaders.\n11. The Ritus of Monomacy shall be used to settle disputes among all Sabbat.\n12. All Sabbat shall support the Black Hand.\n13. All Sabbat have the right to monitor the behavior and activities of their fellow Sect members in order to maintain freedom and security.\n14. All Sabbat possess the right to call a council of their peers and immediate leaders.\n15. All Sabbat shall act against Sect members who use the powers and authority the Sabbat has given them for personal gain at the expense of the Sabbat. Action shall be taken only through accepted means, approved by a quorum of Prisci."
+
 /datum/sabbat_ritae/ritae_description/vaulderie_info
 	name = "The Vaulderie"
 	desc = "The Vaulderie is a ritual by which a vinculum is established among a pack. It establishes a low level, communal blood bond among its participants. It severs blood bonds, reminding all Cainites to be free from the Elders who usurped Caine. Perform this ritual via the Vaulderie Goblet or Silver Goblet. Each member must drip their vitae into the cup, which is then shared among all participants.\n"
@@ -133,7 +137,8 @@
 		"Blood Bath" = new /datum/sabbat_ritae/ritae_description/bloodbath_info(),
 		"War Party" = new /datum/sabbat_ritae/ritae_description/war_party_hunt_info(),
 		"Blood Feast" = new /datum/sabbat_ritae/ritae_description/blood_feast_info(),
-		"Wild Hunt" = new /datum/sabbat_ritae/ritae_description/wild_hunt_info()
+		"Wild Hunt" = new /datum/sabbat_ritae/ritae_description/wild_hunt_info(),
+		"Code of Milan" = new /datum/sabbat_ritae/ritae_description/code_of_milan(),
 	)
 
 	var/list/ritae_options = list()
@@ -143,11 +148,12 @@
 		ritae_options += "Pack Credo (Edit)"
 	else
 		ritae_options += "Pack Credo"
+		ritae_options += "Code of Milan"
 
 	// Only Priests can see other ritae
 	if(is_priest)
 		for(var/name in ritae_datums)
-			if(name != "Pack Credo")
+			if(name != "Pack Credo" || name != "Code of Milan")
 				ritae_options += name
 
 	var/choice = tgui_input_list(user, "Select a Rite to learn about:", "Sabbat Ritae", ritae_options)
