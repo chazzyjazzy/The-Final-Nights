@@ -3,7 +3,7 @@
 	faction = "Vampire"
 	total_positions = 4
 	spawn_positions = 4
-	supervisors = "Caine"
+	supervisors = "The Traditions and the Inner Council"
 	selection_color = "#7B0000"
 	access = list()
 	minimal_access = list()
