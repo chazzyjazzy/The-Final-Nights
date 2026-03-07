@@ -312,7 +312,7 @@
 	exp_type_department = EXP_TYPE_COUNCIL
 
 	allowed_species = list("Vampire")
-	allowed_bloodlines = list(CLAN_ALL)
+	allowed_bloodlines = CLAN_ALL
 	minimal_generation = 12
 //	minimum_character_age = 100
 	minimum_vampire_age = 5 // Heavily meritocratic and new to the Camarilla, plus, Julia Sowinski *shrug

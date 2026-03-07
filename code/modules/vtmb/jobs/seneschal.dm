@@ -46,7 +46,7 @@
 	v_duty = "You are the right hand man or woman of the most powerful vampire in the city. The Archbishop and Regent trust you to maintain the affairs of the domain, overseeing the worship of Caine, and the Code of Milan."
 	duty = "You are the right hand man or woman of the most powerful vampire in the city. The Archbishop and Regent trust you to maintain the affairs of the domain, overseeing the worship of Caine, and the Code of Milan."
 	experience_addition = 15
-	allowed_bloodlines = list(CLAN_ALL)
+	allowed_bloodlines = CLAN_ALL
 
 /datum/outfit/job/clerk
 	name = "Seneschal"
@@ -118,7 +118,7 @@
 	known_contacts = list("Prince","Sheriff","Tremere Regent","Dealer","Emissary","Baron","Primogens")
 
 	v_duty = "You are a studious childe of Caine, and have extensively studied the Book of Nod and the history of Cainite society, as well as the treachery of the antediluvians. Study and learn from those lessons, and ensure that the blood of Caine is respected, across all clans, across all of his childer, and that everyone knows the story of our kind."
-	allowed_bloodlines = list(CLAN_ALL)
+	allowed_bloodlines = CLAN_ALL
 
 /datum/outfit/job/harpy
 	name = "Harpy"
@@ -167,7 +167,7 @@
 	bounty_types = CIV_JOB_SEC
 	known_contacts = list("Prince", "Sheriff", "Seneschal")
 	allowed_species = list("Ghoul", "Human", "Vampire")
-	allowed_bloodlines = list(CLAN_ALL)
+	allowed_bloodlines = CLAN_ALL
 	v_duty = "You work directly for the Archbishop, and by extension the Priscus, Inquisitor, and Sabbat as a whole, though you may or may not know it. Ensure your mortal coworkers stay in the dark of any supernatural happenings, and keep up the facade to the outside world."
 	duty = "You work directly for the Millenium Tower and its administrative staff in a variety of ways, you may even be a personal retainer of one of the top three, to the point that any oddities that you may see over night or hear are either things you are already aware or you simply laugh them off and try not to think about it."
 	minimal_masquerade = 4

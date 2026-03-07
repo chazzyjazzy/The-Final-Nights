@@ -29,7 +29,7 @@
 	v_duty = "You are the Archbishop's enforcer. Enforce the Code of Milan, and begrudgingly maintain the Masquerade so that Caine's children may continue to thrive."
 	minimal_masquerade = 4
 	experience_addition = 10
-	allowed_bloodlines = list(CLAN_ALL)
+	allowed_bloodlines = CLAN_ALL
 
 /datum/outfit/job/hound
 	name = "Hound"
