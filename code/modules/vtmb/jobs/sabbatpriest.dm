@@ -21,7 +21,7 @@
 	minimal_masquerade = 0
 	allowed_bloodlines = list(CLAN_BRUJAH, CLAN_TREMERE, CLAN_VENTRUE, CLAN_TOREADOR, CLAN_GANGREL, CLAN_MALKAVIAN, CLAN_LASOMBRA, CLAN_BANU_HAQIM, CLAN_LASOMBRA)
 	display_order = JOB_DISPLAY_ORDER_SABBATPRIEST
-	//whitelisted = TRUE
+	whitelisted = TRUE
 
 /datum/outfit/job/sabbatpriest
 	name = "Sabbat Priest"
