@@ -11794,10 +11794,7 @@
 /turf/open/floor/plating/vampgrass,
 /area/vtm/pacificheights)
 "cJU" = (
-/obj/structure/vampdoor/prison{
-	lock_id = "sabbat";
-	lockpick_difficulty = 8
-	},
+/obj/structure/vampdoor/camarilla,
 /turf/open/floor/plating/vampcanal,
 /area/vtm/interior/sabbat_lair)
 "cJV" = (
@@ -78834,10 +78831,7 @@
 /turf/open/floor/plating/granite/black,
 /area/vtm/interior/chantry/basement)
 "rJT" = (
-/obj/structure/vampdoor/prison{
-	lock_id = "sabbat";
-	lockpick_difficulty = 8
-	},
+/obj/structure/vampdoor/camarilla,
 /obj/effect/decal/cleanable/blood/old{
 	icon_state = "trails_1-old"
 	},
