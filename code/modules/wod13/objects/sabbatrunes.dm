@@ -15,11 +15,6 @@
 /obj/sabbatrune/attack_hand(mob/living/user)
 	. = ..()
 
-	// Check if user is a sabbatist, ductus, or priest
-	if(!is_sabbatist(user))
-		to_chat(user, span_warning("You do not understand the power of this rune."))
-		return
-
 	if(!COOLDOWN_FINISHED(src, MONOMACY_CHALLENGE_COOLDOWN))
 		to_chat(user, span_warning("The rune is still cooling down from the last challenge."))
 		return
