@@ -378,7 +378,6 @@
 		"clerk",
 		"theatre",
 		"ventrueGreenroom",
-		"camarilla",
 	)
 	color = "#6a2e1d"
 
