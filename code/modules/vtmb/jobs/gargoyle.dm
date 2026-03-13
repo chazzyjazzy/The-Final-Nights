@@ -47,6 +47,10 @@
 		/obj/item/vamp/keys/sabbat=1,
 	)
 
+/datum/outfit/job/gargoyle/pre_equip(mob/living/carbon/human/H)
+	.=..()
+	ADD_TRAIT(H, TRAIT_SABBATIST, "late_party")
+
 /obj/effect/landmark/start/gargoyle
 	name = "Chantry Gargoyle"
 	icon_state = "Archivist"

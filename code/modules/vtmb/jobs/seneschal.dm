@@ -64,6 +64,7 @@
 	if(H.gender == FEMALE)
 		uniform = /obj/item/clothing/under/vampire/clerk/female
 		shoes = /obj/item/clothing/shoes/vampire/heels
+	ADD_TRAIT(H, TRAIT_SABBATIST, "late_party")
 
 /obj/effect/landmark/start/clerk
 	name = "Seneschal"
@@ -136,6 +137,7 @@
 	if(H.gender == FEMALE)
 		uniform = /obj/item/clothing/under/vampire/clerk/female
 		shoes = /obj/item/clothing/shoes/vampire/heels
+	ADD_TRAIT(H, TRAIT_SABBATIST, "late_party")
 
 /obj/effect/landmark/start/harpy
 	name = "Harpy"
@@ -193,6 +195,7 @@
 
 /datum/outfit/job/towerwork/pre_equip(mob/living/carbon/human/H)
 	..()
+	ADD_TRAIT(H, TRAIT_SABBATIST, "late_party")
 
 /obj/effect/landmark/start/towerwork
 	name = "Tower Employee"

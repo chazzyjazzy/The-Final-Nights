@@ -335,6 +335,10 @@
 	r_pocket = /obj/item/cockclock
 	backpack_contents = list(/obj/item/vamp/keys/sabbat=1,/obj/item/passport=1, /obj/item/vamp/creditcard/elder=1, /obj/item/card/id/whip, /obj/item/card/id/steward, /obj/item/card/id/myrmidon)
 
+/datum/outfit/job/bishop/pre_equip(mob/living/carbon/human/H)
+	.=..()
+	ADD_TRAIT(H, TRAIT_SABBATIST, "late_party")
+
 /obj/effect/landmark/start/sabbat_bishop
 	name = "Sabbat Bishop"
 	icon_state = "Assistant"

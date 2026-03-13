@@ -51,7 +51,8 @@
 	implants = list(/obj/item/implant/mindshield)
 
 /datum/outfit/job/hound/pre_equip(mob/living/carbon/human/H)
-	..()
+	.=..()
+	ADD_TRAIT(H, TRAIT_SABBATIST, "late_party")
 
 /obj/effect/landmark/start/hound
 	name = "Templar"
