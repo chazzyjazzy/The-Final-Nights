@@ -11,3 +11,9 @@
   - balance: 'halved the damage of Thaumaturgy''s fifth dot power, cauldron of blood
 
       :cl:'
+2026-03-13:
+  Stutternov:
+  - balance: Redid Artifact's Brute/burn mods into DR, changed the way it caps
+  - balance: Changed Fortitude a bit to make sure you don't go over a certain cap
+  - balance: Viss now has masq breeches on cenipede legs and bone armor
+  - balance: Viss armors have been halved
